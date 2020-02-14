@@ -2,9 +2,15 @@ body {
   font: 14px "微軟正黑體", "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
-a {
-  color: #00B7FF;
+.ico {
+  fill:#fff;
+  width: 20px;
+  height: 20px;
 }
+
+.ico:hover {
+  fill: #18BC9C
+}  
 
 /*!
  * Bootswatch v4.4.1
