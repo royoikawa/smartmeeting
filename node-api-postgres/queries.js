@@ -3,7 +3,7 @@ const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
   database: 'smartmeeting',
-  //password: 'password',
+  password: 'vajus',
   port: 5432,
 })
 
@@ -21,7 +21,7 @@ const getUsers = (request, response) => {
 const getUserById = (request, response) => {
     const id = parseInt(request.params.id)
 
-    pool.query('SELECT * FROM Project WHERE pro_id = $1', [id], (error, results) => {
+    pool.query('SELECT * FROM public."Project" WHERE pro_id = $1', [id], (error, results) => {
         if (error) {
         throw error
         }
@@ -68,9 +68,9 @@ const deleteUser = (request, response) => {
 }
 
 module.exports = {
-    getUsers,
-    getUserById,
-    createUser,
-    updateUser,
-    deleteUser,
+  getUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
 }
