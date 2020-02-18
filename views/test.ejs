@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+  <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+  </head>
+  <body>
+  
+    <!--<h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>-->
+    <br>
+    <div style="border:1px #ced4da solid; width:50%; margin:0 auto;">
+      <h1 align="center"><b>查詢使用者資料</b></h1>  
+        <center><table   width='70%' height="300px" >
+          <form method="POST" action="/test">
+            <tr>
+              <td ><label for="loginacc" class="col-form-label">帳號(信箱)</label></td>              
+            </tr>
+            <tr>
+              <td ><input type="email" class="form-control" name="loginacc" id="loginacc"></td>
+            </tr>
+            
+            
+            <tr>
+              
+              <td  align="center"><input type="submit" class="btn btn-primary" style="width: 40%;" id="btn" value="查詢"></td>
+              
+            </tr>
+            
+          </form>
+        </table></center>
+        <br>
+    </div>
+
+    
+    
+  </body>
+</html>
