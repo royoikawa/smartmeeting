@@ -18,9 +18,6 @@ router.post('/', function(req, res) {
         }
         
         else{
-            /*res.locals.username = results.rows[0].acc_name;
-            req.session.username = res.locals.username;
-            console.log(req.session.username)*/
             res.json({"status":0, "msg": "success"})
        }
        pg.end();
