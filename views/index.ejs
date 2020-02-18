@@ -2,31 +2,17 @@
 <html>
   <head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel='stylesheet' href='/stylesheets/style.css'>
   </head>
+
   <body>
     <div><%- include navbar %></div>
-    <div class="bs-docs-section">
-      <div class="row">
-        <div class="col-lg-12">
-          <div class="page-header">
-            <h3>我的專案</h3>
-            <button type="button" class="btn btn-primary">建立專案</button>
-          </div>
-          <div class="bs-component">
-            <div class="jumbotron" style="background-color: white;">
-              <h4>專案一</h4>
-            </div>
-          </div>
-        </div>
+      <div class="jumbotron" style="background-color: white;">
+        <button type="button" onclick="document.getElementById('modal_project').style.display='block'" class="btn btn-primary">建立專案</button>
+        <h5>我的專案</h5>         
+        <%- include modal %>
+        <h6>專案一</h6>
       </div>
-        
-        
-      
-    </div>
     
   </body>
 </html>

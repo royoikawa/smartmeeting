@@ -9,7 +9,7 @@ const pool = new Pool({
 
 //GET all users
 const getUsers = (request, response) => {
-    pool.query('SELECT * FROM public."Project" ORDER BY pro_id ASC', (error, results) => {
+    pool.query('SELECT * FROM public."project" ORDER BY pro_id ASC', (error, results) => {
       if (error) {
         throw error
       }
@@ -21,7 +21,7 @@ const getUsers = (request, response) => {
 const getUserById = (request, response) => {
     const id = parseInt(request.params.id)
 
-    pool.query('SELECT * FROM public."Project" WHERE pro_id = $1', [id], (error, results) => {
+    pool.query('SELECT * FROM public."project" WHERE pro_id = $1', [id], (error, results) => {
       if (error) {
       throw error
       }
