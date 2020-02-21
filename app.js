@@ -7,6 +7,9 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var registerRouter = require('./routes/register');//register
+var loginRouter = require('./routes/login');//login
+var testRouter = require('./routes/test');//test我測試查詢用的
 
 var app = express();
 
@@ -24,9 +27,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/register', registerRouter);//register
+app.use('/login', loginRouter);//login
+app.use('/test', testRouter);//test我測試查詢用的
 
 //db
 app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: false}))
 
 app.get('/users', db.getUsers)
 app.get('/users/:id', db.getUserById)
