@@ -4,7 +4,7 @@ var pool = require('../node-api-postgres/query');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  var q = 'SELECT * FROM public."project" ORDER BY pro_id ASC';
+  var q = 'SELECT * FROM project ORDER BY pro_id ASC';
   //'SELECT * FROM public."project", public."account_project" WHERE ap_proid = pro_id AND ap_accid = "Wang@gmail.com" ORDER BY pro_id ASC';
   
   pool.query(q, function(err, results) { //若有傳回值，傳回值會儲存於「results」參數中

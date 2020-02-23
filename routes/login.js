@@ -20,7 +20,7 @@ router.post('/', function(req, res) {
         else{
             res.json({"status":0, "msg": "success"})
        }
-       pg.end();
+       
     })
     
 })
