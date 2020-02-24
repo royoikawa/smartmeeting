@@ -18,6 +18,7 @@ var testRouter = require('./routes/test');//test我測試查詢用的
 
 var app = express();
 
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -47,6 +48,8 @@ app.use('/forgetpw', forgetpwRouter);//forgetpw
 app.use('/logout', logoutRouter);//logout
 app.use('/personalSetting', personalSettingRouter);//personalSetting
 app.use('/test', testRouter);//test我測試查詢用的
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

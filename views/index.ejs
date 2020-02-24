@@ -1,15 +1,172 @@
 <!DOCTYPE html>
-<html>
+<html style="background-color: rgba(0, 0, 0, 0.03);">
   <head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel='stylesheet' href='/stylesheets/style.css'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
   </head>
+
   <body>
     <div><%- include navbar %></div>
-    <h1><%= title %></h1>
-    <p>Welcome too <%= title %></p>
+      <div class="jumbotron" style="background-color: rgba(0, 0, 0, 0.03);">
+        <h5 align="center">我的專案</h5>
+        <button type="button" class="btn btn-primary" style="position: relative; margin-left: 1em; display: block;" onclick="document.getElementById('modal_project').style.display='block'">建立專案</button>
+                 
+        
+        <!--create project modal-->
+<div id="modal_project" class="modal" >
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <form method="post" action="" class="form-group">
+              <div class="modal-header"><h5 class="modal-title">建立專案</h5></div>
+              <div class="modal-body">
+                  <label class="col-form-label">專案名稱</label>
+                  <input class="form-control" type="text" name="pro_name" id="pro_name" required>              
+                  <span class="invalid-feedback" id="messagen">請填入專案名稱</span>              
+                         
+                  <label class="col-form-label">專案密碼</label>
+                  <input class="form-control" type="password" name="pro_pw" id="pro_pw" required>
+                  <span class="invalid-feedback" id="messagepw">請填入專案密碼</span>
+              
+                  <label class="col-form-label">請再次輸入密碼</label>
+                  <input class="form-control" type="password" id="checkpw" required>
+                  <span class="invalid-feedback" id="messagecpw"></span>
+              </div>
+              <div class="modal-footer">
+                  <input type="button" value="取消" class="btn btn-secondary" data-dismiss="modal" onclick="clearAll();">
+                  <input type="submit" value="確認" id="btncreate" disabled="disabled" class="btn btn-primary">
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
+        <!--顯示專案cards-->
+        <% var id %>
+        <% var name %>
+        <% for(var i=0; i<projectData.length; i++) {%>
+          <% id = projectData[i].pro_id; %>
+          <% name = projectData[i].pro_name;%>
+        
+        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header">
+            <span class="badge badge-light">專案代號：<%= id %></span>
+            <small style="position: absolute; right: 15px;">我的身份：管理員</small>
+          </div>
+          <div class="toast-body">
+            <h6><%= name %></h6>
+          </div>
+        </div>
+
+        <% } %>
+
+
+      </div>
+      <script>
+        $(document).ready(function(){//當 document 物件下所有 DOM 物件都可以正確取得時，就會觸發 .ready()，也就是說，當document中所需的物件載入後，即可馬上執行，不需等其他物件(ex. 圖片)全部載入才開始做
+          var name = false; // 用來判斷 "名字"欄位 是否有效欄位
+          var pw = false;  // 用來判斷 "密碼"欄位 是否為有效欄位
+          var chp = false; // 用來判斷 "檢驗密碼"欄位 是否為有效欄位
+
+          /*** "名字"欄位， $('#pro_name')表該欄位，$('#pro_name').val()表該欄位值 ***/         
+          $('#pro_name').blur(function() { // blur(function) 點擊該欄位，從該欄位移開時，要做的事情
+            if (!$('#pro_name').val()) { // 當pro_name 為空
+              $('#pro_name').addClass("is-invalid"); // 加入 class="is-invalid"，讓該欄位變紅色
+              $("#messagen").css("display", "block"); // 顯示錯誤訊息
+              name = false;
+            } else {
+              $('#pro_name').removeClass("is-invalid"); // 移除 class="is-invalid"
+              $("#messagen").css("display", "none");  // 隱藏錯誤訊息
+              name = true;
+            }
+            testbtn(); // 執行 testbtn()函式 (此函式在最下面)
+          })
+          
+          /*** "密碼"欄位 ***/
+          $('#pro_pw').blur(function() {
+            // 判斷 pro_pw 是否為空
+            if (!$('#pro_pw').val()) {
+              $("#messagepw").css("display", "block");
+              $('#pro_pw').addClass("is-invalid");
+              pw = false;
+            } else {
+              $('#pro_pw').removeClass("is-invalid");
+              $('#messagepw').css("display", "none");
+              pw = true;
+            }
+
+            // 判斷 "檢驗密碼"欄位(checkpw) 是否有值，若有值，可直接與 pro_pw 比較，沒有就不需要比較
+            if ($('#checkpw').val()) {
+              if ($('#pro_pw').val() != $('#checkpw').val()) {
+                showErrorMsg_differPw();
+              } else {
+                successCheckpw();
+              }         
+            }
+            testbtn();
+          })
+
+          /*** "檢驗密碼"欄位 ***/
+          $('#checkpw').blur(function() {
+            // 判斷 checkpw 是否為空 或 密碼是否一致
+            if (!$('#checkpw').val()) {
+              $("#messagecpw").text("請再次填入密碼");
+              $("#messagecpw").css("display", "block");
+              $('#checkpw').addClass("is-invalid");
+              chp = false;
+            } else if ($('#pro_pw').val() != $('#checkpw').val()) {
+              showErrorMsg_differPw();
+            } else {
+              successCheckpw();
+            }
+            testbtn();
+          })
+
+          // 當三個欄位皆為有效欄位，即可點擊按鈕，送出表單資料
+          function testbtn() {
+            if (Boolean(name) == true && Boolean(pw) == true && Boolean(chp) == true){
+              $("#btncreate").attr("disabled", false);
+            } else {
+              $("#btncreate").attr("disabled", true);
+            }
+          }
+          
+          // 密碼不相同，顯示錯誤訊息，欄位變為紅色
+          function showErrorMsg_differPw() {
+            $("#messagecpw").text("密碼不相同");
+            $("#messagecpw").css("display", "block");
+            $('#checkpw').addClass("is-invalid");
+            chp = false;
+          }
+
+          // 密碼相同，隱藏錯誤訊息，欄位變為綠色
+          function successCheckpw() {
+            $("#messagecpw").css("display", "none");
+            $('#checkpw').removeClass("is-invalid");
+            $('#checkpw').addClass("is-valid"); // 加入 class="is-valid"，讓該欄位變綠色
+            chp = true;
+          }
+
+        })
+
+        function clearAll() {
+          document.getElementById('modal_project').style.display='none';
+          $('#pro_name').val(null);
+          $('#pro_pw').val(null);
+          $('#checkpw').val(null);
+          $('#pro_name').removeClass("is-invalid");
+          $("#messagen").css("display", "none");
+          $('#pro_pw').removeClass("is-invalid");
+          $('#messagepw').css("display", "none");
+          $('#checkpw').removeClass("is-invalid");
+          $('#checkpw').removeClass("is-valid");
+          $("#messagecpw").css("display", "none");
+          $("#btncreate").attr("disabled", true);
+        }
+        
+        
+      </script>
   </body>
 </html>
