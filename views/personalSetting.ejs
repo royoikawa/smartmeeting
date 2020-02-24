@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+  <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+  
+  </head>
+  <body>
+    <div><%- include navbar %></div>  
+    <div style="border:1px #ced4da solid; background-color: white; width:40%; margin:0 auto; position: relative; top:50px">
+    <br>   
+        <center>          
+            <i class="glyphicon glyphicon-user" style="font-size: 200px;"></i>
+            <br>
+            <label class="col-form-label"><%= username %></label>        
+            <br>           
+            <label class="col-form-label">帳號</label>
+            <label class="col-form-label"><%= useracc %></label>           
+            <br><br>
+            <button class="btn " onclick="openFormName()">修改姓名</button>&nbsp;&nbsp;
+            <button class="btn " onclick="openFormPw()">修改密碼</button>          
+        </center>
+        <br>
+    </div>
+    <!--修改姓名的popup window-->
+    <div style="border:1px #ced4da solid; background-color: #ecf0f1; width:20%; position: relative; top:-250px; margin:0 auto; display: none;" id="myFormName">      
+        <center><form>
+        <h3><b>修改姓名</b></h3>
+        <br>
+        <label class="col-form-label">姓名&nbsp;</label>
+        <input type="text"  class="form-control-12" id="name" name="name" value="<%= username %>" required>
+        <input type="hidden" id="uname" value="<%= username %>">
+        <br>
+        <label class="col-form-label">信箱&nbsp;</label>
+        <input type="email"  class="form-control-12" name="email" value="<%= useracc %>" readonly>
+        <br><font color='red' id='message1'></font><br>
+        <button type="button" class="btn " style="background-color: white; border-color: #2C3E50;" onclick="closeFormName()">取消</button>&nbsp;&nbsp;&nbsp;
+        <button type="button" class="btn btn-primary" style="background-color: #2C3E50;" id="btn1">儲存</button>      
+      </form></center>
+      <br>
+    </div>
+    <!--修改密碼的popup window-->
+    <div style="border:1px #ced4da solid; background-color: #ecf0f1; width:20%; position: relative; top:-250px; margin:0 auto; display: none;" id="myFormPw">      
+        <center><form>
+        <h3><b>修改密碼</b></h3>
+        <br>
+        <label class="col-form-label">原始密碼:&nbsp; </label>
+        <input type="password"  class="form-control-12" id="oldpw" name="oldpw" required>
+        <br>
+        <label class="col-form-label">新的密碼:&nbsp; </label>
+        <input type="password"  class="form-control-12" id="newpw" name="newpw" required>
+        <label class="col-form-label">再次輸入:&nbsp; </label>
+        <input type="password"  class="form-control-12" id="checkpw" name="checkpw" required>
+        <br><font color='red' id='message2'></font><br>   
+        <button type="button" class="btn " style="background-color: white; border-color: #2C3E50;" onclick="closeFormPw()">取消</button>&nbsp;&nbsp;&nbsp;
+        <button type="button" class="btn btn-primary" style="background-color: #2C3E50;" id="btn2">確認</button>      
+      </form></center>
+      <br>
+    </div>
+
+    <script>
+        //開啟修改姓名視窗
+        function openFormName() {          
+            document.getElementById("myFormName").style.display = "block";
+        }
+        //關閉修改姓名視窗
+        function closeFormName() {
+            var name = $("#uname").val();
+            $("#name").val(name);
+            $("#message1").text("");        
+            document.getElementById("myFormName").style.display = "none";
+        }
+        //開啟修改密碼視窗
+        function openFormPw() {           
+            document.getElementById("myFormPw").style.display = "block";
+        }
+        //關閉修改密碼視窗
+        function closeFormPw() {  
+            $("#oldpw").val("");
+            $("#newpw").val("");
+            $("#checkpw").val("");
+            $("#message2").text("");         
+            document.getElementById("myFormPw").style.display = "none";
+        }
+        //修改姓名傳送後端
+        $("#btn1").click(function() {     
+            var name = $('#name').val();           
+            if(!name) {
+                $('#message1').text("輸入名字");
+            }      
+            else{
+                $.ajax({
+                    url:"/personalSetting/changename",
+                    data:{'name': name},
+                    type:"POST",
+                    success: function(res){
+                        if(res.status == 0) {
+                            alert("名字修改成功");
+                            location.href="/personalSetting";
+                        }             
+                    }
+                })         
+            }      
+        })
+        //修改密碼傳送後端
+        $("#btn2").click(function() {     
+            var old = $('#oldpw').val();
+            var newpw = $('#newpw').val();  
+            var check = $('#checkpw').val();      
+            if(!old || !newpw || !check) {
+                $('#message2').text("輸入未填欄位");
+            }
+            else if(newpw != check){
+                $('#message2').text("新密碼不一樣");
+            }            
+            else{
+                $.ajax({
+                    url:"/personalSetting/changepw",
+                    data:{'old': old, 'newpw': newpw, 'check': check},
+                    type:"POST",
+                    success: function(res){
+                        if(res.status == 1) {
+                            $('#message2').text(res.msg);                          
+                        }
+                        else if(res.status == 0){
+                            alert("密碼修改成功");
+                            location.href="/personalSetting";
+                        }
+                    }
+                })         
+            }      
+        })        
+      
+    </script>
+    
+  </body>
+</html>

@@ -17,7 +17,7 @@
         <center><table   width='70%' height="300px" >
           <form>
             <tr>
-              <td colspan="3"><div class="col-12"><input type="email" class="form-control" id="registeracc" name="registeracc" placeholder="電子郵件" required></div></td>
+              <td colspan="3"><div class="col-12"><input type="email" class="form-control" aria-describedby="emailHelp" id="registeracc" name="registeracc" placeholder="電子郵件" required></div></td>
             </tr>
             <tr>
               <td><div class="col-12"><input type="text"  class="form-control" id="registername" name="registername" placeholder="姓名或暱稱" required></div></td>             
@@ -46,14 +46,17 @@
 
 
     <script>
-      $("#btn").click(function() {
-        
+      $("#btn").click(function() {        
         var acc_id = $('#registeracc').val();
         var acc_name = $('#registername').val();
         var acc_pw = $('#registerpw').val();
         var chpw = $('#checkpw').val();
+        var regex = /^([a-zA-Z0-9_\.\-\+])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;//mail格式
         if(!acc_id || !acc_name || !acc_pw || !chpw) {
           $('#message').text("輸入未填欄位");
+        }
+        else if(!regex.test(acc_id)){//不符合mail模式
+          $('#message').text("輸入有效的郵件");
         }
         else if(acc_pw != chpw) {
           $('#message').text("密碼不一樣");

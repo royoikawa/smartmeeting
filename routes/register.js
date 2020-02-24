@@ -19,9 +19,10 @@ router.post('/', function(req, res) {
         else{
             const insertacc = 'INSERT INTO account(acc_id, acc_name, acc_pw) VALUES ($1, $2, $3)';
             pg.query(insertacc, [req.body.account, req.body.name, req.body.password]);
+            req.session.userAccount = req.body.account;
+            req.session.userName = req.body.name;
             res.json({"status":0, "msg": "success"});             
         }
-        pg.end();
     })
     
  
