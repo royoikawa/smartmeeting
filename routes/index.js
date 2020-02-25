@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var pool = require('../node-api-postgres/query');
+var pool = require('../models/db');
 
 /* GET home page. */
 
@@ -16,7 +16,7 @@ router.all('/', function(req, res, next) {
       if (err) throw err;
       var data = results.rows;
       
-      res.render('index', { title: 'SmartMeeting', username: '王大明', projectData: data, content:'搜尋結果' });
+      res.render('index', { title: 'SmartMeeting', username: req.session.userName, projectData: data, content:'搜尋結果' });
     })
   }
   
@@ -30,7 +30,7 @@ router.get('/', function(req, res, next) {
     if (err) throw err;
     var data = results.rows;
     
-    res.render('index', { title: 'SmartMeeting', username: '王大明', projectData: data, content: '我的專案' });
+    res.render('index', { title: 'SmartMeeting', username: req.session.userName, projectData: data, content: '我的專案' });
   })
 });
 

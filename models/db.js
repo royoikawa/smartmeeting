@@ -1,11 +1,10 @@
-var pg = require("pg")
-var connectionString = "pg://postgres:vajus@localhost:5432/smartmeeting";
-//pg://你自己的用戶名:你自己的密碼@域名(沒有server所以用localhost):port號(預設5432)/你自己的database name
-var client = new pg.Client(connectionString);
-client.connect();
+const Pool = require('pg').Pool
+const pool = new Pool({
+  user: 'postgres',//你的用戶名
+  password: 'vajus',//你的密碼
+  host: 'localhost',
+  port: 5432,
+  database: 'smartmeeting', 
+})
 
-module.exports = {
-    query: (text, params, callback) => {
-        return client.query(text, params, callback)
-    }
-};
+module.exports = pool;

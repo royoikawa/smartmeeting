@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var pg = require('../models/db');
 
-/* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('login', { title: '登入'});
 });
@@ -18,12 +17,13 @@ router.post('/', function(req, res) {
         }
         
         else{
-            res.json({"status":0, "msg": "success"})
+            req.session.userAccount = req.body.account;
+            req.session.userName = results.rows[0].acc_name;          
+            res.json({"status":0, "msg": req.session.userName})
        }
-       
     })
     
-})
+});
 
 
 module.exports = router;
