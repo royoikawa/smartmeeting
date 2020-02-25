@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="border-radius: 0%;">
+<nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary" style="border-radius: 0%;">
     <a class="navbar-brand">智慧會議系統</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -7,21 +7,41 @@
     <div class="collapse navbar-collapse" id="navbarColor01" style="position: absolute; right: 50px;">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-          <a class="nav-link ico" href="/"><img src="/images/home.png" width="20px" height= "20px" style="margin-right: 50px;"></a>
+          <a class="nav-link" href="/" style="margin-right: 0.5em;"><i class="fas fa-home"></i></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#"><img src="/images/bell.png" width="20px" height= "20px"><!--<span class="glyphicon glyphicon-bell"></span><svg class="ico" src="/images/home.svg" xmlns="http://www.w3.org/2000/svg"></svg>--></a>
+          <a class="nav-link" href="#" style="margin-right: 0.5em;"><i class="fas fa-bell"></i></a>
         </li>
         
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="themes" aria-expanded="false">
+        <li class="nav-item dropdown" id="nav_toggle" onclick="$('#dropdown').slideToggle(200);">
+          
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
                 <%= username %> </a>
-            <div class="dropdown-menu" aria-labelledby="themes">
-                <a class="dropdown-item" href="#">個人設定</a>
+            <div class="dropdown-menu" id="dropdown" style="right: 0; left: auto;" aria-labelledby="themes">
+                <a class="dropdown-item" href="#"><i class="fas fa-cog"></i>&nbsp&nbsp&nbsp個人設定</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">登出</a>
+                <a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt"></i>&nbsp&nbsp&nbsp登出</a>
             </div>
         </li>
       </ul>
     </div>
   </nav>
+
+  <script>
+    $(function () {  
+      $('#nav_toggle').click(function (event) {  
+          //取消事件冒泡  
+          event.stopPropagation();  
+      });
+
+      //點選空白處隱藏
+      $(document).click(function(event){
+        var _con = $('#dropdown');   // 設定目標區域
+        if(!_con.is(event.target) && _con.has(event.target).length === 0){ 
+          $('#dropdown').slideUp(200);   //滑動消失
+        }
+      });
+    })
+
+    
+  </script>

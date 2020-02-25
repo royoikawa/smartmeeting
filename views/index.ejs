@@ -3,64 +3,68 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css'>
+    <link rel="stylesheet" href="/stylesheets/css/all.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
     
-
-    <script>
-      $('.dropdown-toggle').dropdown('toggle');
-      $('#myDropdown').on('show.bs.dropdown', function () {
-      // do something…
-      })
-    </script>
   </head>
 
   <body>
       <div><%- include navbar %></div>
       <div class="jumbotron" style="background-color: rgba(88, 87, 87, 0.01);">
-        <h5 align="center">我的專案</h5>
-        <button type="button" class="btn btn-outline-primary" style="position: relative; margin-left: 1em; display: block;" onclick="document.getElementById('modal_project').style.display='block'">建立專案</button>
+      <div class="col-sm-10">
+        <input type="text" readonly="" class="form-control-plaintext" value="">
+      </div>
+        <button type="button" class="btn btn-outline-primary" style="position: relative; margin-left: 1em; float: left; display: block;" onclick="document.getElementById('modal_project').style.display='block'">建立專案</button>
         
         <!--彈跳視窗 modal -->
         <%- include modal %>     
         
         <!--搜尋框-->
-        <form method="post" action="" class="form-inline my-2 my-lg-0">
+        <form method="post" action="" class="form-inline my-2 my-lg-0" style="padding-left: inherit;">
           <div class="form-inline">
             <div class="form-group">
               <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                  <span class="input-group-text">$</span>
+                  <span class="input-group-text" style="color: #2C3E50; border-color: inherit;"><i class="fas fa-search"></i></span>
                 </div>
                 <input class="form-control" type="text" style="border-color: #2C3E50;" name="pro_id" placeholder="輸入專案代號" aria-label="Amount (to the nearest dollar)">
                 <div class="input-group-append">
-                  <input class="btn btn-outline-primary" type="submit" value="搜尋">
+                  <input class="btn btn-outline-primary" style=" border-left-width: 0;" type="submit" value="搜尋">
                 </div>
               </div>
             </div>
           </div>
         </form>
-        
-        
+        <p style="margin-top: 2em; margin-left: 1em;"><%= content%> <a id="back" href="/">返回我的專案</a></p>
+        <% if (content == '我的專案') { %>
+          <script>$("#back").css("display", "none");</script>
+        <% } %>
 
         <!--顯示專案cards-->
         <% var id %>
         <% var name %>
-        <% for(var i=0; i<projectData.length; i++) {%>
-          <% id = projectData[i].pro_id; %>
-          <% name = projectData[i].pro_name;%>
         
-          <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-              <span class="badge badge-light">專案代號：<%= id %></span>
-              <small style="position: absolute; right: 15px;">我的身份：管理員</small>
-            </div>
-            <div class="toast-body">
-              <h6><%= name %></h6>
-            </div>
-          </div>
+        <% if (projectData.length == 0) { %>
+          <p class="text-primary" style="margin-top: 2em; margin-left: 1em;">該搜尋沒有符合的項目</p>
 
+        <% } else { %>
+          <% for(var i=0; i<projectData.length; i++) { %>
+            <% id = projectData[i].pro_id; %>
+            <% name = projectData[i].pro_name;%>
+        
+            <div class="toast show" role="alert" style="cursor:pointer;" onclick="location.href='#';" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                <span class="badge badge-light">專案代號：<%= id %></span>
+                <small style="position: absolute; right: 15px;">我的身份：管理員</small>
+              </div>
+              <div class="toast-body">
+                <h6><%= name %></h6>
+              </div>
+            </div>
+
+          <% } %>
         <% } %>
 
 

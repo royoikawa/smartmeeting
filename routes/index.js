@@ -5,7 +5,7 @@ var pool = require('../node-api-postgres/query');
 /* GET home page. */
 
 /* 搜尋特定專案 */
-// 先判斷是否用搜尋功能，即搜尋框中是否有值，若沒有執行next()，路由轉移到下面router.get
+// 先判斷是否用搜尋功能，即搜尋框中是否有值，若沒有，執行next()，路由轉移到下面router.get
 router.all('/', function(req, res, next) {
   var id = req.body.pro_id;
   if (id == null) { 
@@ -16,7 +16,7 @@ router.all('/', function(req, res, next) {
       if (err) throw err;
       var data = results.rows;
       
-      res.render('index', { title: 'SmartMeeting', username: '王大明', projectData: data});
+      res.render('index', { title: 'SmartMeeting', username: '王大明', projectData: data, content:'搜尋結果' });
     })
   }
   
@@ -30,7 +30,7 @@ router.get('/', function(req, res, next) {
     if (err) throw err;
     var data = results.rows;
     
-    res.render('index', { title: 'SmartMeeting', username: '王大明', projectData: data});
+    res.render('index', { title: 'SmartMeeting', username: '王大明', projectData: data, content: '我的專案' });
   })
 });
 
