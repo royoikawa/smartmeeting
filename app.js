@@ -2,7 +2,6 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser')//db
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
@@ -12,8 +11,6 @@ var loginRouter = require('./routes/login');//login
 var testRouter = require('./routes/test');//test我測試查詢用的
 
 var app = express();
-
-const db = require('./node-api-postgres/queries')//db
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,16 +27,6 @@ app.use('/users', usersRouter);
 app.use('/register', registerRouter);//register
 app.use('/login', loginRouter);//login
 app.use('/test', testRouter);//test我測試查詢用的
-
-//db
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: false}))
-
-app.get('/users', db.getUsers)
-app.get('/users/:id', db.getUserById)
-app.post('/users', db.createUser)
-app.put('/users/:id', db.updateUser)
-app.delete('/users/:id', db.deleteUser)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
