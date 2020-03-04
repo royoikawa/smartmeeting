@@ -7,19 +7,19 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res) {
-    var text = 'SELECT * FROM account where acc_id=$1'  
+    var text = 'SELECT * FROM account where acc_id=$1';  
     pg.query(text, [req.body.account]).then(results => {
         if (results.rowCount == 0){
-            res.json({"status":1, "msg": "沒有該帳號"})
+            res.json({"status":1, "msg": "沒有該帳號"});
         }
         else if (results.rows[0].acc_pw != req.body.password){
-            res.json({"status":1, "msg": "密碼不符合"})
+            res.json({"status":1, "msg": "密碼不符合"});
         }
         
         else{
             req.session.userAccount = req.body.account;
             req.session.userName = results.rows[0].acc_name;          
-            res.json({"status":0, "msg": req.session.userName})
+            res.json({"status":0, "msg": req.session.userName});
        }
     })
     

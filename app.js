@@ -14,6 +14,8 @@ var loginRouter = require('./routes/login');//login
 var forgetpwRouter = require('./routes/forgetpw');//forgetpw
 var logoutRouter = require('./routes/logout');//logout
 var personalSettingRouter = require('./routes/personalSetting');//personalSetting
+var member = require('./routes/member');//member
+var admin = require('./routes/admin');//admin
 var testRouter = require('./routes/test');//test我測試查詢用的
 
 var app = express();
@@ -46,6 +48,8 @@ app.use('/login', loginRouter);//login
 app.use('/forgetpw', forgetpwRouter);//forgetpw
 app.use('/logout', logoutRouter);//logout
 app.use('/personalSetting', personalSettingRouter);//personalSetting
+app.use('/member', member);//member
+app.use('/admin', admin);//admin
 app.use('/test', testRouter);//test我測試查詢用的
 
 

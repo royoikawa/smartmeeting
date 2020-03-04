@@ -68,6 +68,7 @@
         //開啟修改姓名視窗
         function openFormName() {          
             document.getElementById("myFormName").style.display = "block";
+            closeFormPw();
         }
         //關閉修改姓名視窗
         function closeFormName() {
@@ -79,6 +80,7 @@
         //開啟修改密碼視窗
         function openFormPw() {           
             document.getElementById("myFormPw").style.display = "block";
+            closeFormName();
         }
         //關閉修改密碼視窗
         function closeFormPw() {  
