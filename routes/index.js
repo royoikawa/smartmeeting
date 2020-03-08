@@ -6,7 +6,9 @@ var pool = require('../models/db');
 
 /* 搜尋特定專案 */
 
-// 先判斷是否用搜尋功能，即搜尋框中是否有值，若沒有，執行next()，路由轉移到下面router
+// 先判斷是否用搜尋功能，即搜尋框中是否有值，若沒有，執行next()，路由轉移到下面router.get
+// 若搜尋框有值，else if 判斷是否為大於等於1 的數字
+// 若不符合 else 直接回傳空的資料
 router.all('/', function(req, res, next) {
   var id = req.body.pro_id;
   console.log(typeof id);
