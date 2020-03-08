@@ -9,9 +9,10 @@ var pool = require('../models/db');
 // 先判斷是否用搜尋功能，即搜尋框中是否有值，若沒有，執行next()，路由轉移到下面router
 router.all('/', function(req, res, next) {
   var id = req.body.pro_id;
+  console.log(typeof id);
   if (id == null) { 
     next();
-  } else {
+  } else if (id != "" && !isNaN(id) && Number.isInteger(parseFloat(id)) && parseInt(id) >= 1) {
 
     // 顯示搜尋結果，並顯示使用者身分
     // 先判斷是否在該專案中，利用 EXISTS語法 得到一欄位exist，欄位值為 true(有在該專案) 或 false(沒有在該專案)
@@ -37,7 +38,10 @@ router.all('/', function(req, res, next) {
         })
       }
     })
+  } else {
+    res.render('index', { title: 'SmartMeeting', username: req.session.userName, projectData: [], content:'搜尋結果', isInProject: false});
   }
+  
   
 });
 

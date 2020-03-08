@@ -20,7 +20,7 @@ router.post('/changepw', function(req, res) {
     var checkpw = "SELECT * FROM account WHERE acc_id=$1 and acc_pw=$2";
     pg.query(checkpw, [req.session.userAccount, req.body.old]).then(results => {
         if(results.rowCount == 0){
-            res.json({"status": 1, "msg": "舊密碼錯誤"});
+            res.json({"status": 1, "msg": "原始密碼錯誤"});
         }
         else{
             var updatepw = "UPDATE account SET acc_pw=$1 WHERE acc_id=$2";

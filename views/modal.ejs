@@ -36,81 +36,81 @@
 
         /*** "名字"欄位， $('#pro_name')表該欄位，$('#pro_name').val()表該欄位值 ***/         
         $('#pro_name').blur(function() { // blur(function) 點擊該欄位，從該欄位移開時，要做的事情
-        if (!$('#pro_name').val()) { // 當pro_name 為空
-            $('#pro_name').addClass("is-invalid"); // 加入 class="is-invalid"，讓該欄位變紅色
-            $("#messagen").css("display", "block"); // 顯示錯誤訊息
-            name = false;
-        } else {
-            $('#pro_name').removeClass("is-invalid"); // 移除 class="is-invalid"
-            $("#messagen").css("display", "none");  // 隱藏錯誤訊息
-            name = true;
-        }
-        testbtn(); // 執行 testbtn()函式 (此函式在最下面)
+            if (!$('#pro_name').val()) { // 當pro_name 為空
+                $('#pro_name').addClass("is-invalid"); // 加入 class="is-invalid"，讓該欄位變紅色
+                $("#messagen").css("display", "block"); // 顯示錯誤訊息
+                name = false;
+            } else {
+                $('#pro_name').removeClass("is-invalid"); // 移除 class="is-invalid"
+                $("#messagen").css("display", "none");  // 隱藏錯誤訊息
+                name = true;
+            }
+            testbtn(); // 執行 testbtn()函式 (此函式在最下面)
         })
         
         /*** "密碼"欄位 ***/
         $('#pro_pw').blur(function() {
-        // 判斷 pro_pw 是否為空
-        if (!$('#pro_pw').val()) {
-            $("#messagepw").css("display", "block");
-            $('#pro_pw').addClass("is-invalid");
-            pw = false;
-        } else {
-            $('#pro_pw').removeClass("is-invalid");
-            $('#messagepw').css("display", "none");
-            pw = true;
-        }
-
-        // 判斷 "檢驗密碼"欄位(checkpw) 是否有值，若有值，可直接與 pro_pw 比較，沒有就不需要比較
-        if ($('#checkpw').val()) {
-            if ($('#pro_pw').val() != $('#checkpw').val()) {
-            showErrorMsg_differPw();
+            // 判斷 pro_pw 是否為空
+            if (!$('#pro_pw').val()) {
+                $("#messagepw").css("display", "block");
+                $('#pro_pw').addClass("is-invalid");
+                pw = false;
             } else {
-            successCheckpw();
-            }         
-        }
-        testbtn();
+                $('#pro_pw').removeClass("is-invalid");
+                $('#messagepw').css("display", "none");
+                pw = true;
+            }
+
+            // 判斷 "檢驗密碼"欄位(checkpw) 是否有值，若有值，可直接與 pro_pw 比較，沒有就不需要比較
+            if ($('#checkpw').val()) {
+                if ($('#pro_pw').val() != $('#checkpw').val()) {
+                showErrorMsg_differPw();
+                } else {
+                successCheckpw();
+                }         
+            }
+            testbtn();
         })
 
         /*** "檢驗密碼"欄位 ***/
         $('#checkpw').blur(function() {
-        // 判斷 checkpw 是否為空 或 密碼是否一致
-        if (!$('#checkpw').val()) {
-            $("#messagecpw").text("請再次填入密碼");
-            $("#messagecpw").css("display", "block");
-            $('#checkpw').addClass("is-invalid");
-            chp = false;
-        } else if ($('#pro_pw').val() != $('#checkpw').val()) {
-            showErrorMsg_differPw();
-        } else {
-            successCheckpw();
-        }
-        testbtn();
+            // 判斷 checkpw 是否為空 或 密碼是否一致
+            if (!$('#checkpw').val()) {
+                $("#messagecpw").text("請再次填入密碼");
+                $("#messagecpw").css("display", "block");
+                $('#checkpw').addClass("is-invalid");
+                chp = false;
+            } else if ($('#pro_pw').val() != $('#checkpw').val()) {
+                showErrorMsg_differPw();
+            } else {
+                successCheckpw();
+            }
+            testbtn();
         })
 
         // 當三個欄位皆為有效欄位，即可點擊按鈕，送出表單資料
         function testbtn() {
-        if (name == true && pw == true && chp == true){
-            $("#btncreate").attr("disabled", false);
-        } else {
-            $("#btncreate").attr("disabled", true);
-        }
+            if (name == true && pw == true && chp == true){
+                $("#btncreate").attr("disabled", false);
+            } else {
+                $("#btncreate").attr("disabled", true);
+            }
         }
         
         // 密碼不相同，顯示錯誤訊息，欄位變為紅色
         function showErrorMsg_differPw() {
-        $("#messagecpw").text("密碼不相同");
-        $("#messagecpw").css("display", "block");
-        $('#checkpw').addClass("is-invalid");
-        chp = false;
+            $("#messagecpw").text("密碼不相同");
+            $("#messagecpw").css("display", "block");
+            $('#checkpw').addClass("is-invalid");
+            chp = false;
         }
 
         // 密碼相同，隱藏錯誤訊息，欄位變為綠色
         function successCheckpw() {
-        $("#messagecpw").css("display", "none");
-        $('#checkpw').removeClass("is-invalid");
-        $('#checkpw').addClass("is-valid"); // 加入 class="is-valid"，讓該欄位變綠色
-        chp = true;
+            $("#messagecpw").css("display", "none");
+            $('#checkpw').removeClass("is-invalid");
+            $('#checkpw').addClass("is-valid"); // 加入 class="is-valid"，讓該欄位變綠色
+            chp = true;
         }
 
         $("#cancel").click(function(){
