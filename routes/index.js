@@ -11,7 +11,6 @@ var pool = require('../models/db');
 // 若不符合 else 直接回傳空的資料
 router.all('/', function(req, res, next) {
   var id = req.body.pro_id;
-  console.log(typeof id);
   if (id == null) { 
     next();
   } else if (id != "" && !isNaN(id) && Number.isInteger(parseFloat(id)) && parseInt(id) >= 1) {
