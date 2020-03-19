@@ -10,12 +10,173 @@
   </head>
   <body>
     <div><%- include navbar %></div>
-    <div class="jumbotron" style="background-color: rgba(88, 87, 87, 0.01);">
+    <div class="jumbotron" style="background-color: rgba(88, 87, 87, 0.01); padding-top: 3rem;">
       <div class="col-sm-10">
         <input type="text" readonly="" class="form-control-plaintext" value="">
       </div>
-      <h1>member<%= pro_id %></h1>
+      <span class="badge badge-light">專案代號：<%=pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
+      <div class="divider"></div>
+      
+
+
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="tab" id="tab_m" onclick="openM();" style="color: #18BC9C;" href="#minutes">會議記錄</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" id="tab_at" onclick="openAT();" style="color: #7b8a8b;" href="#audioText">文檔與音檔</a>
+        </li>
+      </ul>
+      <div id="myTabContent" class="tab-content">
+        <div class="tab-pane fade active show" id="ctd_minutes">
+          <div class="jumbotron" style="padding-top:15px; padding-left: 0; background-color: inherit;">
+
+            <!--新增會議記錄-->
+            <div class="nav-item dropdown" id="add_toggle" onclick="$('#file_dropdown').slideToggle(200);" style="position: relative; float: left; display: block; margin-right: 1em;">  
+              <button type="button" class="btn btn-outline-primary"><i class="fas fa-plus"></i>&nbsp;&nbsp;新增</button>
+          
+                <div class="dropdown-menu" id="file_dropdown" aria-labelledby="themes">
+                    <a class="dropdown-item" href="#" onclick="document.getElementById('upload').style.display='block';"><i class="fas fa-file-alt"></i>&nbsp&nbsp&nbsp新檔案上傳</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#"><i class="fas fa-archive"></i>&nbsp&nbsp&nbsp舊檔案上傳</a>
+                </div>
+            </div>
+            
+            
+            <!--上傳檔案modal-->
+    <div id="upload" class="modal" >
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <form class="form-group">
+                  <div class="modal-header">
+                    <h5 class="modal-title">上傳新會議記錄</h5>
+                  </div>
+                  <div class="modal-body">
+                      <!--<iframe id="iframe_upload" src="https://script.google.com/macros/s/AKfycbzlikYulCzy4fKGcBOUvlUuENPXrGnjJ9sdpEdbsFiqDZo_aik/exec" width="100%" height="100%" frameborder="0" scrolling="no" allowfullscreen></iframe>-->
+                      <input type="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp">
+                      <label class="col-form-label">檔名</label>
+                      
+                  </div>
+                  <div class="modal-footer">
+                      <input type="button" value="取消" class="btn btn-secondary" data-dismiss="modal" onclick="document.getElementById('upload').style.display='none';">
+                      <input type="button" value="確定" class="btn btn-primary" id="btn1">
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+
+
+            <!--搜尋會議記錄-->
+            <form method="post" action="" class="form-inline my-2 my-lg-0" style="position: relative; display: inline-block; padding-left: 1em; margin-top: 1em; margin-right: 2em;">
+              <div class="form-inline">
+                <div class="form-group">
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text" style="color: #2C3E50; border-color: inherit;"><i class="fas fa-search"></i></span>
+                    </div>
+                    <input class="form-control" type="text" style="border-color: #2C3E50;" name="pro_id" id="pro_id" placeholder="搜尋會議紀錄" aria-label="Search minutes">
+                    <div class="input-group-append">
+                      <input class="btn btn-outline-primary" style=" border-left-width: 0;" type="submit" value="搜尋">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+            <!--篩選-->
+            <div style="position: relative; display: inline-block;  margin-right: 1em;">
+              <label>篩選：</label>
+              <div class="custom-control custom-checkbox" style="position: relative; display: inline-block;">
+                <input type="checkbox" class="custom-control-input" id="customCheck1" checked="">
+                <label class="custom-control-label" for="customCheck1">審核中</label>
+              </div>
+              <div class="custom-control custom-checkbox" style="position: relative; display: inline-block; margin-left: 1em;">
+                <input type="checkbox" class="custom-control-input" id="customCheck2" checked="">
+                <label class="custom-control-label" for="customCheck2">審核不通過</label>
+              </div>
+            </div>
+
+
+            <!--檔案表格-->
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">名稱</th>
+                  <th scope="col">標籤</th>
+                  <th scope="col">上傳者</th>
+                  <th scope="col">上次修改時間</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="table-light">
+                  <th scope="row">Default</th>
+                  <td>Column content</td>
+                  <td>Column content</td>
+                  <td>Column content</td>
+                </tr>
+                <tr>
+                  <th scope="row">Light</th>
+                  <td>Column content</td>
+                  <td>Column content</td>
+                  <td>Column content</td>
+                </tr>
+              </tbody>
+            </table> 
+
+
+
+
+          </div>  
+        </div>
+        <div class="tab-pane fade" id="ctd_audioText">
+          <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit.</p>
+        </div>
+      </div>
+    </div>
+
+
     </div>
     
   </body>
+
+  <script>
+    function openM() {
+      $("#tab_m").addClass("active");
+      $("#tab_at").removeClass("active");
+      $("#ctd_minutes").addClass("active");
+      $("#ctd_minutes").addClass("show");
+      $("#ctd_audioText").removeClass("active");
+      $("#ctd_audioText").removeClass("show");
+      $('#tab_m').css("color", "#18BC9C");
+      $('#tab_at').css("color", "#7b8a8b");
+    }
+
+    function openAT() {
+      $("#tab_at").addClass("active");
+      $("#tab_m").removeClass("active");
+      $("#ctd_audioText").addClass("active");
+      $("#ctd_audioText").addClass("show");
+      $("#ctd_minutes").removeClass("active");
+      $("#ctd_minutes").removeClass("show");
+      $('#tab_at').css("color", "#18BC9C");
+      $('#tab_m').css("color", "#7b8a8b");
+    }
+
+    $(function () {  
+      $('#add_toggle').click(function (event) {  
+          //取消事件冒泡  
+          event.stopPropagation();  
+      });
+
+      //點選空白處隱藏
+      $(document).click(function(event){
+        var _con = $('#file_dropdown');   // 設定目標區域
+        if(!_con.is(event.target) && _con.has(event.target).length === 0){ 
+          $('#file_dropdown').slideUp(200);   //滑動消失
+        }
+      });
+    })
+
+  </script>
 </html>

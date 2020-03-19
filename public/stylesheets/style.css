@@ -1,3 +1,10 @@
+.divider {
+  height: 0;
+  margin: 0.5rem 0;
+  overflow: hidden;
+  border-top: 1px solid #dee2e6;
+}
+
 /*!
  * Bootswatch v4.4.1
  * Homepage: https://bootswatch.com
@@ -1883,7 +1890,7 @@
  .table td {
    padding: 0.75rem;
    vertical-align: top;
-   border-top: 1px solid #dee2e6;
+   border-top: 1px solid #fff;/*#dee2e6;*/
  }
  
  .table thead th {
@@ -4536,7 +4543,7 @@
  }
  
  .nav-tabs {
-   border-bottom: 1px solid #ecf0f1;
+   border-bottom: 1px solid #fff; /*#ecf0f1;*/
  }
  
  .nav-tabs .nav-item {
@@ -4551,6 +4558,7 @@
  
  .nav-tabs .nav-link:hover, .nav-tabs .nav-link:focus {
    border-color: #ecf0f1 #ecf0f1 #ecf0f1;
+   font-weight: 600;
  }
  
  .nav-tabs .nav-link.disabled {
@@ -4563,7 +4571,8 @@
  .nav-tabs .nav-item.show .nav-link {
    color: #7b8a8b;
    background-color: #fff;
-   border-color: #dee2e6 #dee2e6 #fff;
+   border-bottom-color: #18BC9C;
+   border-bottom-width: 2px;
  }
  
  .nav-tabs .dropdown-menu {
@@ -5430,6 +5439,7 @@
  .badge {
    display: inline-block;
    padding: 0.25em 0.4em;
+   margin-right: 10px;
    font-size: 75%;
    font-weight: 700;
    line-height: 2; /* 行高 */
