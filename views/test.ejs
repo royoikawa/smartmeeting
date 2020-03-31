@@ -22,22 +22,25 @@
               <td ><label for="loginacc" class="col-form-label">帳號(信箱)</label></td>              
             </tr>
             <tr>
-              <td ><input type="email" class="form-control" name="loginacc" id="loginacc"></td>
-            </tr>
-            
-            
+              <td ><input type="text" class="form-control" name="loginacc" id="loginacc"></td>
+            </tr>            
             <tr>
-              
               <td  align="center"><input type="submit" class="btn btn-primary" style="width: 40%;" id="btn" value="查詢"></td>
-              
             </tr>
-            
           </form>
         </table></center>
         <br>
     </div>
 
-    
+    <!-- 顯示record裡的全部資料 點擊可下載 -->
+    <% if(data.length!=0){ %>
+      <% for(var i=0; i<data.length; i++) { %>
+          <% id = data[i].rec_id %>
+          <% name = data[i].rec_name %>
+          <a href="/file/<%= id %>" target="_blank"><%= name %></a>
+          <br>
+      <% } %>
+    <% } %>
     
   </body>
 </html>
