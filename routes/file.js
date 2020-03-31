@@ -81,12 +81,11 @@ router.post('/newminute', upload.single('files'), function(req, res, next) {
 //上傳舊會議記錄
 router.post('/oldminute', upload.single('oldfiles'), function(req, res, next) {
     var proid = req.query.proid;
-    var index = req.files.filename.lastIndexOf('.');
-    var time = req.files.filename.substring(index-20, index-1).replace('.', ':');
+    var index = req.file.filename.lastIndexOf('.');
+    var time = req.file.filename.substring(index-20, index-1).replace('.', ':');
     var insertfile = "INSERT INTO record (rec_name, rec_uploadtime, rec_time, rec_upload, rec_proid) VALUES ($1, $2, $3, $4, $5)";
-    var filename = req.files.originalname;
-    var fvalues = [filename, time, time, req.session.userAccount, proid];
-    pool.query(insertfile, fvalues);
+    var filename = req.file.originalname;
+    pool.query(insertfile, [filename, time, time, req.session.userAccount, proid]);
     res.redirect('/member/'+proid);
 });
 
