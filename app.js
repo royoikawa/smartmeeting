@@ -16,7 +16,8 @@ var logoutRouter = require('./routes/logout');//logout
 var personalSettingRouter = require('./routes/personalSetting');//personalSetting
 var member = require('./routes/member');//member
 var admin = require('./routes/admin');//admin
-var testRouter = require('./routes/test');//test我測試查詢用的
+var fileRouter = require('./routes/file');//upload and download
+var testRouter = require('./routes/test');//test我測試查詢(pg、solr)和下載檔案用的
 
 var app = express();
 
@@ -50,7 +51,8 @@ app.use('/logout', logoutRouter);//logout
 app.use('/personalSetting', personalSettingRouter);//personalSetting
 app.use('/member', member);//member
 app.use('/admin', admin);//admin
-app.use('/test', testRouter);//test我測試查詢用的
+app.use('/file', fileRouter);//upload and download
+app.use('/test', testRouter);//test我測試查詢(pg、solr)和下載檔案用的
 
 
 

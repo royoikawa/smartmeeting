@@ -11,6 +11,16 @@ router.get('/showfile/:recid', function(req, res, next) {
     var filelist = new Array();
     const filedata = new Array();
     var rec_id = req.params.recid;
+    var options = {
+        styleMap: [
+            "p[style-name='Section Title'] => h1:fresh",
+            "p[style-name='Subsection Title'] => h2:fresh",
+            "b => em",
+            "i => strong",
+            "u => em",
+            "strike => del"
+        ]
+    };
     //filedata.push("1");
     //console.log("abc");
     // fs.readdirSync(testFolder).forEach(file => {
@@ -35,7 +45,7 @@ router.get('/showfile/:recid', function(req, res, next) {
                 if (file == rec_id) {
                     filelist.push(file);
                     //console.log("C:/Users/Admin/Desktop/wordmeeting/" + file);
-                    mammoth.extractRawText({ path: "D:/txt/" + file }).then(function (result) {
+                    mammoth.convertToHtml({ path: "D:/txt/" + file }, options).then(function (result) {
                         var text = result.value; // The raw text 
                         
                         //console.log(text);
