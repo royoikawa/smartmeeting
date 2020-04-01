@@ -38,7 +38,7 @@
               <button type="button" class="btn btn-outline-primary"><i class="fas fa-plus"></i>&nbsp;&nbsp;新增</button>
           
                 <div class="dropdown-menu" id="file_dropdown" aria-labelledby="themes">
-                    <a class="dropdown-item" href="#" onclick="document.getElementById('upload').style.display='block';"><i class="fas fa-file-alt"></i>&nbsp&nbsp&nbsp新檔案上傳</a>
+                    <a class="dropdown-item" href="#" onclick="document.getElementById('upload').style.display='block';"><i class="fas fa-file-alt"></i>&nbsp;&nbsp;&nbsp;新檔案上傳</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#"><i class="fas fa-archive"></i>&nbsp;&nbsp;&nbsp;舊檔案上傳</a>
                 </div>
@@ -120,6 +120,7 @@
                     <th scope="col">標籤</th>
                     <th scope="col">上傳者</th>
                     <th scope="col">上次修改時間</th>
+                    <!--<th scope="col"></th>-->
                   </tr>
                 </thead>
                 <tbody>
@@ -132,15 +133,47 @@
                     <% state = record[i].rec_state; %>
 
                     <% if (isEven == true) { %>
-                      <tr class="table-light" style="cursor: pointer;" onclick="location.href='/member/<%=pro_id %>/<%= record[i].rec_id %>';">
+                      <tr class="table-light" style="cursor: pointer;" id="tr" onclick="location.href='/member/<%=pro_id %>/<%= record[i].rec_id %>';">
                         <th scope="row"><%= name %><span class="badge badge-pill badge-info" style="margin-left: 1em; font-weight: normal;"><%= state %></span></th>
                         <td><%= tags %></td>
                         <td><%= uploader %></td>
                         <td><%= time %></td>
+                        <!--<td>
+                          <div class="nav-item dropdown" id="tag" onclick="removeHandler();">
+                            <i class="fas fa-tag"></i>
+                            <div class="dropdown-menu" id="tag_dropdown" style="right: 0; left: auto;" aria-labelledby="themes">
+                              <label for="addTags">套用標籤</label>
+                              <form method="POST" id="formfilter">
+                                <input type="email" class="form-control" id="addTags" aria-describedby="tagHelp">
+                              
+                
+                                  <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="denyReview" value="審核不通過" checked>
+                                    <label class="custom-control-label" for="denyReview">審核不通過</label>
+                                  </div>
+                                  <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="underReview" value="審核中" checked>
+                                    <label class="custom-control-label" for="underReview">審核中</label>
+                                  </div>
+                                  <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="doneFile" value="已確立檔案" checked>
+                                    <label class="custom-control-label" for="doneFile">已確立檔案</label>
+                                  </div>
+                                  <input type="hidden" id="filter" name="filter">
+                
+                              
+
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">新增標籤</a>
+                              </form>
+                            </div>
+                          </div>
+                          
+                        </td>-->
                       </tr>
                       <% isEven = false; %>
                     <% } else if (isEven == false) { %>
-                      <tr style="cursor: pointer;" onclick="location.href='/member/<%=pro_id %>/<%= record[i].rec_id %>';">
+                      <tr style="cursor: pointer;" id="tr" onclick="location.href='/member/<%=pro_id %>/<%= record[i].rec_id %>';">
                         <th scope="row"><%= name %><span class="badge badge-pill badge-info" style="margin-left: 1em; font-weight: normal;"><%= state %></span></th>
                         <td><%= tags %></td>
                         <td><%= uploader %></td>
@@ -250,5 +283,34 @@
       });
     })
 
+//    var recordId;
+//    function rowClick(rid) {
+//      recordId = rid;
+//      document.getElementById("tr").addEventListener("click", goLocation);
+//    }
+//
+//    function goLocation() {
+//      location.href='/member/<%=pro_id %>/' + recordId;
+//    }
+//    function removeHandler() {
+//      document.getElementById("tr").removeEventListener("click", goLocation);
+//      $('#tag_dropdown').slideToggle(200);
+//    }
+//
+//    
+//    $(function () {  
+//      $('#tag').click(function (event) {  
+//          //取消事件冒泡  
+//          event.stopPropagation();  
+//      });
+//
+//      //點選空白處隱藏
+//      $(document).click(function(event){
+//        var _con = $('#tag');   // 設定目標區域
+//        if(!_con.is(event.target) && _con.has(event.target).length === 0){ 
+//          $('#tag_dropdown').slideUp(200);   //滑動消失
+//        }
+//      });
+//    })
   </script>
 </html>

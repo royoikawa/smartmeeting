@@ -6481,6 +6481,22 @@
            flex: 1 1 auto;
    padding: 1rem;
  }
+
+.iframe-container {
+  overflow: auto;
+  /* Calculated from the aspect ration of the content (in case of 16:9 it is 9/16= 0.5625)*/
+  padding-top: 56.25%;
+  position: relative;
+}
+ 
+.iframe-container iframe {
+   border: 0;
+   height: 70%;
+   left: 0;
+   position: absolute;
+   top: 0;
+   width: 100%;
+}
  
  .modal-footer {
    display: -webkit-box;

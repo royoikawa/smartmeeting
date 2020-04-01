@@ -2,6 +2,69 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../models/db');
 
+//預覽畫面
+const testFolder = 'D:/txt';
+const fs = require('fs');
+var mammoth = require("mammoth");
+
+router.get('/showfile/:recid', function(req, res, next) {
+    var filelist = new Array();
+    const filedata = new Array();
+    var rec_id = req.params.recid;
+    //filedata.push("1");
+    //console.log("abc");
+    // fs.readdirSync(testFolder).forEach(file => {
+    //   filelist.push(file);
+    //   fs.readFile(file, (err, data) => { 
+    //     mammoth.extractRawText({ path: "C:/Users/Admin/Desktop/wordmeeting/"+file })
+    //     .then(function (result) {
+    //       var text = result.value; // The raw text 
+  
+    //       //console.log("text:"+text);
+    //       //filedata.push(text);
+    //       //var messages = result.messages;
+    //     }).done();
+  
+    //   }) 
+    //   //console.log("file:"+file);
+    // });
+    var a = new Promise(function (resolve, reject) {
+      
+        fs.readdir(testFolder, (err, files) => {
+            files.forEach(file => {
+                if (file == rec_id) {
+                    filelist.push(file);
+                    //console.log("C:/Users/Admin/Desktop/wordmeeting/" + file);
+                    mammoth.extractRawText({ path: "D:/txt/" + file }).then(function (result) {
+                        var text = result.value; // The raw text 
+                        
+                        //console.log(text);
+                        filedata.push(text);
+                        //console.log("file1:" + filedata[1]);
+                        // var messages = result.messages;
+                    }).done();
+                    resolve('hello world');
+                    // console.log("file000:" + filedata[1]);
+                    // console.log("file" + file);
+                }
+            });
+  
+        });
+    });
+  
+   
+    a.then(function(value) {
+      console.log(value);
+       setTimeout(function () { 
+         res.render('showfile', { title: 'Smartmeeting', filedata: filedata });
+       }, 200);
+    });
+    a.catch(function(value) {
+        console.log("error");
+    });
+});
+
+//顯示 member 首頁
 var pro_id;
 var pro_name;
 var recPlusAcc;
@@ -58,6 +121,7 @@ router.all('/:proid', function(req, res, next) {
     })
 });
 
+//顯示record 詳細資料頁面
 router.get('/:proid/:rec_id', function(req, res, next) {
     pro_id = req.params.proid;
     var recid = req.params.rec_id;

@@ -27,7 +27,7 @@
           <h5><%= record[0].rec_name %>
             <span class="badge badge-pill badge-info" style="margin-left: 1em; font-weight: normal;"><%= state %></span>
             <i class="fas fa-arrow-down" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c; cursor: pointer;"></i>
-            <i class="fas fa-eye" style="float: right; font-size: 1.2rem; color: #50565c; cursor: pointer;"></i>
+            <i class="fas fa-eye" onclick="document.getElementById('preview').style.display='block';" style="float: right; font-size: 1.2rem; color: #50565c; cursor: pointer;"></i>
           </h5>
           <hr class="my-4">
           
@@ -87,11 +87,11 @@
                       </div>
                       <div class="modal-body">
                           <!--<iframe id="iframe_upload" src="https://script.google.com/macros/s/AKfycbzlikYulCzy4fKGcBOUvlUuENPXrGnjJ9sdpEdbsFiqDZo_aik/exec" width="100%" height="100%" frameborder="0" scrolling="no" allowfullscreen></iframe>-->
-                          <input type="file" class="form-control-file" id="reuploadFile" aria-describedby="fileHelp">
+                          <input type="file" class="form-control-file" id="reuploadFile" aria-describedby="reuploadFile">
                           <label class="col-form-label">檔名</label>
                       </div>
                       <div class="modal-footer">
-                          <input type="button" value="取消" class="btn btn-secondary" data-dismiss="modal" onclick="document.getElementById('reupload').style.display='none';">
+                          <input type="button" value="取消" class="btn btn-secondary" onclick="document.getElementById('reupload').style.display='none';">
                           <input type="submit" value="確定" class="btn btn-primary" id="btnReupload">
                       </div>
                   </form>
@@ -111,7 +111,7 @@
                       </div>
                       <div class="modal-body">
                           <!--<iframe id="iframe_upload" src="https://script.google.com/macros/s/AKfycbzlikYulCzy4fKGcBOUvlUuENPXrGnjJ9sdpEdbsFiqDZo_aik/exec" width="100%" height="100%" frameborder="0" scrolling="no" allowfullscreen></iframe>-->
-                          <input type="file" class="form-control-file" id="reviseReason" aria-describedby="fileHelp">
+                          <input type="file" class="form-control-file" id="reviseReason" aria-describedby="reviseReason">
                           <!--<label class="col-form-label">檔名</label>-->
                           <br>
                           <label for="reviseTextarea">請說明修改原因</label>
@@ -119,8 +119,31 @@
                           <span class="invalid-feedback" id="msg_reason">請輸入原因</span>
                       </div>
                       <div class="modal-footer">
-                          <input type="button" value="取消" class="btn btn-secondary" data-dismiss="modal" onclick="cancelRevise();">
+                          <input type="button" value="取消" class="btn btn-secondary" onclick="cancelRevise();">
                           <input type="button" value="確定" class="btn btn-primary" id="btnRevise">
+                      </div>
+                  </form>
+              </div>
+          </div>
+        </div>
+
+
+
+        <!--預覽modal-->
+        <div id="preview" class="modal">
+          <div class="modal-dialog" role="document" style="min-width: 100%; height: 100%;">
+              <div class="modal-content" style="min-height: 100%; scroll-behavior: auto; overflow: auto;">
+                  <form method="POST" class="form-group">
+                      <div class="modal-header">
+                        <h5 class="modal-title"><%= record[0].rec_name%></h5>
+                        <button type="button" class="close" data-dismiss="preview" aria-label="Close" onclick="document.getElementById('preview').style.display='none';">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body" style="padding-top: 0;">
+                        <div class="iframe-container">
+                          <iframe id="iframe_preview" src="/member/showfile/<%= record[0].rec_name%>" allowfullscreen></iframe>
+                        </div>
                       </div>
                   </form>
               </div>
