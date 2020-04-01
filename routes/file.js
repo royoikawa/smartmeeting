@@ -89,8 +89,30 @@ router.post('/oldminute', upload.single('oldfiles'), function(req, res, next) {
     res.redirect('/member/'+proid);
 });
 
-router.post('/', function(req, res, next){
+//審核不通過重新上傳 覆蓋掉之前檔案
+router.post('/reupload', upload.single(''), function(req, res, next){//single後填<input type='file' name=''>name裡的東西
+    var id = req.query.fileid;//原始檔案的id，看你是用query還是params
+    var sql = "SELECT * FROM record WHERE rec_id=$1";
+    pool.query(sql, [id]).then(results => {//找檔案id
+        var index = results.rows[0].rec_name.lastIndexOf('.');//找檔名與副檔名中間的.
+        var arr = [results.rows[0].rec_name.substring(0, index), results.rows[0].rec_name.substring(index)];//檔名與副檔名
+        var filename = arr[0]+'('+results.rows[0].rec_uploadtime.replace(':', '.')+')'+arr[1];//拼湊成資料夾裡儲存的檔名，檔名(時間)副檔名
+        var filePath = path.join('D:/minute', filename);//檔案路徑
+        fs.unlink(filePath, function(err) {//刪除原審核不通過的檔案
+            if(err) throw err;
+            console.log('file delete');
+        })
+    })
     
+    // var index = req.file.filename.lastIndexOf('.');
+    // var time = req.file.filename.substring(index-20, index-1).replace('.', ':');//取得上傳檔案的時間，新增進資料庫用
+    // var update = "UPDATE record SET rec_state='審核中', rec_uploadtime=$1, rec_time=$2 WHERE rec_id=$3";
+    // pool.query(update, [time, time, id]).then(() => {
+    //     var sql = "INSERT INTO notice (notice_recid, notice_action, notice_time) VALUES ($1, $2, $3)";
+    //     pool.query(sql, [id, '重新上傳', time]);
+    // })
+
+    //res.redirect('');
 });
 
 
