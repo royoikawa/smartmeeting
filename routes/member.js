@@ -11,16 +11,16 @@ router.get('/showfile/:recid', function(req, res, next) {
     var filelist = new Array();
     const filedata = new Array();
     var rec_id = req.params.recid;
-    var options = {
-        styleMap: [
-            "p[style-name='Section Title'] => h1:fresh",
-            "p[style-name='Subsection Title'] => h2:fresh",
-            "b => em",
-            "i => strong",
-            "u => em",
-            "strike => del"
-        ]
-    };
+    //var options = {
+    //    styleMap: [
+    //        "p[style-name='Section Title'] => h1:fresh",
+    //        "p[style-name='Subsection Title'] => h2:fresh",
+    //        "b => em",
+    //        "i => strong",
+    //        "u => em",
+    //        "strike => del"
+    //    ]
+    //};
     //filedata.push("1");
     //console.log("abc");
     // fs.readdirSync(testFolder).forEach(file => {
@@ -45,7 +45,7 @@ router.get('/showfile/:recid', function(req, res, next) {
                 if (file == rec_id) {
                     filelist.push(file);
                     //console.log("C:/Users/Admin/Desktop/wordmeeting/" + file);
-                    mammoth.convertToHtml({ path: "D:/txt/" + file }, options).then(function (result) {
+                    mammoth.extractRawText({ path: "D:/txt/" + file }).then(function (result) {
                         var text = result.value; // The raw text 
                         
                         //console.log(text);
@@ -138,40 +138,25 @@ router.get('/:proid/:rec_id', function(req, res, next) {
     recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id AND rec_id = $1";
     aggTags = "select tag_recid, string_agg(tag_name,',') as tag_names from tag where tag_proid=$2 group by tag_recid";
     var q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id";;
-    pool.query(q, [recid, pro_id], function(err, results) {
-        if (err) throw err;
+    pool.query(q, [recid, pro_id]).then(results => {
+        data = results.rows;
+        res.render('memberMinute', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: data });
+    });
+    next();
+});
+
+router.get('/:proid/:rec_id', function(req, res, next) {
+    pro_id = req.params.proid;
+    var recid = req.params.rec_id;
+    //recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id AND rec_id = $1";
+    //aggTags = "select tag_recid, string_agg(tag_name,',') as tag_names from tag where tag_proid=$2 group by tag_recid";
+    //var q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id";;
+    var q = "SELECT * FROM tag WHERE tag_proid = $1";
+    pool.query(q, [pro_id]).then(results => {
         data = results.rows;
         //res.json(data);
         res.render('memberMinute', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: data });
     })
-});
-
-router.post('/:proid/:rec_id', function(req, res, next) {
-    pro_id = req.params.proid;
-    var recid = req.params.rec_id;
-    var time = '2020-01-21';
-    var reviseReason = req.body.reviseReason;
-    
-    //重新上傳
-    if (!reviseReason) {
-        var q = "UPDATE record SET rec_state = '審核中', rec_reason = '', rec_time = $1 WHERE rec_id = $2";
-        pool.query(q, [time, recid], function(err, results) {
-            if (err) throw err;
-            data = results.rows;
-            //res.json(data);
-            res.redirect('/member/' + pro_id);
-        })
-    
-    //申請修改
-    } else {
-        var q = "UPDATE record SET rec_state = '審核中', rec_reason = $1, rec_time = $2 WHERE rec_id = $3";
-        pool.query(q, [reviseReason, time, recid], function(err, results) {
-            if (err) throw err;
-            data = results.rows;
-            //res.json(data);
-            res.redirect('/member/' + pro_id);
-        })
-    }
 });
 
 module.exports = router;
