@@ -11,16 +11,16 @@ router.get('/showfile/:recid', function(req, res, next) {
     var filelist = new Array();
     const filedata = new Array();
     var rec_id = req.params.recid;
-    var options = {
-        styleMap: [
-            "p[style-name='Section Title'] => h1:fresh",
-            "p[style-name='Subsection Title'] => h2:fresh",
-            "b => em",
-            "i => strong",
-            "u => em",
-            "strike => del"
-        ]
-    };
+    //var options = {
+    //    styleMap: [
+    //        "p[style-name='Section Title'] => h1:fresh",
+    //        "p[style-name='Subsection Title'] => h2:fresh",
+    //        "b => em",
+    //        "i => strong",
+    //        "u => em",
+    //        "strike => del"
+    //    ]
+    //};
     //filedata.push("1");
     //console.log("abc");
     // fs.readdirSync(testFolder).forEach(file => {
@@ -45,7 +45,7 @@ router.get('/showfile/:recid', function(req, res, next) {
                 if (file == rec_id) {
                     filelist.push(file);
                     //console.log("C:/Users/Admin/Desktop/wordmeeting/" + file);
-                    mammoth.convertToHtml({ path: "D:/txt/" + file }, options).then(function (result) {
+                    mammoth.extractRawText({ path: "D:/txt/" + file }).then(function (result) {
                         var text = result.value; // The raw text 
                         
                         //console.log(text);
@@ -79,6 +79,23 @@ var pro_id;
 var pro_name;
 var recPlusAcc;
 var aggTags;
+var audioText;
+//搜尋音檔文檔
+router.all('/:proid', function(req, res, next) {
+    pro_id = req.params.proid;
+    var searchAT = req.body.searchAudioText;
+    var q;
+    if (searchAT != null)
+        q = "SELECT * FROM audiotext WHERE at_proid = $1 AND at_name LIKE '%" + searchAT + "%'";
+    else
+        q = 'SELECT * FROM audiotext WHERE at_proid = $1';
+    pool.query(q, [pro_id], function(err, results) {
+        if (err) throw err;
+        audioText = results.rows;
+        next();
+    })
+})
+
 router.all('/:proid', function(req, res, next) {
     pro_id = req.params.proid;
     var searchRecord = req.body.searchRecord;
@@ -90,12 +107,15 @@ router.all('/:proid', function(req, res, next) {
     pool.query(q, [pro_id], function(err, results) {
         if (err) throw err;
         pro_name = results.rows[0].pro_name;
+
+        //搜尋會議記錄
         if (searchRecord != null) {
             s = " AND (tag_names LIKE '%" + searchRecord + "%' OR rec_name LIKE '%" + searchRecord + "%')";
         }
 
+        //篩選狀態
         if (state) {
-            state = JSON.parse(state);
+            state = JSON.parse(state);//把一個JSON字串轉換成JavaScript的數值或是物件
             filter += " AND (";
             checkbox = [false, false, false];
             for (var i in state.val) {
@@ -116,21 +136,22 @@ router.all('/:proid', function(req, res, next) {
         }
         
         if (checkbox[0] == false && checkbox[1] == false && checkbox[2] == false ) {
-            res.render('member', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: [], cb: checkbox });
+            res.render('member', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: [], cb: checkbox, audioText: audioText });
         } else {
             recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id";
             aggTags = "SELECT tag_recid, string_agg(tag_name,',') AS tag_names FROM tag WHERE tag_proid = $1 GROUP BY tag_recid";
             q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id" + s + filter + " ORDER BY rec_time DESC";
             pool.query(q, [pro_id], function(err, results) {
                 if (err) throw err;
-                data_rec_t_a = results.rows;
+                var data_rec_t_a = results.rows;
                 //res.json(data_rec_t_a);           
-                res.render('member', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: data_rec_t_a, cb: checkbox });
+                res.render('member', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: data_rec_t_a, cb: checkbox, audioText: audioText });
             });
         }
     })
 });
 
+var data;
 //顯示record 詳細資料頁面
 router.get('/:proid/:rec_id', function(req, res, next) {
     pro_id = req.params.proid;
@@ -138,13 +159,36 @@ router.get('/:proid/:rec_id', function(req, res, next) {
     recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id AND rec_id = $1";
     aggTags = "select tag_recid, string_agg(tag_name,',') as tag_names from tag where tag_proid=$2 group by tag_recid";
     var q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id";;
-    pool.query(q, [recid, pro_id], function(err, results) {
-        if (err) throw err;
+    pool.query(q, [recid, pro_id]).then(results => {
         data = results.rows;
+        //res.render('memberMinute', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: data });
+        next();
+    });
+    //pool.query(q, [recid, pro_id], function(err, results) {
+    //    if (err) throw err;
+    //    data = results.rows;
+    //    //res.json(data);
+    //    //res.render('memberMinute', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: data });
+    //    next();
+    //});
+});
+
+router.get('/:proid/:rec_id', function(req, res, next) {
+    pro_id = req.params.proid;
+    var recid = req.params.rec_id;
+    //recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id AND rec_id = $1";
+    //aggTags = "select tag_recid, string_agg(tag_name,',') as tag_names from tag where tag_proid=$2 group by tag_recid";
+    //var q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id";;
+    var q = "SELECT * FROM (SELECT DISTINCT ON (tag_name) * FROM tag WHERE tag_proid = $1) AS distinctTag ORDER BY CASE tag_recid WHEN $2 THEN 1 ELSE 2 END, tag_id;";
+    pool.query(q, [pro_id, recid], function(err, results) {
+        if (err) throw err;
+        var distinctTag = results.rows;
         //res.json(data);
-        res.render('memberMinute', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: data });
+        res.render('memberMinute', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: data, tag: distinctTag});
     })
 });
+
+
 
 router.post('/:proid/:rec_id', function(req, res, next) {
     pro_id = req.params.proid;
