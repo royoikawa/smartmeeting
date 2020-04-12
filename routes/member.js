@@ -136,7 +136,15 @@ router.all('/:proid', function(req, res, next) {
         }
         
         if (checkbox[0] == false && checkbox[1] == false && checkbox[2] == false ) {
-            res.render('member', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: [], cb: checkbox, audioText: audioText });
+            res.render('member', { 
+                title: 'SmartMeeting', 
+                username: req.session.userName, 
+                pro_id: pro_id, 
+                pro_name: pro_name, 
+                record: [], 
+                cb: checkbox, 
+                audioText: audioText 
+            });
         } else {
             recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id";
             aggTags = "SELECT tag_recid, string_agg(tag_name,',') AS tag_names FROM tag WHERE tag_proid = $1 GROUP BY tag_recid";
@@ -145,7 +153,15 @@ router.all('/:proid', function(req, res, next) {
                 if (err) throw err;
                 var data_rec_t_a = results.rows;
                 //res.json(data_rec_t_a);           
-                res.render('member', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: data_rec_t_a, cb: checkbox, audioText: audioText });
+                res.render('member', { 
+                    title: 'SmartMeeting', 
+                    username: req.session.userName, 
+                    pro_id: pro_id, 
+                    pro_name: pro_name, 
+                    record: data_rec_t_a, 
+                    cb: checkbox, 
+                    audioText: audioText 
+                });
             });
         }
     })
@@ -198,7 +214,7 @@ router.post('/:proid/:rec_id', function(req, res, next) {
     
     //重新上傳
     if (!reviseReason) {
-        var q = "UPDATE record SET rec_state = '審核中', rec_reason = '', rec_time = $1 WHERE rec_id = $2";
+        var q = "UPDATE record SET rec_state = '審核中', rec_reason = null, rec_time = $1 WHERE rec_id = $2";
         pool.query(q, [time, recid], function(err, results) {
             if (err) throw err;
             data = results.rows;

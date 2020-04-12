@@ -10,14 +10,159 @@
   </head>
   <body>
     <div><%- include navbar %></div>
-    <div class="jumbotron" style="background-color: rgba(88, 87, 87, 0.01);">
+    <div class="jumbotron" style="background-color: rgba(88, 87, 87, 0.01); padding-top: 3rem; padding-bottom: 0; margin-bottom: 0;">
       <div class="col-sm-10">
         <div class="card" style="border-color: transparent;">
           <div class="card-body"></div>
         </div>
       </div>
-      <h1>admin<%= pro_id %></h1>
+      <span class="badge badge-light">專案代號：<%= pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
+      <div class="divider"></div>
+      <!--書籤 nav tabs-->
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="tab" id="tab_r" onclick="openR();" style="color: #18BC9C;" href="#ctd_review">審核</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" id="tab_pm" onclick="openPM();" style="color: #7b8a8b;" href="#">管理專案</a>
+        </li>
+      </ul>
+      <div id="myTabContent" class="tab-content">
+        <div class="tab-pane fade active show" id="ctd_review">
+          <div class="jumbotron" style="padding-top:15px; padding-left: 0; background-color: inherit;">
+            
+
+            <!--檔案表格-->
+            <% if (review.length == 0) { %>
+              <p class="text-primary" style="margin-top: 2em;">沒有需要審核的會議記錄</p>
+            <% } else { %>
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">檔名</th>
+                    <th scope="col">標籤</th>
+                    <th scope="col">上傳者</th>
+                    <th scope="col">上次修改時間</th>
+                    <!--<th scope="col"></th>-->
+                  </tr>
+                </thead>
+                <tbody>
+                  <% isEven = true; %><!--用來判斷 table 的顏色，從第0列開始算，true表偶數列(灰色)、false表奇數列(白色)-->
+                  <% for(var i = 0; i < review.length; i++) { %>
+                    <% name = review[i].rec_name; %>
+                    <% tags = review[i].tag_names; %>
+                    <% uploader = review[i].acc_name; %>
+                    <% time = review[i].rec_time; %>
+                    <% state = review[i].rec_state; %>
+
+                    <% if (isEven == true) { %>
+                      <tr class="table-light" style="cursor: pointer;" id="tr" onclick="location.href='/admin/<%=pro_id %>/<%= review[i].rec_id %>';">
+                        <th scope="row"><%= name %><span class="badge badge-pill badge-info" style="margin-left: 1em; font-weight: normal;"><%= state %></span></th>
+                        <td><%= tags %></td>
+                        <td><%= uploader %></td>
+                        <td><%= time %></td>
+                      </tr>
+                      <% isEven = false; %>
+                    <% } else if (isEven == false) { %>
+                      <tr style="cursor: pointer;" id="tr" onclick="location.href='/admin/<%=pro_id %>/<%= review[i].rec_id %>';">
+                        <th scope="row"><%= name %><span class="badge badge-pill badge-info" style="margin-left: 1em; font-weight: normal;"><%= state %></span></th>
+                        <td><%= tags %></td>
+                        <td><%= uploader %></td>
+                        <td><%= time %></td>
+                      </tr>
+                      <% isEven = true; %>
+                    <% } %>
+                  <% } %>
+                </tbody>
+              </table> 
+            <% } %>
+
+
+
+
+          </div>  
+        </div>
+        <div class="tab-pane fade" id="projectmanage">
+          <div class="jumbotron" style="padding-top:15px; padding-left: 0; background-color: inherit;">
+            
+
+
+
+            <div class="card mb-3">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                  <span class="project-item"><strong>名稱</strong></span>
+                      <span class="project-item"><%= pro_name %>
+                        <i class="fas fa-edit" style="color: #7b8a8b; margin-left: 0.7em;"></i>
+                      </span>
+                </li>
+                <li class="list-group-item">
+                  <span class="project-item"><strong>密碼</strong></span>
+                  <span class="project-item">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;
+                    <i class="fas fa-edit" style="color: #7b8a8b; margin-left: 0.7em;"></i>
+                  </span>
+                </li>
+                </li>
+                <li class="list-group-item">
+                  <span class="project-item"><strong>使用者</strong></span>
+                  <div class="project-item">
+                    <div class="card border-dark mb-3" style="max-width: inherit;">
+                      <div class="card-header">管理員<i class="fas fa-edit" style="color: #7b8a8b; margin-left: 0.7em;"></i></div>
+                      <div class="card-body">
+                        <p class="card-text"><%= username %></p>
+                      </div>
+                      <div class="card-header" style="border-top: 1px solid rgba(0, 0, 0, 0.125);">成員
+                        <span class="badge badge-pill badge-dark" style="line-height: 1rem; margin-left: 0.7em;">12</span>
+                      </div>
+                      <div class="card-body">
+                        <div class="alert alert-dismissible alert-light" style="max-width: 10em; display: inline-block; margin-right: 1em;">
+                          <button type="button" class="close" data-dismiss="alert">&times;</button>
+                          簡勝弘
+                        </div>
+                        <div class="alert alert-dismissible alert-light" style="max-width: 10em; display: inline-block; margin-right: 1em;">
+                          <button type="button" class="close" data-dismiss="alert">&times;</button>
+                          XXX
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+
+
+
+
+          </div>
+        </div>
+      </div>
     </div>
     
   </body>
+
+  <script>
+    /**tabs**/
+    function openR() {
+      $("#tab_r").addClass("active");
+      $("#tab_pm").removeClass("active");
+      $("#ctd_review").addClass("active");
+      $("#ctd_review").addClass("show");
+      $("#projectmanage").removeClass("active");
+      $("#projectmanage").removeClass("show");
+      $('#tab_r').css("color", "#18BC9C");
+      $('#tab_pm').css("color", "#7b8a8b");
+    }
+
+    function openPM() {
+      $("#tab_pm").addClass("active");
+      $("#tab_r").removeClass("active");
+      $("#projectmanage").addClass("active");
+      $("#projectmanage").addClass("show");
+      $("#ctd_review").removeClass("active");
+      $("#ctd_review").removeClass("show");
+      $('#tab_pm').css("color", "#18BC9C");
+      $('#tab_r').css("color", "#7b8a8b");
+    }
+  </script>
 </html>

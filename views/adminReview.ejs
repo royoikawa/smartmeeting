@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css'>
+    <link rel="stylesheet" href="/stylesheets/css/all.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+  </head>
+  <body>
+    <div><%- include navbar %></div>
+    <div class="jumbotron" style="background-color: rgba(88, 87, 87, 0.01); padding-top: 3rem;">
+      <div class="col-sm-10">
+        <div class="card" style="border-color: transparent;">
+          <div class="card-body"></div>
+        </div>
+      </div>
+      <span class="badge badge-light">專案代號：<%= pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
+      <div class="divider"></div>
+      
+      <div class="jumbotron" style="padding-top:1em; padding-bottom: 1em; padding-left: 1rem; margin-bottom: 1rem; background-color: #ecf0f1;">
+        <a href="/admin/<%= pro_id %>"><i class="fas fa-arrow-left">&nbsp;&nbsp;</i><span>返回</span></a>
+          
+        <% state = record[0].rec_state; %>
+        <div class="jumbotron" style="padding-top:1rem; padding-bottom: 0; padding-left: 3rem; margin-bottom: 1rem; background-color: #ecf0f1;">
+            <h5><%= record[0].rec_name %>
+              <span class="badge badge-pill badge-info" style="margin-left: 1em; font-weight: normal;"><%= state %></span>
+              <a href="/file/<%= record[0].rec_id %>" target="_blank"><i class="fas fa-arrow-down" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c;"></i></a>
+              <i class="fas fa-eye" onclick="document.getElementById('preview').style.display='block';" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c; cursor: pointer;"></i>
+              <!--<i class="fas fa-tag fa-rotate-135" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c; cursor: pointer;"></i>
+              <i class="fas fa-tag" onclick="document.getElementById('tags').style.display='block';" style="float: right; font-size: 1.1rem; color: #50565c; cursor: pointer;"></i>-->
+            </h5>
+            <hr class="my-4">
+          
+            <div class="card mb-3" style="min-width: 100%;">
+              <table class="table">
+              <tbody>
+                <tr>
+                  <td>標籤</td>
+                  <td><%= record[0].tag_names %></td>
+                </tr>
+                <tr>
+                  <td>上次修改時間</td>
+                  <td><%= record[0].rec_time %></td>
+                </tr>
+                <tr>
+                  <td>上傳者</td>
+                  <td><%= record[0].acc_name %></td>
+                </tr>
+              </tbody>
+              </table> 
+            </div>
+
+            <% if (record[0].rec_reason != null) { %>
+              <div class="card mb-3" style="min-width: 100%; position: relative; display: inline-block;">
+                <div class="toast-body">
+                申請原因：<%= record[0].rec_reason %>
+                </div>
+              </div>
+            <% } %>
+
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('denyReview').style.display='block';">不通過</button>
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('recognizeReview').style.display='block';">通過</button>
+        </div>
+      </div>
+    </div>
+    
+
+    
+
+        <!--審核通過modal-->
+        <div id="recognizeReview" class="modal" >
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <form method="POST" class="form-group" enctype="multipart/form-data" action="">
+                <div class="modal-header">
+                    <h5 class="modal-title">確定審核通過會議記錄？</h5>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" value="取消" class="btn btn-secondary" onclick="document.getElementById('recognizeReview').style.display='none';">
+                    <input type="submit" value="確定" class="btn btn-primary" id="btnRecognize">
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!--審核不通過modal-->
+        <div id="denyReview" class="modal" >
+          <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                  <form method="POST" class="form-group" id="denyForm">
+                      <div class="modal-header">
+                        <h5 class="modal-title">確定不通過會議記錄？</h5>
+                      </div>
+                      <div class="modal-body">
+                          <label for="denyTextarea">請說明不通過原因</label>
+                          <textarea class="form-control" id="denyTextarea" rows="3" name="denyReason"></textarea>
+                          <span class="invalid-feedback" id="msg_reason">請輸入原因</span>
+                      </div>
+                      <div class="modal-footer">
+                          <input type="button" value="取消" class="btn btn-secondary" onclick="cancelDeny();">
+                          <input type="button" value="確定" class="btn btn-primary" id="btnDeny">
+                      </div>
+                  </form>
+              </div>
+          </div>
+        </div>
+
+
+
+        <!--預覽modal-->
+        <div id="preview" class="modal">
+          <div class="modal-dialog" role="document" style="min-width: 100%; height: 100%;">
+              <div class="modal-content" style="min-height: 100%; scroll-behavior: auto; overflow: auto;">
+                  <form method="POST" class="form-group">
+                      <div class="modal-header">
+                        <h5 class="modal-title"><%= record[0].rec_name%></h5>
+                        <button type="button" class="close" data-dismiss="preview" aria-label="Close" onclick="document.getElementById('preview').style.display='none';">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body" style="padding-top: 0;">
+                        <div class="iframe-container">
+                          <iframe id="iframe_preview" src="/member/showfile/<%= record[0].rec_name%>" allowfullscreen></iframe>
+                        </div>
+                      </div>
+                  </form>
+              </div>
+          </div>
+        </div>
+
+  </body>
+
+  <script>
+    //不通過審核
+    $("#btnDeny").click(function(){
+      if (!$("#denyTextarea").val()) {
+        $("#msg_reason").css("display", "block");
+        $('#denyTextarea').addClass("is-invalid");
+      } else {
+        $("#denyForm").submit();
+      }
+      
+    })
+
+    //取消審核不通過
+    function cancelDeny() {
+      document.getElementById('denyReview').style.display='none';
+      $("#msg_reason").css("display", "none");
+      $('#denyTextarea').removeClass("is-invalid");
+      $("#denyTextarea").val(null);
+    }
+
+  </script>
+</html>

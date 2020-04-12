@@ -5,6 +5,10 @@
   border-top: 1px solid #dee2e6;
 }
 
+.project-item + .project-item {
+  margin-left: 10rem;
+}
+
 /*!
  * Bootswatch v4.4.1
  * Homepage: https://bootswatch.com
