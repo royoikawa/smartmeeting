@@ -32,13 +32,26 @@ router.post('/', function(req, res) {
 
   //關鍵字查詢solr檔案 
   var query = req.body.loginacc;
+  var arr = [];
   var strquery = solr.query().q('text:'+ query);//text是檔案的內文
-  solr.search(strquery, function(err, result) {
-    if(err){
-      res.json({"關鍵字": query, "err": err});
+  solr.search(strquery, function(err, results) {
+    // if(err){
+    //   res.json({"關鍵字": query, "err": err});
+    // }
+    // res.json({"關鍵字": query, "length": result.response.numFound, "name": result.response.docs[0].fileName, "data": result.response});
+    for(var i=0; i<results.response.numFound; i++){
+      var filename = results.response.docs[i].fileName;
+      arr[i] = filename.substring(0, filename.lastIndexOf('.')-21)+filename.substring(filename.lastIndexOf('.'));
     }
-    res.json({"關鍵字": query, "length": result.response.numFound, "name": result.response.docs[0].fileName, "data": result.response});
+    //res.send(arr);
+    //aggTags = "SELECT tag_recid, string_agg(tag_name,',') AS tag_names FROM tag WHERE tag_proid = $1 GROUP BY tag_recid";
+    var p = "SELECT * FROM record WHERE rec_name = ANY($1::text[])";  
+    pg.query(p, [arr]).then(results => {
+      res.send(results.rows)
+    })
   })
+  
+  
 
 })
 

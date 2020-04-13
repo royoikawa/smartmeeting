@@ -10,19 +10,19 @@ var pool = require('../models/db');
 //上傳檔案儲存的路徑和檔名
 var storage = multer.diskStorage({
     destination: function(req, file, callback) {
-        fs.exists('D:/minute', function(exists) {//../../solr-7.7.2/example/exampledocs
+        fs.exists('./public/minute', function(exists) {
             if(!exists){
-                fs.mkdir('D:/minute', function(err) {
+                fs.mkdir('./public/minute', function(err) {
                     if(err){
                         console.log(err);
                     }
                     else{
-                        callback(null, 'D:/minute');
+                        callback(null, './public/minute');
                     }
                 });
             }
             else{
-                callback(null, 'D:/minute');
+                callback(null, './public/minute');
             }
         })
     },

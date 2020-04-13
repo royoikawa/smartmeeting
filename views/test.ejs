@@ -42,5 +42,46 @@
       <% } %>
     <% } %>
     
+    <button id='get' >轉檔</button>
+    <p id='tt'></p>
+    
   </body>
+  <script>
+    $(document).ready(function() {
+      $('#get').click(function() {
+        $.ajax({
+          url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datachannels/words/datapoints',//deviceld: D0GyA2Da, deviceKey: nOJM4aFkjC980deR, datachannelID: words
+          headers: {deviceKey:'nOJM4aFkjC980deR'},
+          type: 'GET',
+          contentType: 'application/json',
+          success: function(res){
+            //$('#tt').text(res.dataChannels[0].dataPoints[0].values.value)
+            $('#tt').text(JSON.stringify(res))
+          }  
+        })
+      })
+    })
+
+    // 資料顯示
+    // {
+    //   "apiVersion": "2.18.3",
+    //   "code": 200,
+    //   "message": "Request has succeeded",
+    //   "deviceId": "D0GyA2Da",
+    //   "dataChannels": [
+    //     {
+    //       "dataChnId": "words",
+    //       "isOverflow": false,
+    //       "dataPoints": [
+    //         {
+    //           "recordedAt": 1586617139947,
+    //           "values": {
+    //             "value": "啊不啦不啦"
+    //           }
+    //         }
+    //       ]
+    //     }
+    //   ]
+    // }
+  </script>
 </html>

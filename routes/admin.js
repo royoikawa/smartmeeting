@@ -53,7 +53,8 @@ router.post('/', function(req, res, next){
             var sql = "INSERT INTO notice (notice_recid, notice_action, notice_time) VALUES ($1, $2, $3)";
             pool.query(sql, [id, "修改通過", time]).then(() => {
                 var repath = results.rows[0].rec_revisepath;
-                var filename = repath.substring(10, repath.lastIndexOf('('))+repath.substring(repath.lastIndexOf('.'));
+                //var filename = repath.substring(10, repath.lastIndexOf('('))+repath.substring(repath.lastIndexOf('.'));//D:/minute/xxx(yyyy-mm-dd hh.mm.ss).xxx
+                var filename = repath.substring(14, repath.lastIndexOf('.')-21)+repath.substring(repath.lastIndexOf('.'));//public/minute/xxx(yyyy-mm-dd hh.mm.ss).xxx
                 sql = "UPDATE record SET rec_name=$1, rec_state=null, rec_reason=null, rec_path=$2, rec_time=$3, rec_revisepath=null WHERE rec_id=$4";
                 pool.query(sql, [filename, repath, time, id], function(err) {
                     if(err) throw err;
