@@ -43,8 +43,7 @@ router.post('/', function(req, res) {
       var filename = results.response.docs[i].fileName;
       arr[i] = filename.substring(0, filename.lastIndexOf('.')-21)+filename.substring(filename.lastIndexOf('.'));
     }
-    //res.send(arr);
-    //aggTags = "SELECT tag_recid, string_agg(tag_name,',') AS tag_names FROM tag WHERE tag_proid = $1 GROUP BY tag_recid";
+
     var p = "SELECT * FROM record WHERE rec_name = ANY($1::text[])";  
     pg.query(p, [arr]).then(results => {
       res.send(results.rows)

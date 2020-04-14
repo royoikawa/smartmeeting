@@ -81,6 +81,9 @@ var pro_name;
 var recPlusAcc;
 var aggTags;
 router.all('/:proid', function(req, res, next) {
+    if(!req.session.userAccount){//若沒登入，跳到登入頁
+        res.redirect('/login');
+    }
     pro_id = req.params.proid;
     var searchRecord = req.body.searchRecord;
     var state = req.body.filter;
@@ -90,27 +93,27 @@ router.all('/:proid', function(req, res, next) {
     var checkbox = [true, true, true];
     var q = 'SELECT pro_name FROM project WHERE pro_id = $1';
     pool.query(q, [pro_id]).then(results => {
-        //if (err) throw err;
         pro_name = results.rows[0].pro_name;
         if (searchRecord != null) {
-            s = " AND (tag_names LIKE '%" + searchRecord + "%' OR rec_name LIKE '%" + searchRecord + "%')" ;                
-            // var str = solr.query().q('text:'+ searchRecord);
-            // solr.search(str, function(err, results) {
-            //     if(err){
-            //         console.log(err);
-            //         return;
-            //     }
-            //     var count = parseInt(results.response.numFound);               
-            //     for(var i=0; i<count; i++){
-            //         var filename = results.response.docs[i].fileName;
-            //         arr[i] = filename.substring(0, filename.lastIndexOf('.')-21)+filename.substring(filename.lastIndexOf('.')) ;
-            //         s += " OR rec_name = '" + arr[i] + "'";
-            //     }
-            //     //console.log(results.response);
-            //     s += ")";
-            //     console.log(s);
-            // })
-                       
+            s = " AND (tag_names LIKE '%" + searchRecord + "%' OR rec_name LIKE '%" + searchRecord + "%'" ;                
+            var str = solr.query().q('text:'+ searchRecord);//全文檢索
+            solr.search(str, function(err, results) {                
+                var count = parseInt(results.response.numFound);               
+                for(var i=0; i<count; i++){
+                    var filename = results.response.docs[i].fileName;
+                    arr[i] = filename.substring(0, filename.lastIndexOf('.')-21)+filename.substring(filename.lastIndexOf('.')) ;
+                    s += " OR rec_name = '" + arr[i] + "'";//符合條件的所有檔名
+                }
+                s += ")";
+                recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id";
+                aggTags = "SELECT tag_recid, string_agg(tag_name,',') AS tag_names FROM tag WHERE tag_proid = $1 GROUP BY tag_recid";
+                q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id" + s + filter + " ORDER BY rec_time DESC";
+                pool.query(q, [pro_id]).then(results => {
+                    data_rec_t_a = results.rows;
+                    //res.json(data_rec_t_a);           
+                    res.render('member', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: data_rec_t_a, cb: checkbox });
+                });
+            })                      
         }
 
         if (state) {
@@ -131,8 +134,6 @@ router.all('/:proid', function(req, res, next) {
                     filter += "rec_state ISNULL" ;
                     checkbox[2] = true;
                 }
-                
-                //filter += "rec_state = '" + state.val[i] + "'";
             }
             filter += ")";
         }
@@ -142,7 +143,7 @@ router.all('/:proid', function(req, res, next) {
         } else {
             recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id";
             aggTags = "SELECT tag_recid, string_agg(tag_name,',') AS tag_names FROM tag WHERE tag_proid = $1 GROUP BY tag_recid";
-            q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id" + s  + filter + " ORDER BY rec_time DESC";
+            q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id" + s + filter + " ORDER BY rec_time DESC";
             pool.query(q, [pro_id]).then(results => {
                 data_rec_t_a = results.rows;
                 //res.json(data_rec_t_a);           

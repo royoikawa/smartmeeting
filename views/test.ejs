@@ -42,23 +42,40 @@
       <% } %>
     <% } %>
     
-    <button id='get' >轉檔</button>
+    <button id='get'>接值</button>
+    <button id='post'>傳值</button>
     <p id='tt'></p>
     
   </body>
   <script>
-    $(document).ready(function() {
-      $('#get').click(function() {
-        $.ajax({
-          url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datachannels/words/datapoints',//deviceld: D0GyA2Da, deviceKey: nOJM4aFkjC980deR, datachannelID: words
-          headers: {deviceKey:'nOJM4aFkjC980deR'},
-          type: 'GET',
-          contentType: 'application/json',
-          success: function(res){
-            //$('#tt').text(res.dataChannels[0].dataPoints[0].values.value)
-            $('#tt').text(JSON.stringify(res))
-          }  
-        })
+
+    $('#get').click(function() {
+      $.ajax({
+        url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datachannels/words/datapoints',//deviceld: D0GyA2Da, deviceKey: nOJM4aFkjC980deR, datachannelID: words
+        headers: {deviceKey:'nOJM4aFkjC980deR'},
+        type: 'GET',
+        contentType: 'application/json',
+        success: function(res){
+          //$('#tt').text(res.dataChannels[0].dataPoints[0].values.value)//值
+          $('#tt').text(JSON.stringify(res))//所有資料
+        }  
+      })
+    })
+
+    //按開始會議傳值
+    $('#post').click(function() {
+      var data = {
+        datapoints:[ {dataChnId:'start', values: {value: 'start'} } ]
+      }
+      $.ajax({
+        url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datapoints',
+        headers: {deviceKey:'nOJM4aFkjC980deR'},
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function(res){
+          $('#tt').text('success')
+        }  
       })
     })
 

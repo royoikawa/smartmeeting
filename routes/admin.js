@@ -6,6 +6,9 @@ var moment = require("moment");
 var tz = require("moment-timezone");
 
 router.get('/:id_join', function(req, res, next) {
+    if(!req.session.userAccount){//若沒登入，跳到登入頁
+        res.redirect('/login');
+    }
     var pro_id = req.params.id_join;
     res.render('admin', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id});
 });

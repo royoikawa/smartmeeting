@@ -10,6 +10,9 @@ var pool = require('../models/db');
 // 若搜尋框有值，else if 判斷是否為大於等於1 的數字
 // 若不符合 else 直接回傳空的資料
 router.all('/', function(req, res, next) {
+  if(!req.session.userAccount){//若沒登入，跳到登入頁
+    res.redirect('/login');
+  }
   var id = req.body.pro_id;
   if (id == null) { 
     next();
