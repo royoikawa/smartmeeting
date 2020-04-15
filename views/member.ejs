@@ -16,7 +16,10 @@
           <div class="card-body"></div>
         </div>
       </div>
-      <span class="badge badge-light">專案代號：<%= pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
+      <div style="width: inherit; height: fit-content;">
+        <span class="badge badge-light">專案代號：<%= pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
+        <button type="button" class="btn btn-outline-warning btn-sm" onclick="loacation.href='/meeting/<%= pro_id %>';" style="float: right;">我要開會</button>
+      </div>
       <div class="divider"></div>
       
 
@@ -235,7 +238,7 @@
 
 
 
-            <!--檔案表格-->
+            <!--文檔音檔表格-->
             <% if (audioText.length == 0) { %>
               <p class="text-primary" style="margin-top: 2em;">沒有符合的項目</p>
             <% } else { %>

@@ -3,76 +3,74 @@ var router = express.Router();
 var pool = require('../models/db');
 
 //預覽畫面
-const testFolder = 'D:/txt';
-const fs = require('fs');
-var mammoth = require("mammoth");
+// const testFolder = 'D:/newproject/public/minute';
+// const fs = require('fs');
+// var mammoth = require("mammoth");
 
-router.get('/showfile/:recid', function(req, res, next) {
-    var filelist = new Array();
-    const filedata = new Array();
-    var rec_id = req.params.recid;
-    //var options = {
-    //    styleMap: [
-    //        "p[style-name='Section Title'] => h1:fresh",
-    //        "p[style-name='Subsection Title'] => h2:fresh",
-    //        "b => em",
-    //        "i => strong",
-    //        "u => em",
-    //        "strike => del"
-    //    ]
-    //};
-    //filedata.push("1");
-    //console.log("abc");
-    // fs.readdirSync(testFolder).forEach(file => {
-    //   filelist.push(file);
-    //   fs.readFile(file, (err, data) => { 
-    //     mammoth.extractRawText({ path: "C:/Users/Admin/Desktop/wordmeeting/"+file })
-    //     .then(function (result) {
-    //       var text = result.value; // The raw text 
+
+// router.get('/showfile', function (req, res, next) {
+//     var filelist = new Array();
+//     const filedata = new Array();
+//     filedata.push("1");
+//     //console.log("abc");
+//     // fs.readdirSync(testFolder).forEach(file => {
+//     //   filelist.push(file);
+//     //   fs.readFile(file, (err, data) => { 
+//     //     mammoth.extractRawText({ path: "C:/Users/Admin/Desktop/wordmeeting/"+file })
+//     //     .then(function (result) {
+//     //       var text = result.value; // The raw text 
   
-    //       //console.log("text:"+text);
-    //       //filedata.push(text);
-    //       //var messages = result.messages;
-    //     }).done();
+//     //       //console.log("text:"+text);
+//     //       //filedata.push(text);
+//     //       //var messages = result.messages;
+//     //     }).done();
   
-    //   }) 
-    //   //console.log("file:"+file);
-    // });
-    var a = new Promise(function (resolve, reject) {
+//     //   }) 
+//     //   //console.log("file:"+file);
+//     // });
+//     var a = new Promise(function (resolve, reject) {
       
-        fs.readdir(testFolder, (err, files) => {
-            files.forEach(file => {
-                if (file == rec_id) {
-                    filelist.push(file);
-                    //console.log("C:/Users/Admin/Desktop/wordmeeting/" + file);
-                    mammoth.extractRawText({ path: "D:/txt/" + file }).then(function (result) {
-                        var text = result.value; // The raw text 
-                        
-                        //console.log(text);
-                        filedata.push(text);
-                        //console.log("file1:" + filedata[1]);
-                        // var messages = result.messages;
-                    }).done();
-                    resolve('hello world');
-                    // console.log("file000:" + filedata[1]);
-                    // console.log("file" + file);
-                }
-            });
+//         fs.readdir(testFolder, (err, files) => {
+//           files.forEach(file => {
+//             filelist.push(file);
+//             //console.log("C:/Users/Admin/Desktop/wordmeeting/" + file);
   
-        });
-    });
+//             mammoth.extractRawText({ path: "D:/newproject/public/minute/" + file })
+//               .then(function (result) {
+//                 var text = result.value; // The raw text 
+  
+//                 //console.log(text);
+//                 filedata.push(text);
+//                 //console.log("file1:" + filedata[1]);
+//                 // var messages = result.messages;
+//               }).done();
+//               resolve('hello world');
+//             // console.log("file000:" + filedata[1]);
+//             // console.log("file" + file);
+          
+//         });
+  
+//       });
+//     });
   
    
-    a.then(function(value) {
-      console.log(value);
-       setTimeout(function () { 
-         res.render('showfile', { title: 'Smartmeeting', filedata: filedata });
-       }, 200);
-    });
-    a.catch(function(value) {
-        console.log("error");
-    });
-});
+//    a.then(function(value) {
+//      console.log(value);
+//       setTimeout(function () { res.render('showfile', { title: 'Express', username: '王大明', filelist: filelist, filedata: filedata }) }, 5000);
+//    });
+//    a.catch(function(value) {
+//     console.log("error");
+//   });
+//     function successCallback(result) {
+//       console.log("It succeeded with " + result);
+//     }
+  
+//     function failureCallback(error) {
+//       console.log("It failed with " + error);
+//     }
+//     // res.send(filelist);
+//     // res.render('showfile', { title: 'Express', username: '王大明' });
+//   });
 
 //顯示 member 首頁
 var pro_id;
@@ -115,7 +113,7 @@ router.all('/:proid', function(req, res, next) {
 
         //篩選狀態
         if (state) {
-            state = JSON.parse(state);//把一個JSON字串轉換成JavaScript的數值或是物件
+            state = JSON.parse(state);//把一個JSON字串轉換成JavaScript的物件，該物件為{val:[] }，[]裡面放checkbox的值
             filter += " AND (";
             checkbox = [false, false, false];
             for (var i in state.val) {

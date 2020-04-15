@@ -1,17 +1,47 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css'>
-    <link rel="stylesheet" href="/stylesheets/css/all.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
-    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-  </head>
-  <body>
-    <div class="jumbotron" style="padding-top: 0;">
-      <p id="filecontent"><%= filedata %></p>
+
+<head>
+  <!-- <title><%= title %></title> -->
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+  <script>
+    // console.log("<%= filelist[1] %>");
+    // console.log("<%= filelist[2] %>");
+  </script>
+  <div><%- include navbar %></div>
+  <h1><%= title %></h1>
+  <p>Welcome too <%= title %></p>
+  <p id="demo"></p>
+  <!-- <p><%= filedata[1] %></p> -->
+  <div class="container">
+    <input id="document" type="file" />
+    <div class="row">
+      <div class="span8">
+        <div id="output" class="well">
+        </div>
+      </div>
     </div>
-    
-  </body>
+    <!-- <button class='preview' data-url='http://localhost:3000/%E6%A1%88%E4%B8%89%E8%B3%87%E6%96%99.docx'>預覽</button> -->
+    <script>
+      var list = "<%= filelist %>".split(",");
+      console.log(typeof (list));
+      console.log(list);
+      list.forEach(myFunction);
+
+      function myFunction(item, index) {
+        var lists = document.getElementById("demo").innerHTML += index + ":" + item + "<button id ='see' class='preview' data-url='../public/minute/" + item + "' >預覽</button>" + "<br>";
+        //console.log(item);//檔名
+      }
+      //console.log("<%= filelist[1] %>");
+    </script>
+    <script src="https://cdn.bootcss.com/mammoth/1.4.8/mammoth.browser.js"></script>
+    <script src="../javascripts/demo.js"></script>
+</body>
+
 </html>
