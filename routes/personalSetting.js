@@ -3,7 +3,10 @@ var router = express.Router();
 var pg = require('../models/db');
 
 router.get('/', function(req, res, next) {
-  res.render('personalSetting', { title: '個人設定', username:req.session.userName, useracc:req.session.userAccount});
+    if(!req.session.userAccount){//若沒登入，跳到登入頁
+        res.redirect('/login');
+    }
+    res.render('personalSetting', { title: '個人設定', username:req.session.userName, useracc:req.session.userAccount});
 });
 
 //修改姓名

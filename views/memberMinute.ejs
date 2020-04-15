@@ -130,7 +130,7 @@
         <div id="reupload" class="modal" >
           <div class="modal-dialog" role="document">
               <div class="modal-content">
-                  <form method="POST" class="form-group" enctype="multipart/form-data" action="">
+                  <form method="POST" class="form-group" enctype="multipart/form-data" action="/file/reupload?proid=<%= pro_id %>&recid=<%= record[0].rec_id %>">
                       <div class="modal-header">
                         <h5 class="modal-title">重新上傳已修改過的會議記錄</h5>
                       </div>
@@ -140,7 +140,7 @@
                           <label class="col-form-label">檔名</label>
                       </div>
                       <div class="modal-footer">
-                          <input type="button" value="取消" class="btn btn-secondary" onclick="document.getElementById('reupload').style.display='none';">
+                          <input type="button" value="取消" class="btn btn-secondary" onclick="cancelReupload()">
                           <input type="submit" value="確定" class="btn btn-primary" id="btnReupload">
                       </div>
                   </form>
@@ -154,13 +154,13 @@
         <div id="revise" class="modal" >
           <div class="modal-dialog" role="document">
               <div class="modal-content">
-                  <form method="POST" class="form-group" id="reviseForm">
+                  <form method="POST" class="form-group" id="reviseForm" enctype="multipart/form-data" action="/file/revise?proid=<%= pro_id %>&recid=<%= record[0].rec_id %>"><!--    -->
                       <div class="modal-header">
                         <h5 class="modal-title">申請修改已通過的會議記錄</h5>
                       </div>
                       <div class="modal-body">
                           <!--<iframe id="iframe_upload" src="https://script.google.com/macros/s/AKfycbzlikYulCzy4fKGcBOUvlUuENPXrGnjJ9sdpEdbsFiqDZo_aik/exec" width="100%" height="100%" frameborder="0" scrolling="no" allowfullscreen></iframe>-->
-                          <input type="file" class="form-control-file" id="reviseReason" aria-describedby="reviseReason">
+                          <input type="file" class="form-control-file" id="reviseFile" name="reviseFile" aria-describedby="reviseReason" required>
                           <!--<label class="col-form-label">檔名</label>-->
                           <br>
                           <label for="reviseTextarea">請說明修改原因</label>
@@ -169,7 +169,7 @@
                       </div>
                       <div class="modal-footer">
                           <input type="button" value="取消" class="btn btn-secondary" onclick="cancelRevise();">
-                          <input type="button" value="確定" class="btn btn-primary" id="btnRevise">
+                          <input type="submit" value="確定" class="btn btn-primary" id="btnRevise">
                       </div>
                   </form>
               </div>
@@ -266,8 +266,6 @@
       if (!$("#reviseTextarea").val()) {
         $("#msg_reason").css("display", "block");
         $('#reviseTextarea').addClass("is-invalid");
-      } else {
-        $("#reviseForm").submit();
       }
       
     })
@@ -278,6 +276,13 @@
       $("#msg_reason").css("display", "none");
       $('#reviseTextarea').removeClass("is-invalid");
       $("#reviseTextarea").val(null);
+      $("#reviseFile").val(null);
+    }
+
+    //取消重新上傳
+    function cancelReupload() {
+      document.getElementById('reupload').style.display='none';
+      $("#reuploadFile").val(null);
     }
 
   </script>

@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var pool = require('../models/db');
+var solr = require('../models/solr');
 
 //預覽畫面
 // const testFolder = 'D:/newproject/public/minute';
@@ -95,20 +96,49 @@ router.all('/:proid', function(req, res, next) {
 })
 
 router.all('/:proid', function(req, res, next) {
+    if(!req.session.userAccount){//若沒登入，跳到登入頁
+        res.redirect('/login');
+    }
     pro_id = req.params.proid;
     var searchRecord = req.body.searchRecord;
     var state = req.body.filter;
     var s = "";
+    var arr = [];
     var filter = "";
     var checkbox = [true, true, true];
     var q = 'SELECT pro_name FROM project WHERE pro_id = $1';
-    pool.query(q, [pro_id], function(err, results) {
-        if (err) throw err;
+    pool.query(q, [pro_id]).then(results => {
         pro_name = results.rows[0].pro_name;
 
         //搜尋會議記錄
         if (searchRecord != null) {
-            s = " AND (tag_names LIKE '%" + searchRecord + "%' OR rec_name LIKE '%" + searchRecord + "%')";
+            s = " AND (tag_names LIKE '%" + searchRecord + "%' OR rec_name LIKE '%" + searchRecord + "%'" ;                
+            var str = solr.query().q('text:'+ searchRecord);//全文檢索
+            solr.search(str, function(err, results) {                
+                var count = parseInt(results.response.numFound);               
+                for(var i=0; i<count; i++){
+                    var filename = results.response.docs[i].fileName;
+                    arr[i] = filename.substring(0, filename.lastIndexOf('.')-21)+filename.substring(filename.lastIndexOf('.')) ;
+                    s += " OR rec_name = '" + arr[i] + "'";//符合條件的所有檔名
+                }
+                s += ")";
+                recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id";
+                aggTags = "SELECT tag_recid, string_agg(tag_name,',') AS tag_names FROM tag WHERE tag_proid = $1 GROUP BY tag_recid";
+                q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id" + s + filter + " ORDER BY rec_time DESC";
+                pool.query(q, [pro_id]).then(results => {
+                    data_rec_t_a = results.rows;
+                    //res.json(data_rec_t_a);           
+                    res.render('member', { 
+                        title: 'SmartMeeting', 
+                        username: req.session.userName, 
+                        pro_id: pro_id, 
+                        pro_name: pro_name, 
+                        record: data_rec_t_a, 
+                        cb: checkbox, 
+                        audioText: audioText 
+                    });
+                });
+            })                      
         }
 
         //篩選狀態
@@ -117,18 +147,19 @@ router.all('/:proid', function(req, res, next) {
             filter += " AND (";
             checkbox = [false, false, false];
             for (var i in state.val) {
-                if (state.val[i] == "審核不通過") {
-                    checkbox[0] = true;
-                } else if (state.val[i] == "審核中") {
-                    checkbox[1] = true;
-                } else if (state.val[i] == "已確立檔案") {
-                    state.val[i] = "";
-                    checkbox[2] = true;
-                }
                 if (i >= 1) {
                     filter += " OR ";
                 }
-                filter += "rec_state = '" + state.val[i] + "'";
+                if (state.val[i] == "審核不通過") {
+                    filter += "rec_state = '" + state.val[i] + "'";
+                    checkbox[0] = true;
+                } else if (state.val[i] == "審核中") {
+                    filter += "rec_state = '" + state.val[i] + "'";
+                    checkbox[1] = true;
+                } else if (state.val[i] == "已確立檔案") {
+                    filter += "rec_state ISNULL" ;
+                    checkbox[2] = true;
+                }
             }
             filter += ")";
         }
@@ -147,9 +178,8 @@ router.all('/:proid', function(req, res, next) {
             recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id";
             aggTags = "SELECT tag_recid, string_agg(tag_name,',') AS tag_names FROM tag WHERE tag_proid = $1 GROUP BY tag_recid";
             q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id" + s + filter + " ORDER BY rec_time DESC";
-            pool.query(q, [pro_id], function(err, results) {
-                if (err) throw err;
-                var data_rec_t_a = results.rows;
+            pool.query(q, [pro_id]).then(results => {
+                data_rec_t_a = results.rows;
                 //res.json(data_rec_t_a);           
                 res.render('member', { 
                     title: 'SmartMeeting', 
@@ -202,34 +232,5 @@ router.get('/:proid/:rec_id', function(req, res, next) {
     })
 });
 
-
-
-router.post('/:proid/:rec_id', function(req, res, next) {
-    pro_id = req.params.proid;
-    var recid = req.params.rec_id;
-    var time = '2020-01-21';
-    var reviseReason = req.body.reviseReason;
-    
-    //重新上傳
-    if (!reviseReason) {
-        var q = "UPDATE record SET rec_state = '審核中', rec_reason = null, rec_time = $1 WHERE rec_id = $2";
-        pool.query(q, [time, recid], function(err, results) {
-            if (err) throw err;
-            data = results.rows;
-            //res.json(data);
-            res.redirect('/member/' + pro_id);
-        })
-    
-    //申請修改
-    } else {
-        var q = "UPDATE record SET rec_state = '審核中', rec_reason = $1, rec_time = $2 WHERE rec_id = $3";
-        pool.query(q, [reviseReason, time, recid], function(err, results) {
-            if (err) throw err;
-            data = results.rows;
-            //res.json(data);
-            res.redirect('/member/' + pro_id);
-        })
-    }
-});
 
 module.exports = router;

@@ -24,12 +24,7 @@ router.post('/', function(req, res) {
             accessToken: 'ya29.Il-_B6nzAnVhDJAtjcw2jgt-HEQOl9RRRelxFn_vyio-d6GyzXMdWWbDJnz7rMxjIRVz5CRATg2ZsDETQYLOnnBSdK-wCdBaMx7SXz_KrRS6g0VMEL2cQfiEy59zC8tBWw',
             expires: 1484314697598
         }
-        /*
-        service: 'Gmail',
-        auth: {
-            user: 'smartmeetingfjuim@gmail.com',
-            pass: 'meet/530'
-        }*/
+        
     });
 
     var text = 'SELECT * FROM account where acc_id=$1'  

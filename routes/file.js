@@ -10,19 +10,19 @@ var pool = require('../models/db');
 //上傳檔案儲存的路徑和檔名
 var storage = multer.diskStorage({
     destination: function(req, file, callback) {
-        fs.exists('D:/minute', function(exists) {//../../solr-7.7.2/example/exampledocs
+        fs.exists('./public/minute', function(exists) {
             if(!exists){
-                fs.mkdir('D:/minute', function(err) {
+                fs.mkdir('./public/minute', function(err) {
                     if(err){
                         console.log(err);
                     }
                     else{
-                        callback(null, 'D:/minute');
+                        callback(null, './public/minute');
                     }
                 });
             }
             else{
-                callback(null, 'D:/minute');
+                callback(null, './public/minute');
             }
         })
     },
@@ -43,11 +43,7 @@ router.get('/:fileid', function(req, res, next) {
     var id = req.params.fileid;
     var sql = "SELECT * FROM record WHERE rec_id=$1";
     pool.query(sql, [id]).then(results => {//找檔案id
-        var index = results.rows[0].rec_name.lastIndexOf('.');
-        var arr = [results.rows[0].rec_name.substring(0, index), results.rows[0].rec_name.substring(index)];//檔名與副檔名
-        var filename = arr[0]+'('+results.rows[0].rec_uploadtime.replace(/:/g, '.')+')'+arr[1];//拼湊成資料夾裡儲存的檔名，檔名(時間)副檔名
-        var filePath = path.join('D:/minute', filename);
-        res.download(filePath, results.rows[0].rec_name);//更改下載檔案的檔名 
+        res.download(results.rows[0].rec_path, results.rows[0].rec_name);//更改下載檔案的檔名 
      })
 });
 
@@ -55,20 +51,21 @@ router.get('/:fileid', function(req, res, next) {
 router.post('/newminute', upload.single('files'), function(req, res, next) {
     var proid = req.query.proid;
     var index = req.file.filename.lastIndexOf('.');
-    var time = req.file.filename.substring(index-20, index-1).replace(/\./g, ':');
-    var insertfile = "INSERT INTO record (rec_name, rec_state, rec_uploadtime, rec_time, rec_upload, rec_proid) VALUES ($1, $2, $3, $4, $5, $6)";
+    var time = req.file.filename.substring(index-20, index-1).replace(/\./g, ':');//上傳時間
+    var insertfile = "INSERT INTO record (rec_name, rec_state, rec_path, rec_time, rec_upload, rec_proid) VALUES ($1, $2, $3, $4, $5, $6)";
     var filename = req.file.originalname;//以原始檔名儲存進資料庫
-    pool.query(insertfile, [filename, "審核中", time, time, req.session.userAccount, proid], function(err) {//新增record
+    var filepath = req.file.path.replace(/\\/g, '\/');
+    pool.query(insertfile, [filename, "審核中", filepath, time, req.session.userAccount, proid], function(err) {//新增record
         if(err) throw err;
-        var sql = "SELECT * FROM record WHERE rec_name=$1 and rec_uploadtime=$2 and rec_proid=$3";
-        pool.query(sql, [filename, time, proid]).then(result => {//尋找file id
+        var sql = "SELECT * FROM record WHERE rec_path=$1 and rec_proid=$2";
+        pool.query(sql, [filepath, proid]).then(result => {//找檔案id
             var insertnotice = "INSERT INTO notice (notice_recid, notice_action, notice_time) VALUES ($1, $2, $3)";
             pool.query(insertnotice, [result.rows[0].rec_id, "新檔案上傳", time], function(err) {//新增notice
                 if(err) throw err;
                 res.redirect('/member/'+proid);
             });
         });
-    })
+    }) 
     
     /*
     上傳=>新檔案上傳
@@ -79,47 +76,64 @@ router.post('/newminute', upload.single('files'), function(req, res, next) {
     審核修改通過=>修改通過
     審核修改不通過=>修改不通過
     */
-    
-    //res.redirect('/member/'+proid);
+       
 });
 
 //上傳舊會議記錄
 router.post('/oldminute', upload.single('oldfiles'), function(req, res, next) {
     var proid = req.query.proid;
     var index = req.file.filename.lastIndexOf('.');
-    var time = req.file.filename.substring(index-20, index-1).replace('.', ':');
-    var insertfile = "INSERT INTO record (rec_name, rec_uploadtime, rec_time, rec_upload, rec_proid) VALUES ($1, $2, $3, $4, $5)";
+    var time = req.file.filename.substring(index-20, index-1).replace(/\./g, ':');
+    var insertfile = "INSERT INTO record (rec_name, rec_path, rec_time, rec_upload, rec_proid) VALUES ($1, $2, $3, $4, $5)";
     var filename = req.file.originalname;
-    pool.query(insertfile, [filename, time, time, req.session.userAccount, proid], function(err) {
+    var filepath = req.file.path.replace(/\\/g, '\/');
+    pool.query(insertfile, [filename, filepath, time, req.session.userAccount, proid], function(err) {
         if(err) throw err;
         res.redirect('/member/'+proid);
-    });
+    });   
 });
 
 //審核不通過重新上傳 覆蓋掉之前檔案
-router.post('/reupload', upload.single(''), function(req, res, next){//single後填<input type='file' name=''>name裡的東西
-    var id = req.query.fileid;//原始檔案的id，看你是用query還是params
+router.post('/reupload', upload.single('reuploadFile'), function(req, res, next){
+    var proid = req.query.proid;
+    var id = req.query.recid;
     var sql = "SELECT * FROM record WHERE rec_id=$1";
     pool.query(sql, [id]).then(results => {//找檔案id
-        var index = results.rows[0].rec_name.lastIndexOf('.');//找檔名與副檔名中間的.
-        var arr = [results.rows[0].rec_name.substring(0, index), results.rows[0].rec_name.substring(index)];//檔名與副檔名
-        var filename = arr[0]+'('+results.rows[0].rec_uploadtime.replace(':', '.')+')'+arr[1];//拼湊成資料夾裡儲存的檔名，檔名(時間)副檔名
-        var filePath = path.join('D:/minute', filename);//檔案路徑
-        fs.unlink(filePath, function(err) {//刪除原審核不通過的檔案
+        fs.unlink(results.rows[0].rec_path, function(err) {//刪除原審核不通過的檔案
             if(err) throw err;
             console.log('file delete');
         })
     })
     
-    // var index = req.file.filename.lastIndexOf('.');
-    // var time = req.file.filename.substring(index-20, index-1).replace(/\./g, ':');//取得上傳檔案的時間，新增進資料庫用
-    // var update = "UPDATE record SET rec_state='審核中', rec_uploadtime=$1, rec_time=$2 WHERE rec_id=$3";
-    // pool.query(update, [time, time, id]).then(() => {
-    //     var sql = "INSERT INTO notice (notice_recid, notice_action, notice_time) VALUES ($1, $2, $3)";
-    //     pool.query(sql, [id, '重新上傳', time]);
-    // })
+    var index = req.file.filename.lastIndexOf('.');
+    var time = req.file.filename.substring(index-20, index-1).replace(/\./g, ':');//取得上傳檔案的時間
+    var filepath = req.file.path.replace(/\\/g, '\/');
+    var update = "UPDATE record SET rec_name=$1, rec_state='審核中', rec_reason=null, rec_path=$2, rec_time=$3 WHERE rec_id=$4";
+    pool.query(update, [req.file.originalname, filepath, time, id]).then(() => {
+        var sql = "INSERT INTO notice (notice_recid, notice_action, notice_time) VALUES ($1, $2, $3)";
+        pool.query(sql, [id, '重新上傳', time], function(err) {
+            if(err) throw err;
+            res.redirect('/member/'+proid);
+        });
+    })
+});
 
-    //res.redirect('');
+//修改重新上傳 
+router.post('/revise', upload.single('reviseFile'), function(req, res, next){
+    var proid = req.query.proid;
+    var id = req.query.recid;
+    var reason = req.body.reviseReason;
+    var index = req.file.filename.lastIndexOf('.');
+    var time = req.file.filename.substring(index-20, index-1).replace(/\./g, ':');//取得上傳檔案的時間
+    var filepath = req.file.path.replace(/\\/g, '\/');
+    var update = "UPDATE record SET rec_state='審核中', rec_reason=$1, rec_time=$2, rec_revisepath=$3 WHERE rec_id=$4";
+    pool.query(update, [reason, time, filepath, id]).then(() => {
+        var sql = "INSERT INTO notice (notice_recid, notice_action, notice_time) VALUES ($1, $2, $3)";
+        pool.query(sql, [id, '修改上傳', time], function(err) {
+            if(err) throw err;
+            res.redirect('/member/'+proid);
+        });
+    })
 });
 
 

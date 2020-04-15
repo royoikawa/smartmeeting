@@ -40,14 +40,14 @@
           event.stopPropagation();  
       });
 
-      //點選空白處隱藏
-      $(document).click(function(event){
-        var _con = $('#dropdown');   // 設定目標區域
-        if(!_con.is(event.target) && _con.has(event.target).length === 0){ 
-          $('#dropdown').slideUp(200);   //滑動消失
-        }
-      });
-    })
+    //點選空白處隱藏
+    $(document).click(function(event){
+      var _con = $('#dropdown');   // 設定目標區域
+      if(!_con.is(event.target) && _con.has(event.target).length === 0){ 
+        $('#dropdown').slideUp(200);   //滑動消失
+      }
+    });
+  })
 
     //通知下拉選單
     $(function () {  
