@@ -81,24 +81,29 @@ var aggTags;
 var audioText;
 //搜尋音檔文檔
 router.all('/:proid', function(req, res, next) {
-    pro_id = req.params.proid;
-    var searchAT = req.body.searchAudioText;
-    var q;
-    if (searchAT != null)
-        q = "SELECT * FROM audiotext WHERE at_proid = $1 AND at_name LIKE '%" + searchAT + "%'";
-    else
-        q = 'SELECT * FROM audiotext WHERE at_proid = $1';
-    pool.query(q, [pro_id], function(err, results) {
-        if (err) throw err;
-        audioText = results.rows;
-        next();
-    })
-})
-
-router.all('/:proid', function(req, res, next) {
     if(!req.session.userAccount){//若沒登入，跳到登入頁
         res.redirect('/login');
     }
+    pro_id = req.params.proid;
+    var searchAT = req.body.searchAudioText;
+    var q;
+    if (searchAT != null) {
+        q = "SELECT * FROM audiotext WHERE at_proid = $1 AND at_name LIKE '%" + searchAT + "%'";
+        pool.query(q, [pro_id]).then(results => {
+            audioText = results.rows;
+            next();
+        })
+    }
+    else {
+        q = 'SELECT * FROM audiotext WHERE at_proid = $1';
+        pool.query(q, [pro_id]).then(results => {
+            audioText = results.rows;
+            next();
+        })
+    }
+})
+
+router.all('/:proid', function(req, res, next) {
     pro_id = req.params.proid;
     var searchRecord = req.body.searchRecord;
     var state = req.body.filter;

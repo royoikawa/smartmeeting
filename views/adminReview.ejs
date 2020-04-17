@@ -29,7 +29,7 @@
               <a href="/file/<%= record[0].rec_id %>" target="_blank"><i class="fas fa-arrow-down" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c;"></i></a>
               <i class="fas fa-eye" onclick="document.getElementById('preview').style.display='block';" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c; cursor: pointer;"></i>
               <!--<i class="fas fa-tag fa-rotate-135" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c; cursor: pointer;"></i>
-              <i class="fas fa-tag" onclick="document.getElementById('tags').style.display='block';" style="float: right; font-size: 1.1rem; color: #50565c; cursor: pointer;"></i>-->
+              <i class="fas fa-tag" onclick="document.getElementById('tags').style.display='block';" style="float: right; font-size: 1.1rem; color: #50565c; cursor: pointer;"></i>-->              
             </h5>
             <hr class="my-4">
           
@@ -53,15 +53,21 @@
             </div>
 
             <% if (record[0].rec_reason != null) { %>
+              <!-- 審核修改 -->
               <div class="card mb-3" style="min-width: 100%; position: relative; display: inline-block;">
                 <div class="toast-body">
                 申請原因：<%= record[0].rec_reason %>
                 </div>
               </div>
+              <button type="button" class="btn btn-secondary" onclick="document.getElementById('deny').style.display='block';">不通過</button>
+              <button type="button" class="btn btn-primary" onclick="document.getElementById('recognize').style.display='block';">通過</button>
+            <% } %>
+            <% if (record[0].rec_reason == null) { %>
+              <!-- 審核 -->
+              <button type="button" class="btn btn-secondary" onclick="document.getElementById('denyReview').style.display='block';">不通過</button>
+              <button type="button" class="btn btn-primary" onclick="document.getElementById('recognizeReview').style.display='block';">通過</button>
             <% } %>
 
-            <button type="button" class="btn btn-secondary" onclick="document.getElementById('denyReview').style.display='block';">不通過</button>
-            <button type="button" class="btn btn-primary" onclick="document.getElementById('recognizeReview').style.display='block';">通過</button>
         </div>
       </div>
     </div>
@@ -73,7 +79,7 @@
         <div id="recognizeReview" class="modal" >
           <div class="modal-dialog" role="document">
             <div class="modal-content">
-              <form method="POST" class="form-group" enctype="multipart/form-data" action="">
+              <form method="POST" class="form-group" action="/admin/audit?proid=<%= pro_id %>&recid=<%= record[0].rec_id %>">
                 <div class="modal-header">
                     <h5 class="modal-title">確定審核通過會議記錄？</h5>
                 </div>
@@ -92,7 +98,7 @@
         <div id="denyReview" class="modal" >
           <div class="modal-dialog" role="document">
               <div class="modal-content">
-                  <form method="POST" class="form-group" id="denyForm">
+                  <form method="POST" class="form-group" id="denyForm" action="/admin/audit?proid=<%= pro_id %>&recid=<%= record[0].rec_id %>">
                       <div class="modal-header">
                         <h5 class="modal-title">確定不通過會議記錄？</h5>
                       </div>
@@ -110,6 +116,46 @@
           </div>
         </div>
 
+        <!--審核修改通過modal-->
+        <div id="recognize" class="modal" >
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <form method="POST" class="form-group" action="/admin?proid=<%= pro_id %>&recid=<%= record[0].rec_id %>">
+                <div class="modal-header">
+                    <h5 class="modal-title">確定審核通過會議記錄？</h5>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" value="取消" class="btn btn-secondary" onclick="document.getElementById('recognize').style.display='none';">
+                    <input type="submit" value="確定" class="btn btn-primary" id="btnRecognize2">
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!--審核修改不通過modal-->
+        <div id="deny" class="modal" >
+          <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                  <form method="POST" class="form-group" id="denyForm2" action="/admin?proid=<%= pro_id %>&recid=<%= record[0].rec_id %>">
+                      <div class="modal-header">
+                        <h5 class="modal-title">確定不通過會議記錄？</h5>
+                      </div>
+                      <div class="modal-body">
+                          <label for="denyTextarea2">請說明不通過原因</label>
+                          <textarea class="form-control" id="denyTextarea2" rows="3" name="denyReason2"></textarea>
+                          <span class="invalid-feedback" id="msg_reason2">請輸入原因</span>
+                      </div>
+                      <div class="modal-footer">
+                          <input type="button" value="取消" class="btn btn-secondary" onclick="cancelDeny();">
+                          <input type="button" value="確定" class="btn btn-primary" id="btnDeny2">
+                      </div>
+                  </form>
+              </div>
+          </div>
+        </div>
 
 
         <!--預覽modal-->
@@ -155,5 +201,23 @@
       $("#denyTextarea").val(null);
     }
 
+    //不通過修改審核
+    $("#btnDeny2").click(function(){
+      if (!$("#denyTextarea2").val()) {
+        $("#msg_reason2").css("display", "block");
+        $('#denyTextarea2').addClass("is-invalid");
+      } else {
+        $("#denyForm2").submit();
+      }
+      
+    })
+
+    //取消修改審核不通過
+    function cancelDeny() {
+      document.getElementById('deny').style.display='none';
+      $("#msg_reason2").css("display", "none");
+      $('#denyTextarea2').removeClass("is-invalid");
+      $("#denyTextarea2").val(null);
+    }
   </script>
 </html>
