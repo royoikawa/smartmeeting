@@ -93,13 +93,13 @@
                 <li class="list-group-item">
                   <span class="project-item"><strong>名稱</strong></span>
                       <span class="project-item"><%= pro_name %>
-                        <i onclick="document.getElementById('proName').style.display='block';" class="fas fa-edit" style="color: #7b8a8b; margin-left: 0.7em;"></i>
+                        <i onclick="document.getElementById('proName').style.display='block';" class="fas fa-edit" style="cursor: pointer; color: #7b8a8b; margin-left: 0.7em;"></i>
                       </span>
                 </li>
                 <li class="list-group-item">
                   <span class="project-item"><strong>密碼</strong></span>
                   <span class="project-item">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;
-                    <i onclick="document.getElementById('proPw').style.display='block';" class="fas fa-edit" style="color: #7b8a8b; margin-left: 0.7em;"></i>
+                    <i onclick="document.getElementById('proPw').style.display='block';" class="fas fa-edit" style="cursor: pointer; color: #7b8a8b; margin-left: 0.7em;"></i>
                   </span>
                 </li>
                 </li>
@@ -107,12 +107,12 @@
                   <span class="project-item"><strong>使用者</strong></span>
                   <div class="project-item">
                     <div class="card border-dark mb-3" style="max-width: inherit;">
-                      <div class="card-header">管理員<i onclick="document.getElementById('chAdmin').style.display='block';" class="fas fa-edit" style="color: #7b8a8b; margin-left: 0.7em;"></i></div>
+                      <div class="card-header">管理員<i onclick="document.getElementById('chAdmin').style.display='block';" class="fas fa-edit" style="cursor: pointer; color: #7b8a8b; margin-left: 0.7em;"></i></div>
                       <div class="card-body">
                         <p class="card-text"><%= username %></p>
                       </div>
                       <div class="card-header" style="border-top: 1px solid rgba(0, 0, 0, 0.125);">成員
-                        <span class="badge badge-pill badge-dark" style="line-height: 1rem; margin-left: 0.7em;"><%= prodata.length-1 %></span>
+                        <span class="badge badge-pill badge-dark" style="line-height: 1rem; margin-left: 0.7em;"><%= prodata.length %></span>
                       </div>
                       <div class="card-body">                       
                         <% for(var i=0; i<prodata.length; i++) { %>
@@ -137,6 +137,7 @@
                   <form class="form-group" id="nameForm" method="POST" action="/admin/change?proid=<%= pro_id %>">
                     <div class="modal-header"><h5 class="modal-title">修改專案名稱</h5></div>
                     <div class="modal-body">
+                      <label class="col-form-label">專案名稱</label>
                       <input class="form-control" type="text" name="proname" id="proname">
                       <span class="invalid-feedback" id="message1"></span>
                     </div>
@@ -196,6 +197,7 @@
                   <form class="form-group">
                     <div class="modal-header"><h5 class="modal-title">我們需要驗證您的身分</h5></div>
                     <div class="modal-body">
+                      <label class="col-form-label">請輸入您的帳號密碼</label>
                       <input class="form-control" type="password" name="chpw" id="chpw">
                       <input type="hidden" value="<%= pro_id %>" id="proid" name="proid">
                       <span class="invalid-feedback" id="message3"></span>
@@ -358,7 +360,7 @@
 
     //顯示移除專案成員視窗
     function OpenProMem(mem) {
-      var text = "確定移除 " + mem.name;
+      var text = "確定移除 " + mem.name + "？";
       $('#promem').text(text);
       document.getElementById('proMem').style.display='block';
       $("#deletemem").click(function(){
