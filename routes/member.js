@@ -3,76 +3,6 @@ var router = express.Router();
 var pool = require('../models/db');
 var solr = require('../models/solr');
 
-//預覽畫面
-// const testFolder = 'D:/newproject/public/minute';
-// const fs = require('fs');
-// var mammoth = require("mammoth");
-
-
-// router.get('/showfile', function (req, res, next) {
-//     var filelist = new Array();
-//     const filedata = new Array();
-//     filedata.push("1");
-//     //console.log("abc");
-//     // fs.readdirSync(testFolder).forEach(file => {
-//     //   filelist.push(file);
-//     //   fs.readFile(file, (err, data) => { 
-//     //     mammoth.extractRawText({ path: "C:/Users/Admin/Desktop/wordmeeting/"+file })
-//     //     .then(function (result) {
-//     //       var text = result.value; // The raw text 
-  
-//     //       //console.log("text:"+text);
-//     //       //filedata.push(text);
-//     //       //var messages = result.messages;
-//     //     }).done();
-  
-//     //   }) 
-//     //   //console.log("file:"+file);
-//     // });
-//     var a = new Promise(function (resolve, reject) {
-      
-//         fs.readdir(testFolder, (err, files) => {
-//           files.forEach(file => {
-//             filelist.push(file);
-//             //console.log("C:/Users/Admin/Desktop/wordmeeting/" + file);
-  
-//             mammoth.extractRawText({ path: "D:/newproject/public/minute/" + file })
-//               .then(function (result) {
-//                 var text = result.value; // The raw text 
-  
-//                 //console.log(text);
-//                 filedata.push(text);
-//                 //console.log("file1:" + filedata[1]);
-//                 // var messages = result.messages;
-//               }).done();
-//               resolve('hello world');
-//             // console.log("file000:" + filedata[1]);
-//             // console.log("file" + file);
-          
-//         });
-  
-//       });
-//     });
-  
-   
-//    a.then(function(value) {
-//      console.log(value);
-//       setTimeout(function () { res.render('showfile', { title: 'Express', username: '王大明', filelist: filelist, filedata: filedata }) }, 5000);
-//    });
-//    a.catch(function(value) {
-//     console.log("error");
-//   });
-//     function successCallback(result) {
-//       console.log("It succeeded with " + result);
-//     }
-  
-//     function failureCallback(error) {
-//       console.log("It failed with " + error);
-//     }
-//     // res.send(filelist);
-//     // res.render('showfile', { title: 'Express', username: '王大明' });
-//   });
-
 //顯示 member 首頁
 var pro_id;
 var pro_name;
@@ -101,11 +31,11 @@ router.all('/:proid', function(req, res, next) {
     }
     pro_id = req.params.proid;
     var searchRecord = req.body.searchRecord;
-    var state = req.body.filter;
-    var s = "";
+    var state = req.body.filter;//傳過來的checkbox 內容，有勾選的有哪些狀態
+    var s = "";//資料庫搜尋音文檔的語法
     var arr = [];
-    var filter = "";
-    var checkbox = [true, true, true];
+    var filter = "";//資料庫搜尋狀態的語法
+    var checkbox = [true, true, true];//紀錄三個狀態有哪些有勾、哪些沒勾
     var q = 'SELECT pro_name FROM project WHERE pro_id = $1';
     pool.query(q, [pro_id]).then(results => {
         pro_name = results.rows[0].pro_name;
@@ -113,32 +43,32 @@ router.all('/:proid', function(req, res, next) {
         //搜尋會議記錄
         if (searchRecord != null) {
             s = " AND (tag_names LIKE '%" + searchRecord + "%' OR rec_name LIKE '%" + searchRecord + "%'" ;                
-            var str = solr.query().q('text:'+ searchRecord);//全文檢索
-            solr.search(str, function(err, results) {                
-                var count = parseInt(results.response.numFound);               
-                for(var i=0; i<count; i++){
-                    var filename = results.response.docs[i].fileName;
-                    arr[i] = filename.substring(0, filename.lastIndexOf('.')-21)+filename.substring(filename.lastIndexOf('.')) ;
-                    s += " OR rec_name = '" + arr[i] + "'";//符合條件的所有檔名
-                }
-                s += ")";
-                recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id";
-                aggTags = "SELECT tag_recid, string_agg(tag_name,',') AS tag_names FROM tag WHERE tag_proid = $1 GROUP BY tag_recid";
-                q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id" + s + filter + " ORDER BY rec_time DESC";
-                pool.query(q, [pro_id]).then(results => {
-                    data_rec_t_a = results.rows;
-                    //res.json(data_rec_t_a);           
-                    res.render('member', { 
-                        title: 'SmartMeeting', 
-                        username: req.session.userName, 
-                        pro_id: pro_id, 
-                        pro_name: pro_name, 
-                        record: data_rec_t_a, 
-                        cb: checkbox, 
-                        audioText: audioText 
-                    });
-                });
-            })                      
+            // var str = solr.query().q('text:'+ searchRecord);//全文檢索
+            // solr.search(str, function(err, results) {                
+            //     var count = parseInt(results.response.numFound);               
+            //     for(var i=0; i<count; i++){
+            //         var filename = results.response.docs[i].fileName;
+            //         arr[i] = filename.substring(0, filename.lastIndexOf('.')-21)+filename.substring(filename.lastIndexOf('.')) ;
+            //         s += " OR rec_name = '" + arr[i] + "'";//符合條件的所有檔名
+            //     }
+                 s += ")";
+                // recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id";
+                // aggTags = "SELECT tag_recid, string_agg(tag_name,',') AS tag_names FROM tag WHERE tag_proid = $1 GROUP BY tag_recid";
+                // q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id" + s + filter + " ORDER BY rec_time DESC";
+                // pool.query(q, [pro_id]).then(results => {
+                //     data_rec_t_a = results.rows;
+                //     //res.json(data_rec_t_a);           
+                //     res.render('member', { 
+                //         title: 'SmartMeeting', 
+                //         username: req.session.userName, 
+                //         pro_id: pro_id, 
+                //         pro_name: pro_name, 
+                //         record: data_rec_t_a, 
+                //         cb: checkbox, 
+                //         audioText: audioText 
+                //     });
+                // });
+            // })                      
         }
 
         //篩選狀態
@@ -217,6 +147,7 @@ router.get('/:proid/:rec_id', function(req, res, next) {
     //});
 });
 
+//顯示tag
 router.get('/:proid/:rec_id', function(req, res, next) {
     pro_id = req.params.proid;
     var recid = req.params.rec_id;

@@ -17,6 +17,8 @@ var personalSettingRouter = require('./routes/personalSetting');//personalSettin
 var member = require('./routes/member');//member
 var admin = require('./routes/admin');//admin
 var fileRouter = require('./routes/file');//upload and download
+var showfileRouter = require('./routes/showfile');
+var meetingRouter = require('./routes/meeting');
 var testRouter = require('./routes/test');//test我測試查詢(pg、solr)和下載檔案用的
 
 var app = express();
@@ -51,6 +53,8 @@ app.use('/logout', logoutRouter);//logout
 app.use('/personalSetting', personalSettingRouter);//personalSetting
 app.use('/member', member);//member
 app.use('/admin', admin);//admin
+app.use('/meeting', meetingRouter);//meeting
+app.use('/showfile', showfileRouter);//showfile
 app.use('/file', fileRouter);//upload and download
 app.use('/test', testRouter);//test我測試查詢(pg、solr)和下載檔案用的
 

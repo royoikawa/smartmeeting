@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css'>
+    <link rel="stylesheet" href="/stylesheets/css/all.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+  </head>
+  <body>
+    <div><%- include navbar %></div>
+    <div class="jumbotron" style="background-color: rgba(88, 87, 87, 0.01); padding-top: 3rem; padding-bottom: 0; margin-bottom: 0;">
+      <div class="col-sm-10">
+        <div class="card" style="border-color: transparent;">
+          <div class="card-body"></div>
+        </div>
+      </div>
+      <span class="badge badge-light">專案代號：<%= pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
+      <!--結束會議-->
+      <button type="button" id="btnMeeting" onclick="location.href='/member/<%= pro_id %>'" class="btn btn-outline-warning btn-sm" style="float: right;">結束會議</button>
+      <span id="onAir" class="badge badge-danger">錄音中</span>
+      <div class="divider"></div>
+
+      <!--錄音區塊-->
+      <div class="card bg-light mb-3" style="border-width: 0;">
+        <div class="card-body">
+          <p id="msgRecord">請按下開始鍵，開始錄音、按下結束會議，回到會議紀錄列表</p>
+            <button type="button" class="close" id="startRecord" onclick="startRecord();" aria-label="Close" style="float: left; font-size: 1.2rem; line-height: 1.5; color: #2C3E50; opacity: 1;">
+                <span aria-hidden="true" style="margin-right: 2em;"><i class="fas fa-play"></i></span>
+            </button>
+            <button type="button" class="close icon" id="stopRecord" disabled onclick="stopRecord();" aria-label="Close" style="float: left; font-size: 1.2rem; line-height: 1.5; color: #2C3E50; opacity: 1;">
+                <span aria-hidden="true" style="margin-right: 2em;"><i class="fas fa-stop"></i></span>
+            </button>
+            <span id="time" style=" font-size: 1.2rem; font-weight: 700; line-height: 1.5;">00:00:00</span>
+            <div class="card-body">
+              <div id="animateRecord" class="record-animate" style="width: 100%; height: 45px; margin-top: 1em; padding: 1em 1em; overflow: hidden;">
+                <% for (var i = 0; i<30; i++) { %>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                <% } %>
+              </div>
+            </div>
+        </div>
+      </div>
+
+      <!--搜尋區塊-->
+      <div class="card bg-light  mb-3"style="border-width: 0;">
+        <div class="card-body">
+          <form class="form-inline my-2 my-lg-0" style="position: relative; display: inline-block; padding-left: 1em; margin-top: 1em; margin-right: 2em;">
+            <div class="form-inline">
+              <div class="form-group">
+                <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" style="border-color: inherit;"><i class="fas fa-search"></i></span>
+                  </div>
+                  <input class="form-control" type="text" style="border-color: inherit;" name="searchMinute" id="searchMinute" placeholder="搜尋會議記錄" aria-label="Search minutes">
+                  <div class="input-group-append">
+                    <input id="btnSearch" class="btn btn-outline-secondary" style=" border-left-width: 0;" type="button" value="搜尋">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      
+    </div>
+
+
+
+    <!--搜尋結果modal-->
+    <div id="searchResult" class="modal">
+      <div class="modal-dialog" role="document" style="min-width: 100%; height: 100%;">
+          <div class="modal-content" style="min-height: 100%; scroll-behavior: auto; overflow: auto;">
+              <form method="POST" class="form-group">
+                  <div class="modal-header" style="margin-bottom: 1rem;">
+                    <h5 class="modal-title">搜尋結果</h5>
+                    <button type="button" onclick="document.getElementById('searchResult').style.display='none';" class="close" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body" style="padding-top: 0;">
+                    <%if (res.length == 0) {%>
+                    <p>no data</p>
+                    <%}%>
+                      <div class="list-group" onclick="showPreview(res[k].rec_name)" style="width: 15rem; float: left; margin-right: 1rem;">
+                        <a href="#" id="list" class="list-group-item list-group-item-action" style="color: #2C3E50;">
+                          <strong><%= res[i].rec_name%></strong><br>';
+                          <span class="badge badge-light"><%= res[i].tag_names%></span>
+                          </a>
+                      </div>
+                      <div class="iframe-container">
+                        <iframe id="iframe_preview" allowfullscreen></iframe>
+                      </div>
+                      
+                    
+                   
+                    
+                  </div>
+              </form>
+          </div>
+      </div>
+    </div>
+
+
+  </body>
+
+  <script>
+    $("#btnSearch").click(function() {
+      console.log("uhr");
+      $.ajax({
+          url:"/meeting/<%= pro_id %>",
+          data:{'searchMinute': $("#searchMinute").val()},
+          type:"POST",
+          success: function(res){
+            var strList = '';
+            var filename = res[0].rec_name;
+            showPreview(filename);
+            alert(res[0].rec_name);
+            if (res.length == 0) {
+              $("#m").html("");
+            } else {
+              for (var i in res) {
+                strList += '<a href="#" id="list" class="list-group-item list-group-item-action" style="color: #2C3E50;">';
+                strList +='<strong>' + res[i].rec_name +'</strong><br>';
+                strList += '<span class="badge badge-light">' + res[i].tag_names + '</span>';
+                strList += '</a>';
+                          
+                $("#mm").html(strList);
+
+                
+              }
+              var x = document.getElementById("list");
+                for (var k = 0; k < x.length; k++){
+                  console.log(x.length);
+                  x[k].addEventListener("click",showPreview(res[k].rec_name));
+                }
+            }
+            document.getElementById('searchResult').style.display='block';
+          }
+      })
+    })
+    
+    //如果有用搜尋，顯示搜尋結果modal
+    
+    //定義iframe的路徑
+    function showPreview(k) {
+      console.log(k);
+      //filename = k;
+      $("#iframe_preview").attr("src", "/showfile/" + k);
+    }
+    
+    //隱藏「錄音中」
+    $( document ).ready(function () {
+      $("#onAir").hide();
+      
+      
+    })
+
+    //開始錄音
+    function startRecord(){
+      $("#onAir").fadeIn(1000);//顯示「錄音中」
+      $("#msgRecord").text("請按下停止鍵，停止錄音");//顯示提示字
+      $("#startRecord").attr("disabled", true);//使「開始鍵」無法點
+      $("#stopRecord").removeAttr("disabled", false);//使「停止鍵」無法點
+      $("div").css("animation-play-state", "running");//錄音動畫開始
+      $("#btnMeeting").attr("disabled", true);//使「結束會議鍵」無法點
+      start();
+    }
+
+    //停止錄音
+    function stopRecord(){
+      $("#onAir").hide();//隱藏「錄音中」
+      $("#msgRecord").text("請按下開始鍵，開始錄音、按下結束會議，回到會議紀錄列表");//顯示提示字
+      $("#stopRecord").attr("disabled", true);//使「停止鍵」無法點
+      $("#startRecord").attr("disabled", false);//使「開始鍵」無法點
+      $("div").css("animation-play-state", "paused");//錄音動畫結束
+      $("#btnMeeting").attr("disabled", false);//使「開始鍵」無法點
+      stop();
+    }
+
+    //計時器動畫
+    var h = m = s = 0;   //定義時、分、秒初始為0
+    var time = 0;
+ 
+    function timer() {   //定義計時函數
+      s = s + 1;
+      if (s >= 60){
+        s = 0;
+        m = m + 1;        //分钟
+      }
+      if (m >= 60) {
+        m = 0;
+        h = h + 1;        //小时
+      }
+      str = toDub(h) + ":" + toDub(m) + ":" + toDub(s);
+      $('#time').text(str);
+    }
+  
+    function reset(){  //重置
+      clearInterval(time);
+      h = m = s = 0;
+      $("#time").text("00:00:00");
+    }
+  
+    function start() {  //開始
+      reset();
+      time = setInterval(timer, 1000);//每隔 1 秒執行一次函式 timer()
+    }
+  
+    function stop() {  //停止
+      clearInterval(time);
+    }
+  
+    function toDub(n) {  //補0
+      if (n < 10)
+        return "0" + n;
+      else
+        return "" + n;
+    }
+  
+  </script>
+
+</html>

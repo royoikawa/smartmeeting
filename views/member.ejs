@@ -18,7 +18,7 @@
       </div>
       <div style="width: inherit; height: fit-content;">
         <span class="badge badge-light">專案代號：<%= pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
-        <button type="button" class="btn btn-outline-warning btn-sm" onclick="loacation.href='/meeting/<%= pro_id %>';" style="float: right;">我要開會</button>
+        <button type="button" onclick="location.href='/meeting/<%= pro_id %>'" class="btn btn-outline-warning btn-sm" style="float: right;">我要開會</button>
       </div>
       <div class="divider"></div>
       
@@ -112,21 +112,21 @@
               </div>
             </form>
 
-            <!--篩選-->
+            <!--篩選狀態-->
             <div style="position: relative; display: inline-block;  margin-right: 1em;">
               <form method="POST" id="formfilter">
                 <label>篩選：</label>
 
                   <div class="custom-control custom-checkbox" style="position: relative; display: inline-block; margin-left: 1em;">
-                    <input type="checkbox" class="custom-control-input" id="denyReview" value="審核不通過" checked>
+                    <input type="checkbox" class="custom-control-input" id="denyReview" value="審核不通過">
                     <label class="custom-control-label" for="denyReview">審核不通過</label>
                   </div>
                   <div class="custom-control custom-checkbox" style="position: relative; display: inline-block; margin-left: 1em;">
-                    <input type="checkbox" class="custom-control-input" id="underReview" value="審核中" checked>
+                    <input type="checkbox" class="custom-control-input" id="underReview" value="審核中">
                     <label class="custom-control-label" for="underReview">審核中</label>
                   </div>
                   <div class="custom-control custom-checkbox" style="position: relative; display: inline-block; margin-left: 1em;">
-                    <input type="checkbox" class="custom-control-input" id="doneFile" value="已確立檔案" checked>
+                    <input type="checkbox" class="custom-control-input" id="doneFile" value="已確立檔案">
                     <label class="custom-control-label" for="doneFile">已確立檔案</label>
                   </div>
                   <input type="hidden" id="filter" name="filter">

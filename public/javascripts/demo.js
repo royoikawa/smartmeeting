@@ -1,46 +1,18 @@
-(function () {
-    // document.getElementById("document")
-    //     .addEventListener("change", handleFileSelect, false);
-    document.querySelectorAll('.preview').forEach(function (btn) {
-        btn.addEventListener('click', preview);
-    });
+$( document ).ready(
+    function () {
+    // document.querySelector('.preview').function (btn) {
+    //     btn.addEventListener('click', preview);
+    // });
 
-    function handleFileSelect(event) {
-        readFileInputEventAsArrayBuffer(event, function (arrayBuffer) {
-            mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
-                .then(displayResult)
-                .done();
-        });
-    }
+    document.querySelector('#see').addEventListener('click', preview);
 
-    function displayResult(result) {
-        document.getElementById("output").innerHTML = result.value;
-    }
+    
 
-    function readFileInputEventAsArrayBuffer(event, callback) {
-        //event.target.files[0].name = "案三資料.docx";
-        var file = event.target.files[0];
-        console.log("file:");
-        console.log(file);
-        console.log("event:");
-        console.log(event);
-        var reader = new FileReader();
-        console.log("callback:" + callback);
-        reader.onload = function (loadEvent) {
-            console.log("loadEvent:");
-            console.log(loadEvent);
-            var arrayBuffer = loadEvent.target.result;
-            console.log("arrayBuffer");
-            console.log(arrayBuffer);
-            callback(arrayBuffer);
-        };
-        reader.readAsArrayBuffer(file);
-        console.log("1");
-    }
     function preview(evt) {
         var btn = evt.target;
         console.log(evt);
-        var url = btn.dataset['url'];
+        console.log(this);//同evt.target：<button id ='see' data-url='../minute/<%= rec_name %>' >預覽</button>
+        var url = btn.dataset['url'];//data-url裡面的東西(url 是自己取的)
         console.log(url);
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url);
@@ -61,4 +33,8 @@
         xhr.send();
     }
 
-})();
+});
+
+function displayResult(result) {
+    document.getElementById("output").innerHTML = result.value;
+}
