@@ -255,10 +255,10 @@
                   <% for(var i = 0; i < audioText.length; i++) { %>
                     <% name = audioText[i].at_name; %>
                     <% time = audioText[i].at_time; %>
-                    <% if (name.substring(name.length - 5) == '.docx') { %>
-                      <% eyeOrSound = 0; %><!--文檔顯示眼睛-->
-                    <% } else if (name.substring(name.length - 4) == '.mp3') { %>
+                    <% if (name.substring(name.lastIndexOf('.')) == '.wav') { %>
                       <% eyeOrSound = 1; %><!--音檔顯示喇叭-->
+                    <% } else { %>
+                      <% eyeOrSound = 0; %><!--文檔顯示眼睛-->
                     <% } %>
 
                     <% if (isEven == true) { %>

@@ -45,9 +45,9 @@
                     <div class="modal-header"><h5 class="modal-title">修改姓名</h5></div>
                     <div class="modal-body">
                         <label class="col-form-label">姓名</label>
-                        <input class="form-control" type="text" name="name" id="name" value="<%= username %>" required>              
+                        <input class="form-control" type="text" name="name" id="name" value="<%= username %>">              
                         <input type="hidden" id="uname" value="<%= username %>">
-                    
+                   
                         <span class="invalid-feedback" id="message1"></span>
                     </div>
                     <div class="modal-footer">
@@ -69,13 +69,13 @@
                     <div class="modal-header"><h5 class="modal-title">修改密碼</h5></div>
                     <div class="modal-body">
                         <label class="col-form-label">原始密碼</label>
-                        <input class="form-control" type="password" name="oldpw" id="oldpw" required>              
+                        <input class="form-control" type="password" name="oldpw" id="oldpw">              
                                
                         <label class="col-form-label">新的密碼</label>
-                        <input class="form-control" type="password" name="newpw" id="newpw" required>
+                        <input class="form-control" type="password" name="newpw" id="newpw">
                     
-                        <label class="col-form-label">請再次輸入密碼</label>
-                        <input class="form-control" type="password" id="checkpw" name="checkpw" required>
+                        <label class="col-form-label">再次輸入</label>
+                        <input class="form-control" type="password" id="checkpw" name="checkpw">
                         
                     </div>
                     <div class="modal-footer">
@@ -95,6 +95,7 @@
         function closeFormName() {
             var name = $("#uname").val();
             $("#name").val(name);
+            $('#name').removeClass("is-invalid");
             $("#message1").css("display", "none");
             document.getElementById("myFormName").style.display = "none";
         }
@@ -104,6 +105,9 @@
             $("#oldpw").val("");
             $("#newpw").val("");
             $("#checkpw").val("");
+            $('#oldpw').removeClass("is-invalid");
+            $('#newpw').removeClass("is-invalid");
+            $('#checkpw').removeClass("is-invalid");
             $("#message2").css("display", "none");
             document.getElementById("myFormPw").style.display = "none";
         }
@@ -112,6 +116,7 @@
         $("#btn1").click(function() {     
             var name = $('#name').val();           
             if(!name) {
+                $('#name').addClass("is-invalid");
                 $('#message1').text("請輸入名字");
                 $("#message1").css("display", "block");
             }      
@@ -122,7 +127,6 @@
                     type:"POST",
                     success: function(res){
                         if(res.status == 0) {
-                            alert("名字修改成功！");
                             location.href="/personalSetting";
                         } 
                     }
@@ -135,15 +139,40 @@
             var old = $('#oldpw').val();
             var newpw = $('#newpw').val();  
             var check = $('#checkpw').val();      
-            if(!old || !newpw || !check) {
+            if(!$('#oldpw').val() || !$('#newpw').val() || !$('#checkpw').val()) {
                 $('#message2').text("請輸入未填欄位");
                 $("#message2").css("display", "block");
+                if (!$('#oldpw').val() && !$('#newpw').val() && !$('#checkpw').val()){//三個都空顯示紅框
+                    $('#oldpw').addClass("is-invalid");
+                    $('#newpw').addClass("is-invalid");
+                    $('#checkpw').addClass("is-invalid");
+                }
+                else{//空的才顯示紅框
+                    $('#oldpw').removeClass("is-invalid");
+                    $('#newpw').removeClass("is-invalid");
+                    $('#checkpw').removeClass("is-invalid");
+                    if(!$('#oldpw').val()){
+                        $('#oldpw').addClass("is-invalid");
+                    }
+                    if(!$('#newpw').val()){
+                        $('#newpw').addClass("is-invalid");
+                    }
+                    if(!$('#checkpw').val()){
+                        $('#checkpw').addClass("is-invalid");
+                    }
+                }               
             }
             else if(newpw != check){
-                $('#message2').text("新密碼不相同");
+                $('#oldpw').removeClass("is-invalid");
+                $('#newpw').addClass("is-invalid");
+                $('#checkpw').addClass("is-invalid");
+                $('#message2').text("密碼不相同");
                 $("#message2").css("display", "block");
             }
             else{
+                $('#oldpw').removeClass("is-invalid");
+                $('#newpw').removeClass("is-invalid");
+                $('#checkpw').removeClass("is-invalid");
                 $.ajax({
                     url:"/personalSetting/changepw",
                     data:{'old': old, 'newpw': newpw, 'check': check},
@@ -152,9 +181,9 @@
                         if(res.status == 1) {
                             $('#message2').text(res.msg);
                             $("#message2").css("display", "block");
+                            $('#oldpw').addClass("is-invalid");
                         }
                         else if(res.status == 0){
-                            alert("密碼修改成功！");
                             location.href="/personalSetting";
                         }
                     }
