@@ -2,6 +2,19 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../models/db');
 
+
+var notice;
+router.all('/', function(req, res, next) {
+  if(!req.session.userAccount){//若沒登入，跳到登入頁
+    res.redirect('/login');
+  }
+  //通知
+  var sql = "SELECT * FROM notice, record, project, account_project WHERE notice_recid=rec_id AND rec_proid=pro_id AND pro_id=ap_proid AND ap_accid=$1 ORDER BY notice_time DESC";
+  pool.query(sql,[req.session.userAccount]).then(results => {
+      notice = results.rows;
+      next();
+  })
+})
 /* GET home page. */
 
 /* 搜尋特定專案 */
@@ -9,10 +22,7 @@ var pool = require('../models/db');
 // 先判斷是否用搜尋功能，即搜尋框中是否有值，若沒有，執行next()，路由轉移到下面router.get
 // 若搜尋框有值，else if 判斷是否為大於等於1 的數字
 // 若不符合 else 直接回傳空的資料
-router.all('/', function(req, res, next) {
-  if(!req.session.userAccount){//若沒登入，跳到登入頁
-    res.redirect('/login');
-  }
+router.all('/', function(req, res, next) { 
   var id = req.body.pro_id;
   if (id == null) { 
     next();
@@ -30,20 +40,20 @@ router.all('/', function(req, res, next) {
         pool.query(q, [id], function(err, results) {
           if (err) throw err;
           data = results.rows;
-          res.render('index', { title: 'SmartMeeting', username: req.session.userName, projectData: data, content:'搜尋結果', isInProject: isInproject});
+          res.render('index', { title: 'SmartMeeting', username: req.session.userName, userid: req.session.userAccount, projectData: data, content:'搜尋結果', isInProject: isInproject, notice: notice});
         })
       } else {
         q = 'SELECT * FROM project, account_project WHERE ap_proid = pro_id AND pro_id=$1 AND ap_accid=$2';
         pool.query(q, [id, req.session.userAccount], function(err, results) {
           if (err) throw err;
           data = results.rows;
-          res.render('index', { title: 'SmartMeeting', username: req.session.userName, projectData: data, content:'搜尋結果', isInProject: isInproject});
+          res.render('index', { title: 'SmartMeeting', username: req.session.userName, userid: req.session.userAccount, projectData: data, content:'搜尋結果', isInProject: isInproject, notice: notice});
           
         })
       }
     })
   } else {
-    res.render('index', { title: 'SmartMeeting', username: req.session.userName, projectData: [], content:'搜尋結果', isInProject: false});
+    res.render('index', { title: 'SmartMeeting', username: req.session.userName, userid: req.session.userAccount, projectData: [], content:'搜尋結果', isInProject: false, notice: notice});
   }
   
   
@@ -56,7 +66,7 @@ router.get('/', function(req, res, next) {
     if (err) throw err;
     var data = results.rows;
     
-    res.render('index', { title: 'SmartMeeting', username: req.session.userName, projectData: data, content: '我的專案', isInProject: true });
+    res.render('index', { title: 'SmartMeeting', username: req.session.userName, userid: req.session.userAccount, projectData: data, content: '我的專案', isInProject: true, notice: notice });
   })
 });
 

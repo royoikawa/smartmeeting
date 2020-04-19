@@ -8,15 +8,26 @@ var tz = require("moment-timezone");
 var data;
 var pro_name;
 var prodata;
+var notice;
+
 router.get('/:id_join', function(req, res, next) {
     if(!req.session.userAccount){//若沒登入，跳到登入頁
         res.redirect('/login');
     }
+    //通知
+    var sql = "SELECT * FROM notice, record, project, account_project WHERE notice_recid=rec_id AND rec_proid=pro_id AND pro_id=ap_proid AND ap_accid=$1 ORDER BY notice_time DESC";
+    pool.query(sql,[req.session.userAccount]).then(results => {
+        notice = results.rows;
+    })
+
     var pro_id = req.params.id_join;
-    var q = "SELECT * FROM project, account_project, account WHERE ap_accid=acc_id AND ap_proid=pro_id AND pro_id=$1 AND ap_authority!='管理員'";//SELECT pro_name FROM project WHERE pro_id = $1
-    pool.query(q, [pro_id]).then(results => {
-        prodata = results.rows;
+    var q = "SELECT pro_name FROM project WHERE pro_id = $1";
+    pool.query(q, [pro_id]).then(results => {     
         pro_name = results.rows[0].pro_name;
+        q = "SELECT * FROM project, account_project, account WHERE ap_accid=acc_id AND ap_proid=pro_id AND pro_id=$1 AND ap_authority!='管理員'";
+        pool.query(q, [pro_id]).then(results => {
+            prodata = results.rows;
+        })
         var recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id AND rec_state = '審核中'";
         var aggTags = "SELECT tag_recid, string_agg(tag_name,',') AS tag_names FROM tag WHERE tag_proid = $1 GROUP BY tag_recid";
         q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id ORDER BY rec_time DESC";
@@ -26,19 +37,27 @@ router.get('/:id_join', function(req, res, next) {
             //res.json(data);
             res.render('admin', { 
                 title: 'SmartMeeting',
-                username: req.session.userName,
+                username: req.session.userName, 
+                userid: req.session.userAccount,
                 pro_id: pro_id, 
                 pro_name: pro_name, 
                 review: data,
-                prodata: prodata 
+                prodata: prodata,
+                notice: notice
             });
         })
     })
     
 });
 
-//顯示會議紀錄詳細資訊
+//顯示會議記錄詳細資訊
 router.get('/:proid/:rec_id', function(req, res, next) {
+    //通知
+    var sql = "SELECT * FROM notice, record, project, account_project WHERE notice_recid=rec_id AND rec_proid=pro_id AND pro_id=ap_proid AND ap_accid=$1 ORDER BY notice_time DESC";
+    pool.query(sql,[req.session.userAccount]).then(results => {
+        notice = results.rows;
+    })
+
     pro_id = req.params.proid;
     var recid = req.params.rec_id;
     recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id AND rec_id = $1";
@@ -48,10 +67,12 @@ router.get('/:proid/:rec_id', function(req, res, next) {
         data = results.rows;
         res.render('adminReview', { 
             title: 'SmartMeeting', 
-            username: req.session.userName, 
+            username: req.session.userName,
+            userid: req.session.userAccount, 
             pro_id: pro_id, 
             pro_name: pro_name, 
-            record: data 
+            record: data,
+            notice: notice
         });
     });
 });

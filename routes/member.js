@@ -9,11 +9,19 @@ var pro_name;
 var recPlusAcc;
 var aggTags;
 var audioText;
+var notice;
+
 //搜尋音檔文檔
 router.all('/:proid', function(req, res, next) {
     if(!req.session.userAccount){//若沒登入，跳到登入頁
         res.redirect('/login');
     }
+    //通知
+    var sql = "SELECT * FROM notice, record, project, account_project WHERE notice_recid=rec_id AND rec_proid=pro_id AND pro_id=ap_proid AND ap_accid=$1 ORDER BY notice_time DESC";
+    pool.query(sql,[req.session.userAccount]).then(results => {
+        notice = results.rows;
+    });
+
     pro_id = req.params.proid;
     var searchAT = req.body.searchAudioText;
     var q;
@@ -37,7 +45,7 @@ router.all('/:proid', function(req, res, next) {
     pro_id = req.params.proid;
     var searchRecord = req.body.searchRecord;
     var state = req.body.filter;//傳過來的checkbox 內容，有勾選的有哪些狀態
-    var s = "";//資料庫搜尋音文檔的語法
+    var s = "";//資料庫搜尋會議記錄的語法
     var arr = [];
     var filter = "";//資料庫搜尋狀態的語法
     var checkbox = [true, true, true];//紀錄三個狀態有哪些有勾、哪些沒勾
@@ -57,22 +65,24 @@ router.all('/:proid', function(req, res, next) {
             //         s += " OR rec_name = '" + arr[i] + "'";//符合條件的所有檔名
             //     }
                  s += ")";
-                // recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id";
-                // aggTags = "SELECT tag_recid, string_agg(tag_name,',') AS tag_names FROM tag WHERE tag_proid = $1 GROUP BY tag_recid";
-                // q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id" + s + filter + " ORDER BY rec_time DESC";
-                // pool.query(q, [pro_id]).then(results => {
-                //     data_rec_t_a = results.rows;
-                //     //res.json(data_rec_t_a);           
-                //     res.render('member', { 
-                //         title: 'SmartMeeting', 
-                //         username: req.session.userName, 
-                //         pro_id: pro_id, 
-                //         pro_name: pro_name, 
-                //         record: data_rec_t_a, 
-                //         cb: checkbox, 
-                //         audioText: audioText 
-                //     });
-                // });
+            //     recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id";
+            //     aggTags = "SELECT tag_recid, string_agg(tag_name,',') AS tag_names FROM tag WHERE tag_proid = $1 GROUP BY tag_recid";
+            //     q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id" + s + filter + " ORDER BY rec_time DESC";
+            //     pool.query(q, [pro_id]).then(results => {
+            //         data_rec_t_a = results.rows;
+            //         //res.json(data_rec_t_a);           
+            //         res.render('member', { 
+            //             title: 'SmartMeeting', 
+            //             username: req.session.userName,
+            //             userid: req.session.userAccount, 
+            //             pro_id: pro_id, 
+            //             pro_name: pro_name, 
+            //             record: data_rec_t_a, 
+            //             cb: checkbox, 
+            //             audioText: audioText,
+            //             notice: notice 
+            //         });
+            //     });
             // })                      
         }
 
@@ -102,12 +112,14 @@ router.all('/:proid', function(req, res, next) {
         if (checkbox[0] == false && checkbox[1] == false && checkbox[2] == false ) {
             res.render('member', { 
                 title: 'SmartMeeting', 
-                username: req.session.userName, 
+                username: req.session.userName,
+                userid: req.session.userAccount,
                 pro_id: pro_id, 
                 pro_name: pro_name, 
                 record: [], 
                 cb: checkbox, 
-                audioText: audioText 
+                audioText: audioText,
+                notice: notice 
             });
         } else {
             recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id";
@@ -118,12 +130,14 @@ router.all('/:proid', function(req, res, next) {
                 //res.json(data_rec_t_a);           
                 res.render('member', { 
                     title: 'SmartMeeting', 
-                    username: req.session.userName, 
+                    username: req.session.userName,
+                    userid: req.session.userAccount,
                     pro_id: pro_id, 
                     pro_name: pro_name, 
                     record: data_rec_t_a, 
                     cb: checkbox, 
-                    audioText: audioText 
+                    audioText: audioText,
+                    notice: notice 
                 });
             });
         }
@@ -133,6 +147,12 @@ router.all('/:proid', function(req, res, next) {
 var data;
 //顯示record 詳細資料頁面
 router.get('/:proid/:rec_id', function(req, res, next) {
+    //通知
+    var sql = "SELECT * FROM notice, record, project, account_project WHERE notice_recid=rec_id AND rec_proid=pro_id AND pro_id=ap_proid AND ap_accid=$1 ORDER BY notice_time DESC";
+    pool.query(sql,[req.session.userAccount]).then(results => {
+        notice = results.rows;
+    });
+
     pro_id = req.params.proid;
     var recid = req.params.rec_id;
     recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id AND rec_id = $1";
@@ -140,14 +160,14 @@ router.get('/:proid/:rec_id', function(req, res, next) {
     var q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id";;
     pool.query(q, [recid, pro_id]).then(results => {
         data = results.rows;
-        //res.render('memberMinute', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: data });
+        //res.render('memberMinute', { title: 'SmartMeeting', username: req.session.userName, userid: req.session.userAccount, pro_id: pro_id, pro_name: pro_name, record: data });
         next();
     });
     //pool.query(q, [recid, pro_id], function(err, results) {
     //    if (err) throw err;
     //    data = results.rows;
     //    //res.json(data);
-    //    //res.render('memberMinute', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: data });
+    //    //res.render('memberMinute', { title: 'SmartMeeting', username: req.session.userName, userid: req.session.userAccount, pro_id: pro_id, pro_name: pro_name, record: data });
     //    next();
     //});
 });
@@ -164,7 +184,7 @@ router.get('/:proid/:rec_id', function(req, res, next) {
         if (err) throw err;
         var distinctTag = results.rows;
         //res.json(data);
-        res.render('memberMinute', { title: 'SmartMeeting', username: req.session.userName, pro_id: pro_id, pro_name: pro_name, record: data, tag: distinctTag});
+        res.render('memberMinute', { title: 'SmartMeeting', username: req.session.userName, userid: req.session.userAccount, pro_id: pro_id, pro_name: pro_name, record: data, tag: distinctTag, notice: notice});
     })
 });
 
