@@ -24,8 +24,8 @@ router.get('/:proid', function(req, res, next) {
             if (err) throw err;
             pro_name = results.rows[0].pro_name;
             next();
-        })
-    })
+        })      
+    })    
     
 });
 

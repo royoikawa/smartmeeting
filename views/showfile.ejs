@@ -7,15 +7,12 @@
 </head>
 
 <body>
-  
-    <button id ='see' data-url='../minute/<%= rec_name %>' >預覽</button>
-  
-    <div class="jumbotron" style=" padding-top: 3rem;">
-        <div id="output"></div>
-    </div>
-        
-    <script src="https://cdn.bootcss.com/mammoth/1.4.8/mammoth.browser.js"></script>
-    <script src="../javascripts/demo.js"></script>
+  <!-- <button id ='see' data-url='../minute/<%= rec_name %>'>預覽</button> -->
+  <div class="jumbotron" style=" padding-top: 3rem;" id ='see' data-url='../minute/<%= rec_name %>'>
+    <div id="output"></div>
+  </div>
+           
 </body>
-
+  <script src="https://cdn.bootcss.com/mammoth/1.4.8/mammoth.browser.js"></script>
+  <script src="../javascripts/demo.js"></script>
 </html>
