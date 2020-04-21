@@ -108,7 +108,7 @@
                           <span class="invalid-feedback" id="msg_reason">請輸入原因</span>
                       </div>
                       <div class="modal-footer">
-                          <input type="button" value="取消" class="btn btn-secondary" onclick="cancelDeny();">
+                          <input type="button" value="取消" class="btn btn-secondary" onclick="cancelDenyReview();">
                           <input type="button" value="確定" class="btn btn-primary" id="btnDeny">
                       </div>
                   </form>
@@ -171,7 +171,7 @@
                       </div>
                       <div class="modal-body" style="padding-top: 0;">
                         <div class="iframe-container">
-                          <iframe id="iframe_preview" src="/member/showfile/<%= record[0].rec_name%>" allowfullscreen></iframe>
+                          <iframe id="iframe_preview" src="/showfile/<%= record[0].rec_path%>" allowfullscreen></iframe>
                         </div>
                       </div>
                   </form>
@@ -194,11 +194,10 @@
     })
 
     //取消審核不通過
-    function cancelDeny() {
+    function cancelDenyReview() {
       document.getElementById('denyReview').style.display='none';
       $("#msg_reason").css("display", "none");
-      $('#denyTextarea').removeClass("is-invalid");
-      $("#denyTextarea").val(null);
+      $('#denyTextarea').removeClass("is-invalid").val(null);
     }
 
     //不通過修改審核
@@ -216,8 +215,7 @@
     function cancelDeny() {
       document.getElementById('deny').style.display='none';
       $("#msg_reason2").css("display", "none");
-      $('#denyTextarea2').removeClass("is-invalid");
-      $("#denyTextarea2").val(null);
+      $('#denyTextarea2').removeClass("is-invalid").val(null);
     }
   </script>
 </html>

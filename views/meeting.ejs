@@ -89,14 +89,15 @@
                     <% } else { %>
                       <div class="list-group" style="width: 15rem; float: left; margin-right: 1rem;">
                         <% for (var i in minute) { %>
-                          <a href="#" onclick="showPreview('<%= minute[i].rec_name %>');" class="list-group-item list-group-item-action" style="color: #2C3E50;">
+                          
+                          <a href="#" onclick="showPreview('<%= minute[i].rec_path %>');" class="list-group-item list-group-item-action" style="color: #2C3E50;">
                             <strong><%= minute[i].rec_name %></strong><br>
                             <span class="badge badge-light"><%= minute[i].tag_names %></span>
                           </a>
                         <% } %>
                       </div>
                       <div class="iframe-container">
-                        <iframe id="iframe_preview" src="/showfile/<%= minute[0].rec_name %>" allowfullscreen></iframe>
+                        <iframe id="iframe_preview" src="/showfile/<%= minute[0].rec_path %>" allowfullscreen></iframe>
                       </div>
                     
                     <% } %>

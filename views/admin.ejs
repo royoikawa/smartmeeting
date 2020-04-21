@@ -135,7 +135,7 @@
                   <form class="form-group" id="nameForm" method="POST" action="/admin/change?proid=<%= pro_id %>">
                     <div class="modal-header"><h5 class="modal-title">修改專案名稱</h5></div>
                     <div class="modal-body">
-                      <label class="col-form-label">專案名稱</label>
+                      <label class="col-form-label">請輸入專案名稱</label>
                       <input class="form-control" type="text" name="proname" id="proname">
                       <span class="invalid-feedback" id="message1"></span>
                     </div>
@@ -159,7 +159,7 @@
                       <input class="form-control" type="password" name="propw" id="propw">
                       <label class="col-form-label">新的密碼</label>
                       <input class="form-control" type="password" name="newpropw1" id="newpropw1">
-                      <label class="col-form-label">再次輸入</label>
+                      <label class="col-form-label">請再次輸入新密碼</label>
                       <input class="form-control" type="password" name="newpropw2" id="newpropw2">
                       <input type="hidden" value="<%= pro_id %>" id="proid" name="proid">
                       <span class="invalid-feedback" id="message2"></span>
@@ -181,7 +181,7 @@
                     <div class="modal-header"><h5 class="modal-title" id="promem"></h5></div>                    
                     <div class="modal-footer">
                       <input type="button" value="取消" class="btn btn-secondary" data-dismiss="modal" onclick="document.getElementById('proMem').style.display='none';">
-                      <input type="submit" value="儲存" class="btn btn-primary" id="deletemem">
+                      <input type="submit" value="確定" class="btn btn-primary" id="deletemem">
                     </div>
                   </form>
                 </div>
@@ -195,7 +195,7 @@
                   <form class="form-group">
                     <div class="modal-header"><h5 class="modal-title">我們需要驗證您的身分</h5></div>
                     <div class="modal-body">
-                      <label class="col-form-label">請輸入您的帳號密碼</label>
+                      <label class="col-form-label">請輸入您註冊時的密碼</label>
                       <input class="form-control" type="password" name="chpw" id="chpw">
                       <input type="hidden" value="<%= pro_id %>" id="proid" name="proid">
                       <span class="invalid-feedback" id="message3"></span>
@@ -233,7 +233,7 @@
                     </div>
                     <div class="modal-footer">                     
                       <input type="button" value="取消" class="btn btn-secondary" data-dismiss="modal" onclick="closeChangeAdmin()">
-                      <input type="button" value="繼續" class="btn btn-primary" id="btn4">
+                      <input type="button" value="確認" class="btn btn-primary" id="btn4">
                     </div>
                   </form>
                 </div>
@@ -252,10 +252,8 @@
     function openR() {
       $("#tab_r").addClass("active");
       $("#tab_pm").removeClass("active");
-      $("#ctd_review").addClass("active");
-      $("#ctd_review").addClass("show");
-      $("#projectmanage").removeClass("active");
-      $("#projectmanage").removeClass("show");
+      $("#ctd_review").addClass("active show");
+      $("#projectmanage").removeClass("active show");
       $('#tab_r').css("color", "#18BC9C");
       $('#tab_pm').css("color", "#7b8a8b");
     }
@@ -263,10 +261,8 @@
     function openPM() {
       $("#tab_pm").addClass("active");
       $("#tab_r").removeClass("active");
-      $("#projectmanage").addClass("active");
-      $("#projectmanage").addClass("show");
-      $("#ctd_review").removeClass("active");
-      $("#ctd_review").removeClass("show");
+      $("#projectmanage").addClass("active show");
+      $("#ctd_review").removeClass("active show");
       $('#tab_pm').css("color", "#18BC9C");
       $('#tab_r').css("color", "#7b8a8b");
     }
@@ -281,12 +277,9 @@
 
     //關閉修改專案密碼視窗
     function closeProPw() {
-      $("#propw").val(null);
-      $("#newpropw1").val(null);
-      $("#newpropw2").val(null);
-      $('#propw').removeClass("is-invalid");
-      $('#newpropw1').removeClass("is-invalid");
-      $('#newpropw2').removeClass("is-invalid");
+      $("#propw").val(null).removeClass("is-invalid");
+      $("#newpropw1").val(null).removeClass("is-invalid");
+      $("#newpropw2").val(null).removeClass("is-invalid");
       $("#message2").css("display", "none");
       document.getElementById("proPw").style.display = "none";
     }
@@ -295,9 +288,7 @@
     $("#btn1").click(function(){
       if (!$("#proname").val()) {
         $('#proname').addClass("is-invalid");
-        $("#message1").text("輸入未填欄位");
-        $("#message1").css("display", "block");
-        $('#message1').addClass("is-invalid");
+        $("#message1").text("請輸入專案名稱").css("display", "block").addClass("is-invalid");
       } else {
         $("#nameForm").submit();
       }     
@@ -324,10 +315,8 @@
           if(!$("#newpropw2").val()){
             $('#newpropw2').addClass("is-invalid");
           }
-        }                
-        $("#message2").text("輸入未填欄位");
-        $("#message2").css("display", "block");
-        $('#message2').addClass("is-invalid");
+        }
+        $("#message2").text("請輸入未填欄位").css("display", "block").addClass("is-invalid");
       } else if($("#newpropw1").val() != $("#newpropw2").val()) {//密碼不同
         $('#propw').removeClass("is-invalid");
         $('#newpropw1').addClass("is-invalid");
@@ -344,8 +333,7 @@
           type:"POST",
           success: function(res){
             if(res.status == 1) {//專案密碼錯誤
-              $('#message2').text(res.msg);
-              $("#message2").css("display", "block");
+              $('#message2').text(res.msg).css("display", "block");
               $('#propw').addClass("is-invalid");
             }
             else if(res.status == 0){
@@ -377,8 +365,7 @@
 
     //關閉驗證管理員身分視窗
     function closeChAdmin() {
-      $("#chpw").val(null);
-      $('#chpw').removeClass("is-invalid");
+      $("#chpw").val(null).removeClass("is-invalid");
       $("#message3").css("display", "none");
       document.getElementById("chAdmin").style.display = "none";
     }
@@ -387,9 +374,7 @@
     $("#btn3").click(function(){
       if (!$("#chpw").val()) {
         $('#chpw').addClass("is-invalid");
-        $("#message3").text("輸入未填欄位");
-        $("#message3").css("display", "block");
-        $('#message3').addClass("is-invalid");
+        $("#message3").text("請輸入未填欄位").css("display", "block").addClass("is-invalid");
       } else {
         $('#chpw').removeClass("is-invalid");
         $.ajax({
@@ -398,8 +383,7 @@
           type: 'POST',
           success: function(res){
             if(res.status == 1){
-              $('#message3').text(res.msg);
-              $("#message3").css("display", "block");
+              $('#message3').text(res.msg).css("display", "block");
               $('#chpw').addClass("is-invalid");
             }
             else if(res.status == 0){
@@ -424,9 +408,7 @@
         $("#newadminForm").submit();
       }
       else{
-        $("#message4").text("請選擇一個成員");
-        $("#message4").css("display", "block");
-        $('#message4').addClass("is-invalid");
+        $("#message4").text("請選擇一位成員").css("display", "block").addClass("is-invalid");
       }    
     })
 

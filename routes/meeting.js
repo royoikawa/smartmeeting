@@ -52,6 +52,10 @@ router.all('/:proid', function(req, res, next) {
             pool.query(q, [pro_id], function(err, results) {
                 if (err) throw err;
                 minute = results.rows;
+                for(var j in minute) {
+                    var path = minute[j].rec_path;
+                    minute[j].rec_path = path.substring(14);
+                }
                 isSearchM = true;
                 res.render('meeting', { 
                     title: 'SmartMeeting',
