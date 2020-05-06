@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/stylesheets/css/all.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
-    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="http://code.jquery.com/jquery-3.4.1.js"></script>
   </head>
   <body>
     <div><%- include navbar %></div>
@@ -84,18 +84,9 @@
                     </button>
                   </div>
                   <div class="modal-body" style="padding-top: 0;">
-                    <%if (res.length == 0) {%>
-                    <p>no data</p>
-                    <%}%>
-                      <div class="list-group" onclick="showPreview(res[k].rec_name)" style="width: 15rem; float: left; margin-right: 1rem;">
-                        <a href="#" id="list" class="list-group-item list-group-item-action" style="color: #2C3E50;">
-                          <strong><%= res[i].rec_name%></strong><br>';
-                          <span class="badge badge-light"><%= res[i].tag_names%></span>
-                          </a>
-                      </div>
-                      <div class="iframe-container">
-                        <iframe id="iframe_preview" allowfullscreen></iframe>
-                      </div>
+                    <div id="m"></div>
+                      
+                      
                       
                     
                    
@@ -117,30 +108,51 @@
           data:{'searchMinute': $("#searchMinute").val()},
           type:"POST",
           success: function(res){
+            console.log(res);
             var strList = '';
-            var filename = res[0].rec_name;
-            showPreview(filename);
-            alert(res[0].rec_name);
+            var path;
+
             if (res.length == 0) {
-              $("#m").html("");
+              $("#m").html("<p>no data</p>");
             } else {
+              strList = '<div class="list-group" style="width: 15rem; float: left; margin-right: 1rem;">';
               for (var i in res) {
-                strList += '<a href="#" id="list" class="list-group-item list-group-item-action" style="color: #2C3E50;">';
+                path = res[i].rec_path.substring(14);
+                //path.replace(/\(/g, "\\(");
+                //path.replace(/\./g, "\\.");
+                console.log(path);
+                strList += '<a href="#" id="aaa" class="list-group-item list-group-item-action" style="color: #2C3E50;">';
                 strList +='<strong>' + res[i].rec_name +'</strong><br>';
                 strList += '<span class="badge badge-light">' + res[i].tag_names + '</span>';
                 strList += '</a>';
                           
-                $("#mm").html(strList);
-
+                
                 
               }
-              var x = document.getElementById("list");
-                for (var k = 0; k < x.length; k++){
-                  console.log(x.length);
-                  x[k].addEventListener("click",showPreview(res[k].rec_name));
-                }
+              strList += '</div>';
+              $("#m").append(strList);
+              strList = '<div class="iframe-container">';
+              strList += '<iframe id="iframe_preview" src="/showfile/' + res[0].rec_path.substring(14) + '" allowfullscreen></iframe>';
+              strList += '</div>';
+              $("#m").append(strList);
+              path = res[0].rec_path;
+              //path.replace(/\(/g, "\\(");
+              //path.replace(/\./g, "\\.");
+              //showPreview(path.substring(14));
+              //alert(path.substring(14));
+              // var x = document.getElementById("list");
+              //   for (var k = 0; k < x.length; k++){
+              //     console.log(x.length);
+              //     x[k].addEventListener("click",showPreview(res[k].rec_name));
+              //   }
             }
             document.getElementById('searchResult').style.display='block';
+            $("#aaa").click(function() {
+              var a = $(this).index();
+              alert(a);
+              $("#iframe_preview").attr('src', '/showfile/' + res[a].rec_path.substring(14));
+              //showPreview(res[a].rec_path.substring(14));
+            })
           }
       })
     })

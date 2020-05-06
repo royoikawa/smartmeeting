@@ -4,13 +4,14 @@ $( document ).ready(
     //     btn.addEventListener('click', preview);
     // });
 
-    document.querySelector('#see').addEventListener('click', preview);
+    //document.querySelector('#see').addEventListener('click', preview);
+    window.addEventListener('pageshow', preview);
 
     
 
-    function preview(evt) {
-        var btn = evt.target;
-        console.log(evt);
+    function preview() {
+        var btn = document.querySelector('#see');
+        //console.log(evt);
         console.log(this);//同evt.target：<button id ='see' data-url='../minute/<%= rec_name %>' >預覽</button>
         var url = btn.dataset['url'];//data-url裡面的東西(url 是自己取的)
         console.log(url);

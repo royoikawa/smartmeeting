@@ -160,8 +160,6 @@ router.get('/:proid/:rec_id', function(req, res, next) {
     var q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id";;
     pool.query(q, [recid, pro_id]).then(results => {
         data = results.rows;
-        var path = data[0].rec_path;
-        data[0].rec_path = path.substring(14);
         //res.render('memberMinute', { title: 'SmartMeeting', username: req.session.userName, userid: req.session.userAccount, pro_id: pro_id, pro_name: pro_name, record: data });
         next();
     });

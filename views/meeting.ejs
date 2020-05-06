@@ -18,7 +18,7 @@
       </div>
       <span class="badge badge-light">專案代號：<%= pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
       <!--結束會議-->
-      <button type="button" id="btnMeeting" onclick="location.href='/member/<%= pro_id %>'" class="btn btn-outline-warning btn-sm" style="float: right;">結束會議</button>
+      <button type="button" id="btnMeeting" onclick="stopMeeting();" class="btn btn-outline-warning btn-sm" style="float: right;">結束會議</button>
       <span id="onAir" class="badge badge-danger">錄音中</span>
       <div class="divider"></div>
 
@@ -89,15 +89,14 @@
                     <% } else { %>
                       <div class="list-group" style="width: 15rem; float: left; margin-right: 1rem;">
                         <% for (var i in minute) { %>
-                          
-                          <a href="#" onclick="showPreview('<%= minute[i].rec_path %>');" class="list-group-item list-group-item-action" style="color: #2C3E50;">
+                          <a href="#" onclick="showPreview('<%= minute[i].rec_path.substring(14) %>');" class="list-group-item list-group-item-action" style="color: #2C3E50;">
                             <strong><%= minute[i].rec_name %></strong><br>
                             <span class="badge badge-light"><%= minute[i].tag_names %></span>
                           </a>
                         <% } %>
                       </div>
                       <div class="iframe-container">
-                        <iframe id="iframe_preview" src="/showfile/<%= minute[0].rec_path %>" allowfullscreen></iframe>
+                        <iframe id="iframe_preview" src="/showfile/<%= minute[0].rec_path.substring(14) %>" allowfullscreen></iframe>
                       </div>
                     
                     <% } %>
@@ -115,7 +114,12 @@
     //如果有用搜尋，顯示搜尋結果modal
     if ('<%= isSearchM %>' === 'true') {
           document.getElementById('searchResult').style.display='block';
-      }
+    }
+
+    function stopMeeting() {
+      '<%= isSearchM %>' = 'false';
+      location.href='/member/<%= pro_id %>';
+    }
 
     //定義iframe的路徑
     function showPreview(k) {

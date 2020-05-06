@@ -6590,15 +6590,14 @@
    padding: 1rem;
  }
 
- .modal-body iframe {
-  float: left;
+ /*.modal-body iframe {
   border: 0;
   height: 70%;
   left: 0;
   position: absolute;
   top: 0;
   width: calc(100% - 15rem);
- }
+ }*/
 
 .iframe-container {
   overflow: auto;
@@ -6608,13 +6607,14 @@
 }
  
 .iframe-container iframe {
-   border: 0;
-   height: 70%;
-   left: 0;
-   position: absolute;
-   top: 0;
    width: 100%;
-}
+   height: 70%;
+   top: 0;
+   left: 0;
+   float: left;
+   position: absolute;
+   border: 0;
+  }
  
  .modal-footer {
    display: -webkit-box;

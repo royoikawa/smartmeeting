@@ -169,10 +169,19 @@
                           <span aria-hidden="true">&times;</span>
                         </button>
                       </div>
-                      <div class="modal-body" style="padding-top: 0;">
-                        <div class="iframe-container">
-                          <iframe id="iframe_preview" src="/showfile/<%= record[0].rec_path%>" allowfullscreen></iframe>
-                        </div>
+                      <div class="modal-body">
+                        <% if (record[0].rec_reason == null) { %>
+                          <div class="iframe-container">
+                            <iframe id="iframe_preview" src="/showfile/<%= record[0].rec_path.substring(14)%>" allowfullscreen></iframe>
+                          </div>
+                        <% } else { %>
+                          <div class="iframe-container" style="padding-top: 0;">
+                            <p>原始會議記錄</p>
+                            <p>修改過的會議記錄</p>
+                            <iframe id="iframe_preview" src="/showfile/<%= record[0].rec_path.substring(14)%>" style="width: 50%; position: relative;" allowfullscreen></iframe>
+                            <iframe id="iframe_preview" src="/showfile/<%= record[0].rec_revisepath.substring(14)%>" style="width: 50%; position: relative;" allowfullscreen></iframe>
+                          </div>
+                        <% } %>
                       </div>
                   </form>
               </div>

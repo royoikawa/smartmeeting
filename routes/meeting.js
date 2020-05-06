@@ -24,8 +24,8 @@ router.get('/:proid', function(req, res, next) {
             if (err) throw err;
             pro_name = results.rows[0].pro_name;
             next();
-        })
-    })
+        })      
+    })    
     
 });
 
@@ -45,17 +45,13 @@ router.all('/:proid', function(req, res, next) {
         //         arr[i] = filename.substring(0, filename.lastIndexOf('.')-21)+filename.substring(filename.lastIndexOf('.')) ;
         //         s += " OR rec_name = '" + arr[i] + "'";//符合條件的所有檔名
         //     }
-            s += ")";
+            s += ") ";
 
             aggTags = "SELECT tag_recid, string_agg(tag_name,',') AS tag_names FROM tag WHERE tag_proid = $1 GROUP BY tag_recid";
-            q = "SELECT * FROM record, (" + aggTags + ") AS t WHERE tag_recid = rec_id "+ s + "ORDER BY rec_time DESC";
+            q = "SELECT * FROM record, (" + aggTags + ") AS t WHERE tag_recid = rec_id AND rec_state ISNULL "+ s + "ORDER BY rec_time DESC";
             pool.query(q, [pro_id], function(err, results) {
                 if (err) throw err;
                 minute = results.rows;
-                for(var j in minute) {
-                    var path = minute[j].rec_path;
-                    minute[j].rec_path = path.substring(14);
-                }
                 isSearchM = true;
                 res.render('meeting', { 
                     title: 'SmartMeeting',
@@ -71,11 +67,11 @@ router.all('/:proid', function(req, res, next) {
         // })
 
 
-        // pool.query(q, [pro_id]).then(results => {
-        //     console.log("ddssf");
-        //     minute = results.rows;
-        //     res.json(minute);
-        // })
+        pool.query(q, [pro_id]).then(results => {
+            console.log("ddssf");
+            minute = results.rows;
+            res.json(minute);
+        })
         
     }
     else {
