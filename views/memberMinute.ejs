@@ -245,8 +245,9 @@
 
         <!--顯示checkbox是否要勾-->
         <% function tag_cbIsChecked(s) { %>
+          <% if(record[0].tag_names != null) { %>
           <% var recordTag = record[0].tag_names.split(','); %>
-
+          <% } %>
           <% var isCheck = false; %>
           <% for(var i in recordTag) { %>
             <% if (s == recordTag[i]) { %>

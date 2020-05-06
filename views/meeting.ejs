@@ -51,7 +51,7 @@
       <!--搜尋區塊-->
       <div class="card bg-light  mb-3"style="border-width: 0;">
         <div class="card-body">
-          <form method="post" action="" class="form-inline my-2 my-lg-0" style="position: relative; display: inline-block; padding-left: 1em; margin-top: 1em; margin-right: 2em;">
+          <form  class="form-inline my-2 my-lg-0" style="position: relative; display: inline-block; padding-left: 1em; margin-top: 1em; margin-right: 2em;">
             <div class="form-inline">
               <div class="form-group">
                 <div class="input-group mb-3">
@@ -60,7 +60,7 @@
                   </div>
                   <input class="form-control" type="text" style="border-color: inherit;" name="searchMinute" id="searchMinute" placeholder="搜尋會議記錄" aria-label="Search minutes">
                   <div class="input-group-append">
-                    <input id="btnSearch" class="btn btn-outline-secondary" style=" border-left-width: 0;" type="submit" value="搜尋">
+                    <input id="btnSearch" class="btn btn-outline-secondary" style=" border-left-width: 0;" type="button" value="搜尋">
                   </div>
                 </div>
               </div>
@@ -79,28 +79,24 @@
               <form method="POST" class="form-group">
                   <div class="modal-header" style="margin-bottom: 1rem;">
                     <h5 class="modal-title">搜尋結果</h5>
-                    <button type="button" onclick="document.getElementById('searchResult').style.display='none';" class="close" aria-label="Close">
+                    <button type="button" onclick="closeResult()" class="close" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
                   <div class="modal-body" style="padding-top: 0;">
-                    <% if (minute.length == 0 || isSearchM == 'false') { %>
-                      <p>no data</p>
-                    <% } else { %>
-                      <div class="list-group" style="width: 15rem; float: left; margin-right: 1rem;">
-                        <% for (var i in minute) { %>
-                          <a href="#" onclick="showPreview('<%= minute[i].rec_path.substring(14) %>');" class="list-group-item list-group-item-action" style="color: #2C3E50;">
-                            <strong><%= minute[i].rec_name %></strong><br>
-                            <span class="badge badge-light"><%= minute[i].tag_names %></span>
-                          </a>
-                        <% } %>
-                      </div>
-                      <div class="iframe-container">
-                        <iframe id="iframe_preview" src="/showfile/<%= minute[0].rec_path.substring(14) %>" allowfullscreen></iframe>
-                      </div>
                     
-                    <% } %>
-                    
+                    <p id="p">no data</p>
+                      
+                    <div class="list-group"  style="width: 15rem; float: left; margin-right: 1rem;">
+                      <!-- <a href="#" id="list" class="list-group-item list-group-item-action" style="color: #2C3E50;">
+                        <strong></strong><br>';
+                        <span class="badge badge-light"></span>
+                        </a> -->
+                    </div>
+                    <div class="iframe-container">
+                      <iframe id="iframe_preview" allowfullscreen></iframe>
+                    </div>
+                                       
                   </div>
               </form>
           </div>
@@ -111,10 +107,49 @@
   </body>
 
   <script>
-    //如果有用搜尋，顯示搜尋結果modal
-    if ('<%= isSearchM %>' === 'true') {
-          document.getElementById('searchResult').style.display='block';
-      }
+
+    $('#btnSearch').click(function() {     
+      $.ajax({
+        url: '/meeting/<%= pro_id %>',
+        type: 'POST',
+        data: {'searchMinute': $('#searchMinute').val()},
+        success: function(res){
+          if(res.num==0){
+            $('#searchResult').show();
+            $('#p').show();
+          }
+          else{
+            $('#p').hide();
+            var strList = '';
+            var filename = res.minute[0].rec_path.substring(14);
+            showPreview(filename);           
+            for (let i in res.minute) {
+              strList += '<a href="#" id="list" name="list" class="list-group-item list-group-item-action" style="color: #2C3E50;">';
+              strList +='<strong>' + res.minute[i].rec_name +'</strong><br>';
+              if(res.minute[i].tag_names){
+                strList += '<span class="badge badge-light">' + res.minute[i].tag_names + '</span>';
+              }             
+              strList += '<input type="hidden" id="filename" name="filename" value="' + res.minute[i].rec_path.substring(14)+ '">' ;
+              strList += '</a>';          
+              $(".list-group").html(strList);                                             
+            }
+ 
+            $('#searchResult').show();
+            var x = document.getElementsByName('list');
+            var y = document.getElementsByName("filename");
+            for (let k = 0; k < x.length; k++){
+              (function(){x[k].addEventListener("click",function() {showPreview(y[k].value)})} )(k);              
+            }          
+          }
+          
+        }
+      })
+    })
+
+    function closeResult() {
+      $('#searchResult').hide();
+      $('#searchMinute').val(null);
+    }
 
     //定義iframe的路徑
     function showPreview(k) {
@@ -153,6 +188,7 @@
     //計時器動畫
     var h = m = s = 0;   //定義時、分、秒初始為0
     var time = 0;
+    var word;
  
     function timer() {   //定義計時函數
       s = s + 1;
@@ -177,10 +213,12 @@
     function start() {  //開始
       reset();
       time = setInterval(timer, 1000);//每隔 1 秒執行一次函式 timer()
+      word = setInterval(getWords, 2000);//每2秒取得語音搜檔關鍵字
     }
   
     function stop() {  //停止
       clearInterval(time);
+      clearInterval(word);
     }
   
     function toDub(n) {  //補0
@@ -189,6 +227,43 @@
       else
         return "" + n;
     }
+
+    function getWords() { //取值 mcs words
+      $.ajax({
+          url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datachannels/words/datapoints',//deviceld: D0GyA2Da, deviceKey: nOJM4aFkjC980deR, datachannelID: words
+          headers: {deviceKey:'nOJM4aFkjC980deR'},
+          type: 'GET',
+          contentType: 'application/json',
+          success: function(res){
+            var value = res.dataChannels[0].dataPoints[0].values.value;
+            if(value!=""){
+              $('#searchMinute').attr("value", value);//若有值查檔
+              $.ajax({
+                url: '/meeting/'+ $('#pro').val(),
+                type: 'POST',
+                data: {'searchMinute': $('#searchMinute').val()},
+                success: function(res){
+                  document.getElementById('searchResult').style.display='block';
+                  console.log(value);
+                  //查檔後清除mcs值
+                  var data = {datapoints:[ {dataChnId:'words', values: {value: ''} } ] }
+                  $.ajax({
+                    url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datapoints',
+                    headers: {deviceKey:'nOJM4aFkjC980deR'},
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function(res){
+                      $('#searchMinute').removeAttr("value", null);
+                    }  
+                  })
+
+                }
+              })
+            }     
+          }  
+      })
+    }   
   
   </script>
 
