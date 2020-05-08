@@ -165,7 +165,7 @@
                   <form method="POST" class="form-group">
                       <div class="modal-header">
                         <h5 class="modal-title"><%= record[0].rec_name%></h5>
-                        <button type="button" class="close" data-dismiss="preview" aria-label="Close" onclick="document.getElementById('preview').style.display='none';">
+                        <button type="button" class="close" aria-label="Close" onclick="document.getElementById('preview').style.display='none';">
                           <span aria-hidden="true">&times;</span>
                         </button>
                       </div>
@@ -175,11 +175,18 @@
                             <iframe id="iframe_preview" src="/showfile/<%= record[0].rec_path.substring(14)%>" allowfullscreen></iframe>
                           </div>
                         <% } else { %>
-                          <div class="iframe-container" style="padding-top: 0;">
-                            <p>原始會議記錄</p>
-                            <p>修改過的會議記錄</p>
-                            <iframe id="iframe_preview" src="/showfile/<%= record[0].rec_path.substring(14)%>" style="width: 50%; position: relative;" allowfullscreen></iframe>
-                            <iframe id="iframe_preview" src="/showfile/<%= record[0].rec_revisepath.substring(14)%>" style="width: 50%; position: relative;" allowfullscreen></iframe>
+                          <div class="alert alert-light" style="width: 49.8%; float: left; margin-right: 0.4%; margin-bottom: 0.25rem;">
+                            原始會議記錄
+                          </div>
+                          <div class="alert alert-light" style="width: 49.8%; float: left; margin-bottom: 0.25rem;">
+                            修改過的會議記錄
+                          </div>
+                          
+                          <div class="iframe-container" style="width: 49.8%; margin-right: 0.4%; float: left;">
+                            <iframe id="iframe_preview" src="/showfile/<%= record[0].rec_path.substring(14)%>" allowfullscreen></iframe>
+                          </div>
+                          <div class="iframe-container" style="width: 49.8%; float: left;">
+                            <iframe id="iframe_preview" src="/showfile/<%= record[0].rec_revisepath.substring(14)%>" allowfullscreen></iframe>
                           </div>
                         <% } %>
                       </div>

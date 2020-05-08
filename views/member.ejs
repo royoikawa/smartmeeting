@@ -18,7 +18,7 @@
       </div>
       <div style="width: inherit; height: fit-content;">
         <span class="badge badge-light">專案代號：<%= pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
-        <button type="button" onclick="location.href='/meeting/<%= pro_id %>'" class="btn btn-outline-warning btn-sm" style="float: right;">我要開會</button>
+        <button id="meet" type="button"  class="btn btn-outline-warning btn-sm" style="float: right;">我要開會</button>
       </div>
       <div class="divider"></div>
       
@@ -266,9 +266,9 @@
                         <th scope="row"><%= name %></th>
                         <td><%= time %></td>
                         <% if (eyeOrSound == 0) { %>
-                          <td><i class="fas fa-eye" style="font-size:1.1rem; color: #50565c; cursor: pointer;"></i></td>
+                          <td><i class="fas fa-eye" onclick="document.getElementById('audio_preview').style.display='block';" style="font-size:1.1rem; color: #50565c; cursor: pointer;"></i></td>
                         <% } else if (eyeOrSound == 1) { %>
-                          <td><i class="fas fa-volume-up" style="font-size:1.1rem; color: #50565c; cursor: pointer;"></i></td>
+                          <td><i class="fas fa-volume-up" onclick="document.getElementById('audio_preview').style.display='block';" style="font-size:1.1rem; color: #50565c; cursor: pointer;"></i></td>
                         <% } %>
                       </tr>
                       <% isEven = false; %>
@@ -277,16 +277,37 @@
                         <th scope="row"><%= name %></th>
                         <td><%= time %></td>
                         <% if (eyeOrSound == 0) { %>
-                          <td><i class="fas fa-eye" style="font-size:1.1rem; color: #50565c; cursor: pointer;"></i></td>
+                          <td><i class="fas fa-eye" onclick="document.getElementById('audio_preview').style.display='block';" style="font-size:1.1rem; color: #50565c; cursor: pointer;"></i></td>
                         <% } else if (eyeOrSound == 1) { %>
-                          <td><i class="fas fa-volume-up" style="font-size:1.1rem; color: #50565c; cursor: pointer;"></i></td>
+                          <td><i class="fas fa-volume-up" onclick="document.getElementById('audio_preview').style.display='block';" style="font-size:1.1rem; color: #50565c; cursor: pointer;"></i></td>
                         <% } %>
                       </tr>
                       <% isEven = true; %>
                     <% } %>
                   <% } %>
                 </tbody>
-              </table> 
+              </table>
+
+              <!--預覽modal-->
+              <div id="audio_preview" class="modal">
+                <div class="modal-dialog" role="document" style="min-width: 100%; height: 100%;">
+                    <div class="modal-content" style="min-height: 100%; scroll-behavior: auto; overflow: auto;">
+                        <form method="POST" class="form-group">
+                            <div class="modal-header">
+                              <h5 class="modal-title"><%= audioText[0].at_name%></h5>
+                              <button type="button" class="close" aria-label="Close" onclick="document.getElementById('audio_preview').style.display='none';">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body" style="padding-top: 0;">
+                              <div class="iframe-container">
+                                <iframe id="iframe_preview" src="https://drive.google.com/embeddedfolderview?id=1KlUS4geNcwMtYKaNViwIKTFtAFrV7Yxp#list" allowfullscreen></iframe>
+                              </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+              </div>
             <% } %>
 
 
@@ -427,6 +448,22 @@
 //      });
 //    })
 
+    //開會傳值到mcs
+    $('#meet').click(function() {
+      var data = {
+        datapoints:[ {dataChnId:'start', values: {value: 'start'} } ]
+      }
+      $.ajax({
+        url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datapoints',
+        headers: {deviceKey:'nOJM4aFkjC980deR'},
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function(res){
+          location.href='/meeting/<%= pro_id %>';
+        }  
+      })
+    })
 
     //匯入solr
     $(document).ready(function() {        
