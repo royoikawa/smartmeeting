@@ -18,7 +18,7 @@
       </div>
       <span class="badge badge-light">專案代號：<%= pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
       <!--結束會議-->
-      <button type="button" id="btnMeeting" onclick="stopMeeting();" class="btn btn-outline-warning btn-sm" style="float: right;">結束會議</button>
+      <button type="button" id="btnMeeting" onclick="location.href='/member/<%= pro_id %>'" class="btn btn-outline-warning btn-sm" style="float: right;">結束會議</button>
       <span id="onAir" class="badge badge-danger">錄音中</span>
       <div class="divider"></div>
 
@@ -51,7 +51,6 @@
       <!--搜尋區塊-->
       <div class="card bg-light  mb-3"style="border-width: 0;">
         <div class="card-body">
-          <p>請輸入關鍵字以查詢會議記錄</p>
           <form  class="form-inline my-2 my-lg-0" style="position: relative; display: inline-block; padding-left: 1em; margin-top: 1em; margin-right: 2em;">
             <div class="form-inline">
               <div class="form-group">
@@ -87,20 +86,38 @@
                   <div class="modal-body" style="padding-top: 0;">
                     
                     <p id="p">no data</p>
-                      
-                    <div class="list-group"  style="width: 15rem; float: left; margin-right: 1rem;">
-                      <!-- <a href="#" id="list" class="list-group-item list-group-item-action" style="color: #2C3E50;">
-                        <strong></strong><br>';
-                        <span class="badge badge-light"></span>
-                        </a> -->
-                    </div>
-                    <div class="iframe-container">
-                      <iframe id="iframe_preview" allowfullscreen></iframe>
-                    </div>
-                                       
+                    <div id='div'>  
+                      <div class="list-group"  style="width: 15rem; float: left; margin-right: 1rem;">
+                        <!-- <a href="#" id="list" class="list-group-item list-group-item-action" style="color: #2C3E50;">
+                          <strong></strong><br>';
+                          <span class="badge badge-light"></span>
+                          </a> -->
+                      </div>
+                      <div class="iframe-container">
+                        <iframe id="iframe_preview" allowfullscreen></iframe>
+                      </div>
+                    </div>                   
                   </div>
               </form>
           </div>
+      </div>
+    </div>
+
+    <!--結束錄音音檔文檔上傳-->
+    <div id="audiotext" class="modal" >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form class="form-group" id="nameForm">
+            <div class="modal-header"><h5 class="modal-title">輸入檔名 檔名系統會加上日期</h5></div>
+            <div class="modal-body">             
+              <input class="form-control" type="text" name="name" id="name">
+            </div>
+            <div class="modal-footer">
+              <input type="button" value="取消" class="btn btn-secondary" data-dismiss="modal" onclick="closeAudiotext()">
+              <input type="button" value="儲存" class="btn btn-primary" id="send">
+            </div>
+          </form>
+        </div>
       </div>
     </div>
 
@@ -109,47 +126,43 @@
 
   <script>
 
-    $('#btnSearch').click(function() {     
+    function closeAudiotext() {
+      $('#name').val(null);
+      $('#audiotext').hide();
+    }
+
+    $('#send').click(function() {
+      var data = {datapoints:[ {dataChnId:'project_id', values: {value: '<%= pro_id %>*' + $('#name').val()} } ] }
       $.ajax({
-        url: '/meeting/<%= pro_id %>',
+        url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datapoints',
+        headers: {deviceKey:'nOJM4aFkjC980deR'},
         type: 'POST',
-        data: {'searchMinute': $('#searchMinute').val()},
+        contentType: 'application/json',
+        data: JSON.stringify(data),
         success: function(res){
-          if(res.num==0){
-            $('#searchResult').show();
-            $('#p').show();
-          }
-          else{
-            $('#p').hide();
-            var strList = '';
-            var filename = res.minute[0].rec_path.substring(14);
-            showPreview(filename);           
-            for (let i in res.minute) {
-              strList += '<a href="#" id="list" name="list" class="list-group-item list-group-item-action" style="color: #2C3E50;">';
-              strList +='<strong>' + res.minute[i].rec_name +'</strong><br>';
-              if(res.minute[i].tag_names){
-                strList += '<span class="badge badge-light">' + res.minute[i].tag_names + '</span>';
-              }             
-              strList += '<input type="hidden" id="filename" name="filename" value="' + res.minute[i].rec_path.substring(14)+ '">' ;
-              strList += '</a>';          
-              $(".list-group").html(strList);                                             
-            }
- 
-            $('#searchResult').show();
-            var x = document.getElementsByName('list');
-            var y = document.getElementsByName("filename");
-            for (let k = 0; k < x.length; k++){
-              (function(){x[k].addEventListener("click",function() {showPreview(y[k].value)})} )(k);              
-            }          
-          }
-          
-        }
+          closeAudiotext();
+        }  
       })
+    })
+
+    $('#btnSearch').click(function() {     
+      search();
     })
 
     function closeResult() {
       $('#searchResult').hide();
       $('#searchMinute').val(null);
+      //清除mcs值
+      var data = {datapoints:[ {dataChnId:'words', values: {value: ''} } ] }
+      $.ajax({
+        url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datapoints',
+        headers: {deviceKey:'nOJM4aFkjC980deR'},
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function(res){                         
+        }  
+      })
     }
 
     //定義iframe的路徑
@@ -159,9 +172,7 @@
     
     //隱藏「錄音中」
     $( document ).ready(function () {
-      $("#onAir").hide();
-      
-      
+      $("#onAir").hide();      
     })
 
     //開始錄音
@@ -178,12 +189,13 @@
     //停止錄音
     function stopRecord(){
       $("#onAir").hide();//隱藏「錄音中」
-      $("#msgRecord").text("請按下開始鍵，開始錄音、按下結束會議，回到會議紀錄列表");//顯示提示字
+      $("#msgRecord").text("請按下開始鍵，開始錄音、按下結束會議，回到會議記錄列表");//顯示提示字
       $("#stopRecord").attr("disabled", true);//使「停止鍵」無法點
       $("#startRecord").attr("disabled", false);//使「開始鍵」無法點
       $("div").css("animation-play-state", "paused");//錄音動畫結束
       $("#btnMeeting").attr("disabled", false);//使「開始鍵」無法點
       stop();
+      $('#audiotext').show();
     }
 
     //計時器動畫
@@ -237,34 +249,55 @@
           contentType: 'application/json',
           success: function(res){
             var value = res.dataChannels[0].dataPoints[0].values.value;
-            if(value!=""){
-              $('#searchMinute').attr("value", value);//若有值查檔
-              $.ajax({
-                url: '/meeting/'+ $('#pro').val(),
-                type: 'POST',
-                data: {'searchMinute': $('#searchMinute').val()},
-                success: function(res){
-                  document.getElementById('searchResult').style.display='block';
-                  console.log(value);
-                  //查檔後清除mcs值
-                  var data = {datapoints:[ {dataChnId:'words', values: {value: ''} } ] }
-                  $.ajax({
-                    url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datapoints',
-                    headers: {deviceKey:'nOJM4aFkjC980deR'},
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(data),
-                    success: function(res){
-                      $('#searchMinute').removeAttr("value", null);
-                    }  
-                  })
-
-                }
-              })
+            if(value!="" && value!=$('#searchMinute').val()){
+              $('#searchMinute').val(value)
+              console.log($('#searchMinute').val());              
+              search();              
             }     
           }  
       })
-    }   
+      
+    } 
+    
+    function search() {
+      $.ajax({
+        url: '/meeting/<%= pro_id %>',
+        type: 'POST',
+        data: {'searchMinute': $('#searchMinute').val()},
+        success: function(res){
+          if(res.num==0){
+            $('#searchResult').show();
+            $('#p').show();
+            $("#div").hide();
+          }
+          else{
+            $('#p').hide();
+            $("#div").show();
+            var strList = '';
+            var filename = res.minute[0].rec_path.substring(14);
+            showPreview(filename);           
+            for (let i in res.minute) {
+              strList += '<a href="#" id="list" name="list" class="list-group-item list-group-item-action" style="color: #2C3E50;">';
+              strList +='<strong>' + res.minute[i].rec_name +'</strong><br>';
+              if(res.minute[i].tag_names){
+                strList += '<span class="badge badge-light">' + res.minute[i].tag_names + '</span>';
+              }             
+              strList += '<input type="hidden" id="filename" name="filename" value="' + res.minute[i].rec_path.substring(14)+ '">' ;
+              strList += '</a>';          
+              $(".list-group").html(strList);                                             
+            }
+ 
+            $('#searchResult').show();
+            var x = document.getElementsByName('list');
+            var y = document.getElementsByName("filename");
+            for (let k = 0; k < x.length; k++){
+              (function(){x[k].addEventListener("click",function() {showPreview(y[k].value)})} )(k);              
+            }          
+          }
+          
+        }
+      })
+    }
   
   </script>
 

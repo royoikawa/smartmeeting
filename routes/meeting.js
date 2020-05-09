@@ -5,8 +5,7 @@ var solr = require('../models/solr');
 
 //搜尋會議記錄
 var pro_name;
-var minute = [];
-var isSearchM;
+var minute;
 var notice;
 
 router.post('/:proid', function(req, res, next) {
@@ -35,7 +34,7 @@ router.post('/:proid', function(req, res, next) {
                 res.json({'num': results.rowCount, 'minute': minute});
                 
             })   
-        // })
+        //})
     }
 })
 router.all('/:proid', function(req, res, next) {
@@ -46,30 +45,24 @@ router.all('/:proid', function(req, res, next) {
     var sql = "SELECT * FROM notice, record, project, account_project WHERE notice_recid=rec_id AND rec_proid=pro_id AND pro_id=ap_proid AND ap_accid=$1 ORDER BY notice_time DESC";
     pool.query(sql,[req.session.userAccount]).then(results => {
         notice = results.rows;
-        console.log(isSearchM);
         var pro_id = req.params.proid;
         var q = 'SELECT pro_name FROM project WHERE pro_id = $1';
         pool.query(q, [pro_id], function(err, results) {
             if (err) throw err;
             pro_name = results.rows[0].pro_name;
-            next();
+            res.render('meeting', { 
+                title: 'SmartMeeting',
+                username: req.session.userName,
+                userid: req.session.userAccount,
+                pro_id: pro_id, 
+                pro_name: pro_name, 
+                notice: notice
+            });
+
         })      
     })    
     
 });
-router.all('/:proid', function(req, res, next) {
-    pro_id = req.params.proid;
-                    
-    res.render('meeting', { 
-        title: 'SmartMeeting',
-        username: req.session.userName,
-        userid: req.session.userAccount,
-        pro_id: pro_id, 
-        pro_name: pro_name, 
-        notice: notice
-    });    
-    
-})
 
 
 module.exports = router;
