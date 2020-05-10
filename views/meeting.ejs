@@ -108,9 +108,15 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <form class="form-group" id="nameForm">
-            <div class="modal-header"><h5 class="modal-title">輸入檔名 檔名系統會加上日期</h5></div>
-            <div class="modal-body">             
-              <input class="form-control" type="text" name="name" id="name">
+            <div class="modal-header">
+              <h5 class="modal-title">儲存音檔與文檔</h5>
+            </div>
+            <div class="modal-body">
+              <label class="col-form-label">請輸入檔名</label>
+              <div style="width: 100%; height: fit-content;">
+                <span class="form-control" style="width: fit-content; display: inline-block; padding: 0.375rem 0; border: 0px;">20200413</span>
+                <input class="form-control" type="text" name="name" id="name" style="width: 83.5%; display: inline-block;">
+              </div>
             </div>
             <div class="modal-footer">
               <input type="button" value="取消" class="btn btn-secondary" data-dismiss="modal" onclick="closeAudiotext()">

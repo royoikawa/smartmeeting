@@ -26,10 +26,12 @@
           <div class="jumbotron" style="padding-top:1rem; padding-bottom: 0; padding-left: 3rem; margin-bottom: 1rem; background-color: #ecf0f1;">
           <h5><%= record[0].rec_name %>
             <span class="badge badge-pill badge-info" style="margin-left: 1em; font-weight: normal;"><%= state %></span>
-            <a href="/file/<%= record[0].rec_id %>" target="_blank"><i class="fas fa-arrow-down" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c;"></i></a>
+            <!--下載icon-->
+            <a href="/file/<%= record[0].rec_id %>" target="_blank">
+              <i class="fas fa-arrow-down" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c;"></i>
+            </a>
+            <!--預覽icon-->
             <i class="fas fa-eye" onclick="document.getElementById('preview').style.display='block';" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c; cursor: pointer;"></i>
-            <!--<i class="fas fa-tag fa-rotate-135" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c; cursor: pointer;"></i>
-            <i class="fas fa-tag" onclick="document.getElementById('tags').style.display='block';" style="float: right; font-size: 1.1rem; color: #50565c; cursor: pointer;"></i>-->
           </h5>
           <hr class="my-4">
           
@@ -39,58 +41,13 @@
               <tr>
                 <td>標籤</td>
                 <td><%= record[0].tag_names %>
-                  <!--<i class="fas fa-edit" onclick="document.getElementById('tags').style.display='block';" style="margin-left: 1em; color: #50565c; cursor: pointer;"></i>-->
-
-
-                  <!--編輯標籤按鈕-->
-                  <% if (record[0].rec_upload == userid) { %>
-
-                    <!--<div class="nav-item dropdown" id="tag" onclick="$('#tag_dropdown').slideToggle(200);" style="display: inline; margin-left: 1em; color: #50565c; cursor: pointer;">-->
-                    <div class="nav-item dropdown" id="tag" onclick="document.getElementById('tags').style.display='block';" style="display: inline; margin-left: 1em; color: #50565c; cursor: pointer;">
-                      <i class="fas fa-edit"></i>
-                      <div class="dropdown-menu" style="min-width: 12rem;" id="tag_dropdown" aria-labelledby="themes">
-                        <form method="POST" id="formfilter">
-                          <div style="margin: 10px;">
-                            <label for="searchTag">套用標籤</label>
-                          
-                          
-                            <div class="input-group mb-3">
-                              <input class="form-control" type="text" style="border-radius: 0; border-width: 0 0 1px 0;" name="searchRecord" id="searchTag" placeholder="搜尋標籤" aria-label="Search minutes">
-                              <div class="input-group-append">
-                                <button class="btn" style="border-bottom-width: 1px;" type="button"><i class="fas fa-search"></i></button>
-                              </div>
-                            </div>
-
-                            <% for (var i = 0; i < tag.length; i++) { %>
-                              <% cbIsCheck = tag_cbIsChecked(tag[i].tag_name); %>
-                              <% if (cbIsCheck == true) { %>
-                                <div class="custom-control custom-checkbox">
-                                  <input type="checkbox" class="custom-control-input" id="cb0" value="<%= tag[i].tag_name%>" checked>
-                                  <label class="custom-control-label" for="cb0"><%= tag[i].tag_name%></label>
-                                </div>
-                              <% } else if (cbIsCheck == false) { %>
-                                <div class="custom-control custom-checkbox">
-                                  <input type="checkbox" class="custom-control-input" id="cb0" value="<%= tag[i].tag_name%>">
-                                  <label class="custom-control-label" for="cb0"><%= tag[i].tag_name%></label>
-                                </div>
-                              <% } %>
-                            <% } %>
-                            <input type="hidden" id="filter" name="filter">
-                          </div>
-                        
-                        
-
-                          <div class="dropdown-divider"></div>
-                          <a class="dropdown-item" href="#">新增標籤</a>
-                        </form>
-                      </div>
-                    </div>
-                  <% } %>
-
-
-
-
-
+                    <!--編輯標籤按鈕-->
+                    <% if (record[0].rec_upload == userid) { %>
+                      <i class="fas fa-edit" 
+                        onclick="document.getElementById('tags').style.display='block';" 
+                        style="margin-left: 1em; color: #50565c; cursor: pointer;">
+                      </i>
+                    <% } %>
                 </td>
               </tr>
               <tr>
@@ -211,19 +168,19 @@
                         <h5 class="modal-title">套用標籤</h5>
                       </div>
                       <div class="modal-body">
-                        <div class="card border-secondary mb-3" style="max-height: 15rem; min-height: 8rem; overflow-y: auto;">
+                        <div class="card mb-3" style="max-height: 15rem; min-height: 8rem; overflow-y: auto;">
                           <div class="card-body" style="padding: 1rem;">
                             <% for (var i = 0; i < tag.length; i++) { %>
                               <% cbIsCheck = tag_cbIsChecked(tag[i].tag_name); %>
                               <% if (cbIsCheck == true) { %>
                                 <div class="custom-control custom-checkbox">
-                                  <input type="checkbox" class="custom-control-input" id="cb0" value="<%= tag[i].tag_name%>" checked>
-                                  <label class="custom-control-label" for="cb0"><%= tag[i].tag_name%></label>
+                                  <input type="checkbox" class="custom-control-input" id="cb<%=i %>" value="<%= tag[i].tag_name%>" checked>
+                                  <label class="custom-control-label" for="cb<%=i %>"><%= tag[i].tag_name%></label>
                                 </div>
                               <% } else if (cbIsCheck == false) { %>
                                 <div class="custom-control custom-checkbox">
-                                  <input type="checkbox" class="custom-control-input" id="cb0" value="<%= tag[i].tag_name%>">
-                                  <label class="custom-control-label" for="cb0"><%= tag[i].tag_name%></label>
+                                  <input type="checkbox" class="custom-control-input" id="cb<%=i %>" value="<%= tag[i].tag_name%>">
+                                  <label class="custom-control-label" for="cb<%=i %>"><%= tag[i].tag_name%></label>
                                 </div>
                               <% } %>
                             <% } %>
