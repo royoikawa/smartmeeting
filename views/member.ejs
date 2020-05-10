@@ -18,7 +18,7 @@
       </div>
       <div style="width: inherit; height: fit-content;">
         <span class="badge badge-light">專案代號：<%= pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
-        <button id="meet" type="button"  class="btn btn-outline-warning btn-sm" style="float: right;">我要開會</button>
+        <button id="meet" type="button" onclick="location.href='/meeting/<%= pro_id %>';" class="btn btn-outline-warning btn-sm" style="float: right;">我要開會</button>
       </div>
       <div class="divider"></div>
       
@@ -416,22 +416,6 @@
 //      });
 //    })
 
-    //開會傳值到mcs
-    $('#meet').click(function() {
-      var data = {
-        datapoints:[ {dataChnId:'start', values: {value: 'start'} } ]
-      }
-      $.ajax({
-        url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datapoints',
-        headers: {deviceKey:'nOJM4aFkjC980deR'},
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function(res){
-          location.href='/meeting/<%= pro_id %>';
-        }  
-      })
-    })
 
     //匯入solr
     $(document).ready(function() {        
