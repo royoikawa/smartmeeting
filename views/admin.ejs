@@ -297,7 +297,7 @@
         alert("dddd");
       } else {
         $("#nameForm").submit();
-        alert("sss");
+        alert("成功修改專案名稱！");
       }     
     })
 
@@ -347,6 +347,7 @@
             }
             else if (res.status == 0){
               location.href='/admin/' + $('#proid').val();
+              alert("成功修改專案密碼！");
             }
           }
         })
@@ -366,7 +367,8 @@
           success: function(res){
             if(res.status == 0){
               location.href='/admin/' + $('#proid').val()
-            }         
+              alert("成功移除 " + mem.name + " ！");
+            }
           }      
         })
       })
