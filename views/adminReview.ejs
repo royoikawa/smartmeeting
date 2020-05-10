@@ -28,8 +28,6 @@
               <span class="badge badge-pill badge-info" style="margin-left: 1em; font-weight: normal;"><%= state %></span>
               <a href="/file/<%= record[0].rec_id %>" target="_blank"><i class="fas fa-arrow-down" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c;"></i></a>
               <i class="fas fa-eye" onclick="document.getElementById('preview').style.display='block';" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c; cursor: pointer;"></i>
-              <!--<i class="fas fa-tag fa-rotate-135" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c; cursor: pointer;"></i>
-              <i class="fas fa-tag" onclick="document.getElementById('tags').style.display='block';" style="float: right; font-size: 1.1rem; color: #50565c; cursor: pointer;"></i>-->              
             </h5>
             <hr class="my-4">
           
@@ -48,12 +46,28 @@
                   <td>上傳者</td>
                   <td><%= record[0].acc_name %></td>
                 </tr>
+              
+          <% if (record[0].rec_reason == null) { %>
+            <!-- 審核：若是審核新檔案，表格結束，顯示按鈕 -->
+              </tbody>
+              </table> 
+            </div>
+            
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('denyReview').style.display='block';">不通過</button>
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('recognizeReview').style.display='block';">通過</button>
+            
+          <% } else { %>
+            <!-- 審核修改：若是審核修改，表格加上一列顯示修改過的檔案，顯示修改原因，顯示按鈕 -->
+                <tr>
+                  <td>修改後的檔案<br>(須審核的檔案)</td>
+                  <td><%= record[0].rec_revisepath.substring(14).slice(0, -26) %>.docx
+                    <a href="/file/<%= record[0].rec_id %>" target="_blank"><i class="fas fa-arrow-down" style="margin-left: 1em; color: #50565c;"></i></a>
+                  </td>
+                </tr>
               </tbody>
               </table> 
             </div>
 
-            <% if (record[0].rec_reason != null) { %>
-              <!-- 審核修改 -->
               <div class="card mb-3" style="min-width: 100%; position: relative; display: inline-block;">
                 <div class="toast-body">
                 申請原因：<%= record[0].rec_reason %>
@@ -61,12 +75,9 @@
               </div>
               <button type="button" class="btn btn-secondary" onclick="document.getElementById('deny').style.display='block';">不通過</button>
               <button type="button" class="btn btn-primary" onclick="document.getElementById('recognize').style.display='block';">通過</button>
-            <% } %>
-            <% if (record[0].rec_reason == null) { %>
-              <!-- 審核 -->
-              <button type="button" class="btn btn-secondary" onclick="document.getElementById('denyReview').style.display='block';">不通過</button>
-              <button type="button" class="btn btn-primary" onclick="document.getElementById('recognizeReview').style.display='block';">通過</button>
-            <% } %>
+            
+                
+          <% } %>
 
         </div>
       </div>
@@ -170,16 +181,30 @@
                         </button>
                       </div>
                       <div class="modal-body">
+                        <!--審核，只顯示一個檔案-->
                         <% if (record[0].rec_reason == null) { %>
+                          
                           <div class="iframe-container">
                             <iframe id="iframe_preview" src="/showfile/<%= record[0].rec_path.substring(14)%>" allowfullscreen></iframe>
                           </div>
+                          
                         <% } else { %>
+
+                          <!--審核修改，顯示兩個檔案-->
                           <div class="alert alert-light" style="width: 49.8%; float: left; margin-right: 0.4%; margin-bottom: 0.25rem;">
                             原始會議記錄
+                            <!--下載icon-->
+                            <a href="/file/<%= record[0].rec_id %>" target="_blank">
+                              <i class="fas fa-arrow-down" style="margin-left:1rem; display: inline; color: #50565c;"></i>
+                            </a>
                           </div>
+
                           <div class="alert alert-light" style="width: 49.8%; float: left; margin-bottom: 0.25rem;">
                             修改過的會議記錄
+                            <!--下載icon-->
+                            <a href="/file/<%= record[0].rec_id %>" target="_blank">
+                              <i class="fas fa-arrow-down" style="margin-left:1rem; display: inline; color: #50565c;"></i>
+                            </a>
                           </div>
                           
                           <div class="iframe-container" style="width: 49.8%; margin-right: 0.4%; float: left;">

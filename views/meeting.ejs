@@ -51,6 +51,7 @@
       <!--搜尋區塊-->
       <div class="card bg-light  mb-3"style="border-width: 0;">
         <div class="card-body">
+          <p>輸入關鍵字開始搜尋會議記錄</p>
           <form  class="form-inline my-2 my-lg-0" style="position: relative; display: inline-block; padding-left: 1em; margin-top: 1em; margin-right: 2em;">
             <div class="form-inline">
               <div class="form-group">
@@ -88,10 +89,6 @@
                     <p id="p">no data</p>
                     <div id='div'>  
                       <div class="list-group"  style="width: 15rem; float: left; margin-right: 1rem;">
-                        <!-- <a href="#" id="list" class="list-group-item list-group-item-action" style="color: #2C3E50;">
-                          <strong></strong><br>';
-                          <span class="badge badge-light"></span>
-                          </a> -->
                       </div>
                       <div class="iframe-container">
                         <iframe id="iframe_preview" allowfullscreen></iframe>
@@ -103,7 +100,7 @@
       </div>
     </div>
 
-    <!--結束錄音音檔文檔上傳-->
+    <!--結束錄音，音檔文檔上傳-->
     <div id="audiotext" class="modal" >
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -265,6 +262,7 @@
       
     } 
     
+    //搜尋
     function search() {
       $.ajax({
         url: '/meeting/<%= pro_id %>',
