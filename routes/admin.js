@@ -11,6 +11,7 @@ var prodata;
 var notice;
 
 router.all('/:id_join', function(req, res, next) {
+    console.log("isisis");
     if(!req.session.userAccount){//若沒登入，跳到登入頁
         res.redirect('/login');
     }
@@ -29,6 +30,7 @@ router.all('/:id_join', function(req, res, next) {
 });
 
 router.get('/:id_join', function(req, res, next) {    
+    console.log("wewewe");
     var pro_id = req.params.id_join;     
     
     var q = "SELECT pro_name FROM project WHERE pro_id = $1";
@@ -84,9 +86,10 @@ router.get('/:proid/:rec_id', function(req, res, next) {
 });
 
 //審核上傳
-router.post('/audit', function(req, res, next){
-    var proid = req.query.proid;
-    var id = req.query.recid;
+router.post('/:proid/:recid/audit', function(req, res, next){
+    console.log("audit");
+    var proid = req.params.proid;
+    var id = req.params.recid;
     var reason = req.body.denyReason;//自行改auditreason
     var time = moment(new Date()).tz("Asia/Taipei").format("YYYY-MM-DD HH:mm:ss");
     if(!reason) {
@@ -163,8 +166,8 @@ router.post('/', function(req, res, next){
 });
 
 //專案管理
-router.post('/change', function(req, res, next){
-    var proid = req.query.proid;
+router.post('/:proid/pm/change', function(req, res, next){
+    var proid = req.params.proid;
     var proname = req.body.proname;
     var propw = req.body.propw;
     var newpropw1 = req.body.newpropw1;
@@ -172,6 +175,7 @@ router.post('/change', function(req, res, next){
     var chpw = req.body.chpw;
     var newadmin = req.body.newadmin;
     if(proname){//更改專案名稱
+        console.log("ds");
         var sql = "UPDATE project SET pro_name=$1 WHERE pro_id=$2";
         pool.query(sql, [proname, proid], function(err) {
             if(err) throw err;
@@ -187,7 +191,7 @@ router.post('/change', function(req, res, next){
             else{
                 var updatepw = "UPDATE project SET pro_pw=$1 WHERE pro_id=$2";
                 pool.query(updatepw, [newpropw1, proid])                  
-                res.json({"status": 0, "msg": "success"})               
+                res.json({"status": 0, "msg": "success"});
             }
         })
     }

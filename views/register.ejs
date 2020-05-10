@@ -34,7 +34,7 @@
               <td colspan="3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color='red' id='message'></font></td>
             </tr>
             <tr>
-              <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;已有帳戶?&nbsp;<a href="/login">登入</a></td>
+              <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;已有帳戶？&nbsp;<a href="/login">登入</a></td>
               <td colspan="2" align="right"><input type="button"  class="btn btn-primary" style="width: 40%;" id="btn" value="繼續"></td>
               
             </tr>
@@ -55,10 +55,10 @@
           $('#message').text("請輸入未填欄位");
         }
         else if(!regex.test(acc_id)){//不符合mail模式
-          $('#message').text("請輸入有效的郵件");
+          $('#message').text("請輸入有效的電子郵件");
         }
         else if(acc_pw != chpw) {
-          $('#message').text("密碼不一樣");
+          $('#message').text("密碼不相同");
         }
         else{
           $.ajax({
@@ -70,7 +70,7 @@
                 $('#message').text(res.msg);
               }
               else{
-                location.href = '/'
+                location.href = '/';
               }
 
             }

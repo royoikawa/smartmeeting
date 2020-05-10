@@ -13,7 +13,7 @@ router.post('/', function(req, res) {
             res.json({"status":1, "msg": "沒有該帳號"});
         }
         else if (results.rows[0].acc_pw != req.body.password){
-            res.json({"status":1, "msg": "密碼不符合"});
+            res.json({"status":1, "msg": "密碼錯誤"});
         }
         
         else{

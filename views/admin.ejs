@@ -92,9 +92,9 @@
               <ul class="list-group list-group-flush">
                 <li class="list-group-item">
                   <span class="project-item"><strong>名稱</strong></span>
-                      <span class="project-item"><%= pro_name %>
-                        <i onclick="document.getElementById('proName').style.display='block';" class="fas fa-edit" style="cursor: pointer; color: #7b8a8b; margin-left: 0.7em;"></i>
-                      </span>
+                    <span class="project-item"><%= pro_name %>
+                      <i onclick="document.getElementById('proName').style.display='block';" class="fas fa-edit" style="cursor: pointer; color: #7b8a8b; margin-left: 0.7em;"></i>
+                    </span>
                 </li>
                 <li class="list-group-item">
                   <span class="project-item"><strong>密碼</strong></span>
@@ -116,10 +116,10 @@
                       </div>
                       <div class="card-body">                       
                         <% for(var i=0; i<prodata.length; i++) { %>
-                            <div class="alert alert-dismissible alert-light" style="max-width: 10em; display: inline-block; margin-right: 1em;">
-                              <button type="button" class="close" data-dismiss="alert" id='<%= prodata[i].acc_id %>' name='<%= prodata[i].acc_name %>' onclick="OpenProMem(this)">&times;</button>
-                              <%= prodata[i].acc_name %>
-                            </div>
+                          <div class="alert alert-dismissible alert-light" style="max-width: 10em; display: inline-block; margin-right: 1em;">
+                            <button type="button" class="close" data-dismiss="alert" id='<%= prodata[i].acc_id %>' name='<%= prodata[i].acc_name %>' onclick="OpenProMem(this)">&times;</button>
+                            <%= prodata[i].acc_name %>
+                          </div>
                         <% } %>                       
                       </div>
                     </div>
@@ -132,7 +132,7 @@
             <div id="proName" class="modal" >
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                  <form class="form-group" id="nameForm" method="POST" action="/admin/change?proid=<%= pro_id %>">
+                  <form class="form-group" id="nameForm" method="POST" action="/admin/<%= pro_id %>/pm/change">
                     <div class="modal-header"><h5 class="modal-title">修改專案名稱</h5></div>
                     <div class="modal-body">
                       <label class="col-form-label">請輸入專案名稱</label>
@@ -177,7 +177,7 @@
             <div id="proMem" class="modal" >
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                  <form class="form-group" id="memForm" method="POST" action="/admin/change?proid=<%= pro_id %>">
+                  <form class="form-group" id="memForm" method="POST" action="/admin/<%= pro_id %>/pm/change">
                     <div class="modal-header"><h5 class="modal-title" id="promem"></h5></div>                    
                     <div class="modal-footer">
                       <input type="button" value="取消" class="btn btn-secondary" data-dismiss="modal" onclick="document.getElementById('proMem').style.display='none';">
@@ -213,25 +213,30 @@
             <div id="changeAdmin" class="modal" >
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                  <form class="form-group" id="newadminForm" method="POST" action="/admin/change?proid=<%= pro_id %>">
+                  <form class="form-group" id="newadminForm" method="POST" action="/admin/<%= pro_id %>/pm/change">
                     <div class="modal-header"><h5 class="modal-title">更換管理員</h5></div>
-                    <div class="modal-body"><h6 class="modal-title">請勾選欲更換的管理員：</h6><br>
-                      <center><table width='90%'>                
-                          <% for(var i=0; i<prodata.length; i++) { %>                           
-                            <% if((i+1)%3==1) {%>
-                              <tr>
-                            <% } %>
-                            <td><input  type="radio" value='<%= prodata[i].acc_id %>' name='newadmin' id='newadmin'><%= prodata[i].acc_name %></td>
-                            <% if((i+1)%3==0 || i==prodata.length-1) {%>
+                    <div class="modal-body" style="scroll-behavior: auto;">
+                      <h6 class="modal-title">請勾選欲更換的管理員：</h6>
+                      <table width='100%' style="border-collapse:separate; border-spacing: 0px 1rem;">                
+                        <% for(var i=0; i<prodata.length; i++) { %>
+                          <% if( i%4 == 0 ) {%>
+                            <tr>
+                          <% } %>
+                          <td>
+                            <div class="custom-control custom-radio">
+                              <input type="radio" value='<%= prodata[i].acc_id %>' name='newadmin' id='newadmin<%= prodata[i].acc_id %>' class="custom-control-input">
+                              <label class="custom-control-label" for="newadmin<%= prodata[i].acc_id %>"><%= prodata[i].acc_name %></label>
+                            </div>
+                          </td>
+                          <% if( i%4 == 3 || i == prodata.length-1) {%>
                             </tr>
-                            <% } %>                           
-                          <% } %>                        
-                      </table></center>                                 
-                      <br>
-                      <span  style="color: red; font-size: small;">注意：更換後您的身分將變成成員</span>
+                          <% } %>
+                        <% } %>
+                      </table>                                
                       <span class="invalid-feedback" id="message4"></span>
                     </div>
-                    <div class="modal-footer">                     
+                    <div class="modal-footer">
+                      <span class="invalid-feedback" style="display: block; width: fit-content;">注意：更換後您的身分將變為成員</span>
                       <input type="button" value="取消" class="btn btn-secondary" data-dismiss="modal" onclick="closeChangeAdmin()">
                       <input type="button" value="確認" class="btn btn-primary" id="btn4">
                     </div>
@@ -289,8 +294,10 @@
       if (!$("#proname").val()) {
         $('#proname').addClass("is-invalid");
         $("#message1").text("請輸入專案名稱").css("display", "block").addClass("is-invalid");
+        alert("dddd");
       } else {
         $("#nameForm").submit();
+        alert("sss");
       }     
     })
 
@@ -302,42 +309,44 @@
           $('#newpropw1').addClass("is-invalid");
           $('#newpropw2').addClass("is-invalid");
         }
-        else{//空的才顯示紅框
+        else {//空的才顯示紅框
           $('#propw').removeClass("is-invalid");
           $('#newpropw1').removeClass("is-invalid");
           $('#newpropw2').removeClass("is-invalid");
-          if(!$("#propw").val()){
+          if (!$("#propw").val()) {
             $('#propw').addClass("is-invalid");
           }
-          if(!$("#newpropw1").val()){
+          if (!$("#newpropw1").val()) {
             $('#newpropw1').addClass("is-invalid");
           }
-          if(!$("#newpropw2").val()){
+          if (!$("#newpropw2").val()) {
             $('#newpropw2').addClass("is-invalid");
           }
         }
         $("#message2").text("請輸入未填欄位").css("display", "block").addClass("is-invalid");
-      } else if($("#newpropw1").val() != $("#newpropw2").val()) {//密碼不同
+        
+      } else if ($("#newpropw1").val() != $("#newpropw2").val()) {//密碼不同
         $('#propw').removeClass("is-invalid");
         $('#newpropw1').addClass("is-invalid");
         $('#newpropw2').addClass("is-invalid");
-        $("#message2").text("密碼不相同");
-        $("#message2").css("display", "block");         
+        $("#message2").text("密碼不相同").css("display", "block");
+
       } else {
         $('#propw').removeClass("is-invalid");
         $('#newpropw1').removeClass("is-invalid");
         $('#newpropw2').removeClass("is-invalid");
+        $("#message2").css("display", "none");
         $.ajax({
-          url:"/admin/change?proid=" + $('#proid').val(),
-          data:{'propw': $('#propw').val(), 'newpropw1': $('#newpropw1').val(), 'newpropw2': $('#newpropw2').val()},
+          url:"/admin/" + $('#proid').val() + "/pm/change",
+          data:{'propw': $('#propw').val(), 'newpropw1': $('#newpropw1').val()},
           type:"POST",
-          success: function(res){
-            if(res.status == 1) {//專案密碼錯誤
+          success: function(res) {
+            if (res.status == 1) {//專案密碼錯誤
               $('#message2').text(res.msg).css("display", "block");
               $('#propw').addClass("is-invalid");
             }
-            else if(res.status == 0){
-              location.href='/admin/' + $('#proid').val()
+            else if (res.status == 0){
+              location.href='/admin/' + $('#proid').val();
             }
           }
         })
@@ -351,7 +360,7 @@
       document.getElementById('proMem').style.display='block';
       $("#deletemem").click(function(){
         $.ajax({
-          url: '/admin/change?proid=' + $('#proid').val(),
+          url: "/admin/" + $('#proid').val() + "/pm/change",
           data:{'member': mem.id},
           type: 'POST',
           success: function(res){
@@ -378,7 +387,7 @@
       } else {
         $('#chpw').removeClass("is-invalid");
         $.ajax({
-          url: '/admin/change?proid=' + $('#proid').val(),
+          url: "/admin/" + $('#proid').val() + "/pm/change",
           data:{'chpw': $("#chpw").val()},
           type: 'POST',
           success: function(res){

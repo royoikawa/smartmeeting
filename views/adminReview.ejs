@@ -79,7 +79,7 @@
         <div id="recognizeReview" class="modal" >
           <div class="modal-dialog" role="document">
             <div class="modal-content">
-              <form method="POST" class="form-group" action="/admin/audit?proid=<%= pro_id %>&recid=<%= record[0].rec_id %>">
+              <form method="POST" class="form-group" action="/admin/<%= pro_id %>/<%= record[0].rec_id %>/audit">
                 <div class="modal-header">
                     <h5 class="modal-title">確定審核通過會議記錄？</h5>
                 </div>
@@ -98,7 +98,7 @@
         <div id="denyReview" class="modal" >
           <div class="modal-dialog" role="document">
               <div class="modal-content">
-                  <form method="POST" class="form-group" id="denyForm" action="/admin/audit?proid=<%= pro_id %>&recid=<%= record[0].rec_id %>">
+                  <form method="POST" class="form-group" id="denyForm" action="/admin/<%= pro_id %>/<%= record[0].rec_id %>/audit">
                       <div class="modal-header">
                         <h5 class="modal-title">確定不通過會議記錄？</h5>
                       </div>
