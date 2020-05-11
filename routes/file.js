@@ -38,12 +38,22 @@ var upload = multer({
     storage: storage
 })
 
-//下載會議記錄
+//下載原始會議記錄
 router.get('/:fileid', function(req, res, next) {
     var id = req.params.fileid;
     var sql = "SELECT * FROM record WHERE rec_id=$1";
     pool.query(sql, [id]).then(results => {//找檔案id
         res.download(results.rows[0].rec_path, results.rows[0].rec_name);//更改下載檔案的檔名 
+     })
+});
+
+//下載修改會議記錄
+router.get('/new/:fileid', function(req, res, next) {
+    var id = req.params.fileid;
+    var sql = "SELECT * FROM record WHERE rec_id=$1";
+    pool.query(sql, [id]).then(results => {//找檔案id
+        var revisepath = results.rows[0].rec_revisepath;
+        res.download(results.rows[0].rec_revisepath, revisepath.substring(14, revisepath.lastIndexOf('.')-21)+revisepath.substring(revisepath.lastIndexOf('.')));//更改下載檔案的檔名 
      })
 });
 

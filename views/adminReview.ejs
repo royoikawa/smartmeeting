@@ -61,7 +61,7 @@
                 <tr>
                   <td>修改後的檔案<br>(須審核的檔案)</td>
                   <td><%= record[0].rec_revisepath.substring(14).slice(0, -26) %>.docx
-                    <a href="/file/<%= record[0].rec_id %>" target="_blank"><i class="fas fa-arrow-down" style="margin-left: 1em; color: #50565c;"></i></a>
+                    <a href="/file/new/<%= record[0].rec_id %>" target="_blank"><i class="fas fa-arrow-down" style="margin-left: 1em; color: #50565c;"></i></a>
                   </td>
                 </tr>
               </tbody>
@@ -202,7 +202,7 @@
                           <div class="alert alert-light" style="width: 49.8%; float: left; margin-bottom: 0.25rem;">
                             修改過的會議記錄
                             <!--下載icon-->
-                            <a href="/file/<%= record[0].rec_id %>" target="_blank">
+                            <a href="/file/new/<%= record[0].rec_id %>" target="_blank">
                               <i class="fas fa-arrow-down" style="margin-left:1rem; display: inline; color: #50565c;"></i>
                             </a>
                           </div>

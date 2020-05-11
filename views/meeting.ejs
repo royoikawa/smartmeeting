@@ -25,8 +25,8 @@
       <!--錄音區塊-->
       <div class="card bg-light mb-3" style="border-width: 0;">
         <div class="card-body">
-          <p id="msgRecord">請按下開始鍵，開始錄音、按下結束會議，回到會議記錄列表</p>
-            <button type="button" class="close" id="startRecord" onclick="document.getElementById('audiotext').style.display('block');" aria-label="Close" style="float: left; font-size: 1.2rem; line-height: 1.5; color: #2C3E50; opacity: 1;">
+          <p id="msgRecord">請按下開始鍵，並輸入檔名，開始錄音、按下結束會議，回到會議記錄列表</p>
+            <button type="button" class="close" id="startRecord" onclick="document.getElementById('audiotext').style.display='block';" aria-label="Close" style="float: left; font-size: 1.2rem; line-height: 1.5; color: #2C3E50; opacity: 1;">
                 <span aria-hidden="true" style="margin-right: 2em;"><i class="fas fa-play"></i></span>
             </button>
             <button type="button" class="close icon" id="stopRecord" disabled onclick="stopRecord();" aria-label="Close" style="float: left; font-size: 1.2rem; line-height: 1.5; color: #2C3E50; opacity: 1;">
@@ -143,23 +143,29 @@
 
     function closeAudiotext() {
       $('#name').val(null);
+      $('#name').removeClass("is-invalid");
       $('#audiotext').hide();
     }
 
     $('#send').click(function() {
-      var data = {datapoints:[ {dataChnId:'project_id', values: {value: '<%= pro_id %>*' + $('#name').val()} } ] }
-      $.ajax({
-        url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datapoints',
-        headers: {deviceKey:'nOJM4aFkjC980deR'},
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(data),
-        success: function(res){
+      if(!$('#name').val()){
+        $('#name').addClass("is-invalid");
+      }
+      else{
+        var data = {datapoints:[ {dataChnId:'project_id', values: {value: '<%= pro_id %>*' + $('#name').val()} } ] }
+        $.ajax({
+          url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datapoints',
+          headers: {deviceKey:'nOJM4aFkjC980deR'},
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(data),
+          success: function(res){
           
-        }  
-      })
-      closeAudiotext();
-      startRecord();
+          }  
+        })
+        closeAudiotext();
+        startRecord();
+      }      
     })
 
     $('#btnSearch').click(function() {     
@@ -203,7 +209,6 @@
       $("#btnMeeting").attr("disabled", false);//使「開始鍵」無法點
       postOff();
       stop();
-      $('#audiotext').show();
     }
 
     //計時器動畫
@@ -350,7 +355,7 @@
         contentType: 'application/json',
         data: JSON.stringify(data),
         success: function(res){
-          
+          console.log('start');
         }  
       })
     }
@@ -371,7 +376,7 @@
       })
     }
 
-    function postOff() { //結束會議 傳值end
+    function postEnd() { //結束會議 傳值end
       var data = {
         datapoints:[ {dataChnId:'start', values: {value: 'end'} } ]
       }
