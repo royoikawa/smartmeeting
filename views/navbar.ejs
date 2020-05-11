@@ -12,7 +12,7 @@
         
         <li class="nav-item dropdown" id="toggle_notice" onclick="$('#dropdown_notice').slideToggle(200);">
           <a id="noticeclick" class="nav-link" href="#" style="margin-right: 0.5em;"><i class="fas fa-bell"></i><span class="badge badge-danger badge-pill" id='noticecount'></span></a>
-          <div class="dropdown-menu" id="dropdown_notice" style="right: 0; left: auto; min-width: 15rem;" aria-labelledby="notice">
+          <div class="dropdown-menu" id="dropdown_notice" style="right: 0; left: auto; min-width: 15rem; max-height: 30rem; overflow-y: auto;" aria-labelledby="notice">
             <% if(notice.length!=0) { %>
               <% for(var i=0; i<notice.length; i++) { %>              
                 <% if(notice[i].ap_authority=='管理員') { %>

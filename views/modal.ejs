@@ -35,7 +35,7 @@
         var chp = false; // 用來判斷 "檢驗密碼"欄位 是否為有效欄位
 
         /*** "名字"欄位， $('#pro_name')表該欄位，$('#pro_name').val()表該欄位值 ***/         
-        $('#pro_name').blur(function() { // blur(function) 點擊該欄位，從該欄位移開時，要做的事情
+        $('#pro_name').keyup(function() { // blur(function) 點擊該欄位，從該欄位移開時，要做的事情
             if (!$('#pro_name').val()) { // 當pro_name 為空
                 $('#pro_name').addClass("is-invalid"); // 加入 class="is-invalid"，讓該欄位變紅色
                 $("#messagen").css("display", "block"); // 顯示錯誤訊息
@@ -49,7 +49,7 @@
         })
         
         /*** "密碼"欄位 ***/
-        $('#pro_pw').blur(function() {
+        $('#pro_pw').keyup(function() {
             // 判斷 pro_pw 是否為空
             if (!$('#pro_pw').val()) {
                 $("#messagepw").css("display", "block");
@@ -73,7 +73,7 @@
         })
 
         /*** "檢驗密碼"欄位 ***/
-        $('#checkpw').blur(function() {
+        $('#checkpw').keyup(function() {
             // 判斷 checkpw 是否為空 或 密碼是否一致
             if (!$('#checkpw').val()) {
                 $("#messagecpw").text("請再次填入密碼");

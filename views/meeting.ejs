@@ -18,7 +18,7 @@
       </div>
       <span class="badge badge-light">專案代號：<%= pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
       <!--結束會議-->
-      <button type="button" id="btnMeeting" onclick="postOff();" class="btn btn-outline-warning btn-sm" style="float: right;">結束會議</button>
+      <button type="button" id="btnMeeting" onclick="postEnd();" class="btn btn-outline-warning btn-sm" style="float: right;">結束會議</button>
       <span id="onAir" class="badge badge-danger">錄音中</span>
       <div class="divider"></div>
 
@@ -26,7 +26,7 @@
       <div class="card bg-light mb-3" style="border-width: 0;">
         <div class="card-body">
           <p id="msgRecord">請按下開始鍵，開始錄音、按下結束會議，回到會議記錄列表</p>
-            <button type="button" class="close" id="startRecord" onclick="startRecord();" aria-label="Close" style="float: left; font-size: 1.2rem; line-height: 1.5; color: #2C3E50; opacity: 1;">
+            <button type="button" class="close" id="startRecord" onclick="document.getElementById('audiotext').style.display('block');" aria-label="Close" style="float: left; font-size: 1.2rem; line-height: 1.5; color: #2C3E50; opacity: 1;">
                 <span aria-hidden="true" style="margin-right: 2em;"><i class="fas fa-play"></i></span>
             </button>
             <button type="button" class="close icon" id="stopRecord" disabled onclick="stopRecord();" aria-label="Close" style="float: left; font-size: 1.2rem; line-height: 1.5; color: #2C3E50; opacity: 1;">
@@ -80,6 +80,12 @@
               <form method="POST" class="form-group">
                   <div class="modal-header" style="margin-bottom: 1rem;">
                     <h5 class="modal-title">搜尋結果</h5>
+                    <div style="display: inline-block; line-height: 1.5;">
+                      <i class="fas fa-circle" style="position: relative; font-size: 0.6rem; color: #f2d600; margin-left: 1em;"></i>
+                      <h6 style="display: inline; vertical-align:middle;">表示審核中</h6>
+                      <i class="fas fa-circle" style="position: relative; font-size: 0.6rem; color: #E74C3C; margin-left: 1em;"></i>
+                      <h6 style="display: inline; vertical-align:middle">表示審核不通過</h6>
+                    </div>
                     <button type="button" onclick="closeResult()" class="close" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
@@ -153,6 +159,7 @@
         }  
       })
       closeAudiotext();
+      startRecord();
     })
 
     $('#btnSearch').click(function() {     
@@ -194,6 +201,7 @@
       $("#startRecord").attr("disabled", false);//使「開始鍵」無法點
       $("div").css("animation-play-state", "paused");//錄音動畫結束
       $("#btnMeeting").attr("disabled", false);//使「開始鍵」無法點
+      postOff();
       stop();
       $('#audiotext').show();
     }
@@ -278,14 +286,31 @@
             var filename = res.minute[0].rec_path.substring(14);
             showPreview(filename);           
             for (let i in res.minute) {
+              if (res.minute[i].rec_revisepath && res.minute[i].rec_reason) {
+                strList += '<a href="#" id="list" name="list" class="list-group-item list-group-item-action" style="color: #2C3E50; border-width: 0px 1px;">';
+                strList += '<i class="fas fa-circle" style="font-size: 0.6rem; color: #f2d600;"></i>';
+                strList +='<strong>' + res.minute[i].rec_revisepath.substring(14).slice(0, -26) +'.docx</strong><br>';
+                strList += '<span class="badge badge-light">' + res.minute[i].tag_names + '</span>';
+                strList += '<input type="hidden" id="filename" name="filename" value="' + res.minute[i].rec_revisepath.substring(14)+ '">' ;
+                strList += '</a>';
+              }
+              
               strList += '<a href="#" id="list" name="list" class="list-group-item list-group-item-action" style="color: #2C3E50;">';
+              if (res.minute[i].rec_state == '審核中') {
+                if (res.minute[i].rec_reason == null)
+                  strList += '<i class="fas fa-circle" style="font-size: 0.6rem; color: #f2d600;"></i>';
+              } else if (res.minute[i].rec_state == '審核不通過')
+                strList += '<i class="fas fa-circle" style="font-size: 0.6rem; color: #E74C3C;"></i>';
+              
               strList +='<strong>' + res.minute[i].rec_name +'</strong><br>';
-              if(res.minute[i].tag_names){
+              if(res.minute[i].tag_names) {
                 strList += '<span class="badge badge-light">' + res.minute[i].tag_names + '</span>';
               }             
               strList += '<input type="hidden" id="filename" name="filename" value="' + res.minute[i].rec_path.substring(14)+ '">' ;
-              strList += '</a>';          
-              $(".list-group").html(strList);                                             
+              strList += '</a>';
+              
+              $(".list-group").html(strList);
+              
             }
  
             $('#searchResult').show();
@@ -330,7 +355,7 @@
       })
     }
 
-    function postOff() { //結束會議 傳值off
+    function postOff() { //結束錄音 傳值off
       var data = {
         datapoints:[ {dataChnId:'start', values: {value: 'off'} } ]
       }
@@ -342,6 +367,22 @@
         data: JSON.stringify(data),
         success: function(res){
           console.log('off');
+        }  
+      })
+    }
+
+    function postOff() { //結束會議 傳值end
+      var data = {
+        datapoints:[ {dataChnId:'start', values: {value: 'end'} } ]
+      }
+      $.ajax({
+        url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datapoints',
+        headers: {deviceKey:'nOJM4aFkjC980deR'},
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function(res){
+          console.log('end');
           location.href='/member/<%= pro_id %>';
         }  
       })

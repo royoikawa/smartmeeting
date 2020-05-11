@@ -59,14 +59,7 @@
                 <td><%= record[0].acc_name %></td>
               </tr>
 
-              <% if (record[0].rec_reason == null) { %>
-                <!-- 上傳新檔：若是新檔案，表格結束 -->
-                  </tbody>
-                  </table> 
-                </div>
-                
-                
-              <% } else { %>
+              <% if (record[0].rec_reason != null && record[0].rec_state == '審核中') { %>
                 <!-- 申請修改：若是申請修改且審核中，表格加上一列顯示修改過的檔案，顯示修改原因 -->
                     <tr>
                       <td>修改後的檔案</td>
@@ -80,16 +73,21 @@
                   </table> 
                 </div>
     
-                  <div class="card mb-3" style="min-width: 100%; position: relative; display: inline-block;">
-                    <div class="toast-body">
-                    原因：<%= record[0].rec_reason %>
-                    </div>
+                <div class="card mb-3" style="min-width: 100%; position: relative; display: inline-block;">
+                  <div class="toast-body">
+                  原因：<%= record[0].rec_reason %>
                   </div>
+                </div>
                 
                     
+              <% } else { %>
+                <!-- 上傳新檔：若是新檔案，表格結束 -->
+                  </tbody>
+                  </table> 
+                </div>
               <% } %>
 
-              <!--審核不通過、已確立之檔案，顯示按鈕-->
+          <!--審核不通過、已確立之檔案，顯示按鈕-->
           <% if (record[0].acc_name == username) { %>
             <% if (state == '審核不通過') { %>
               <button type="button" class="btn btn-primary" onclick="document.getElementById('reupload').style.display='block';">重新上傳</button>
@@ -169,14 +167,9 @@
                       </div>
                       <div class="modal-body" style="padding-top: 0;">
 
-                        <!--上傳新檔：上傳新檔後審核中，只顯示一個檔案-->
-                        <% if (record[0].rec_reason == null) { %>
+                        
+                        <% if (record[0].rec_reason != null && record[0].rec_state == '審核中') { %>
                           
-                          <div class="iframe-container">
-                            <iframe id="iframe_preview" src="/showfile/<%= record[0].rec_path.substring(14)%>" allowfullscreen></iframe>
-                          </div>
-                          
-                        <% } else { %>
                           <!--申請修改：申請修改後且審核中，顯示兩個檔案-->
                           <div class="alert alert-light" style="width: 49.8%; float: left; margin-right: 0.4%; margin-bottom: 0.25rem;">
                             原始會議記錄
@@ -200,6 +193,13 @@
                           <div class="iframe-container" style="width: 49.8%; float: left;">
                             <iframe id="iframe_preview" src="/showfile/<%= record[0].rec_revisepath.substring(14)%>" allowfullscreen></iframe>
                           </div>
+                        <% } else { %>
+                          
+                          <!--上傳新檔：上傳新檔後審核中，只顯示一個檔案-->
+                          <div class="iframe-container">
+                            <iframe id="iframe_preview" src="/showfile/<%= record[0].rec_path.substring(14)%>" allowfullscreen></iframe>
+                          </div>
+                          
                         <% } %>
 
 
