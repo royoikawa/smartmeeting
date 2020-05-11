@@ -7,7 +7,7 @@
     <div class="collapse navbar-collapse" id="navbarColor01" style="position: absolute; right: 50px;">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-          <a class="nav-link" href="/" style="margin-right: 0.5em;"><i class="fas fa-home"></i></a>
+          <a class="nav-link" href="/" onclick="removeStorage();" style="margin-right: 0.5em;"><i class="fas fa-home"></i></a>
         </li>
         
         <li class="nav-item dropdown" id="toggle_notice" onclick="$('#dropdown_notice').slideToggle(200);">
@@ -90,7 +90,7 @@
             <div class="dropdown-menu" id="dropdown" style="right: 0; left: auto;" aria-labelledby="themes">
                 <a class="dropdown-item" href="/personalSetting"><i class="fas fa-cog"></i>&nbsp;&nbsp;&nbsp;個人設定</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;&nbsp;登出</a>
+                <a class="dropdown-item" href="/logout" onclick="removeStorage();"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;&nbsp;登出</a>
             </div>
         </li>
       </ul>
@@ -148,5 +148,7 @@
       });
     })
 
-    
+    function removeStorage() {
+      window.localStorage.removeItem('tab');
+    }
   </script>

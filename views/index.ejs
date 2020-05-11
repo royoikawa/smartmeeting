@@ -132,7 +132,7 @@
       
     };
     $(document).ready(function(){
-        $('#pw_join').blur(function() {
+        $('#pw_join').keyup(function() {
             if (!$('#pw_join').val()) {
                 $('#pw_join').addClass("is-invalid");
                 $('#pw_join').removeClass("is-valid");

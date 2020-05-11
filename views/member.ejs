@@ -290,9 +290,14 @@
   </body>
 
   <script>
-    /*checkbox*/
     $(document).ready(function(){
-      
+      //切換tabs
+      if (window.localStorage.getItem('tab') == '<%= pro_id %>audioText')
+        openAT();
+      else
+        openM();
+
+      /*checkbox*/
       /*checkbox是否呈現勾選*/
       if ('<%= cb[0] %>' == 'true') {
         $("#denyReview").attr("checked", "checked");
@@ -333,32 +338,20 @@
 
     /**tabs**/
     function openM() {
-      $("#tab_m").addClass("active");
-      $("#tab_at").removeClass("active");
-      $("#ctd_minutes").addClass("active");
-      $("#ctd_minutes").addClass("show");
-      $("#ctd_audioText").removeClass("active");
-      $("#ctd_audioText").removeClass("show");
-      $('#tab_m').css("color", "#18BC9C");
-      $('#tab_at').css("color", "#7b8a8b");
+      $("#tab_m").addClass("active").css("color", "#18BC9C");
+      $("#tab_at").removeClass("active").css("color", "#7b8a8b");
+      $("#ctd_minutes").addClass("active show");
+      $("#ctd_audioText").removeClass("active show");
+      window.localStorage.setItem('tab', '<%= pro_id %>minute');
     }
 
     function openAT() {
-      $("#tab_at").addClass("active");
-      $("#tab_m").removeClass("active");
-      $("#ctd_audioText").addClass("active");
-      $("#ctd_audioText").addClass("show");
-      $("#ctd_minutes").removeClass("active");
-      $("#ctd_minutes").removeClass("show");
-      $('#tab_at').css("color", "#18BC9C");
-      $('#tab_m').css("color", "#7b8a8b");
+      $("#tab_at").addClass("active").css("color", "#18BC9C");
+      $("#tab_m").removeClass("active").css("color", "#7b8a8b");
+      $("#ctd_audioText").addClass("active show");
+      $("#ctd_minutes").removeClass("active show");
+      window.localStorage.setItem('tab', '<%= pro_id %>audioText');
     }
-
-    //$("#searchAudioText").blur(function() {
-    //  //if($("#searchAudioText").val() != null)
-    //  //alert('aat');
-    //    openAT();
-    //});
 
     function cancelUpload() {//取消新檔案上傳
       $("#files").val(null);
@@ -385,37 +378,6 @@
         }
       });
     })
-
-//    var recordId;
-//    function rowClick(rid) {
-//      recordId = rid;
-//      document.getElementById("tr").addEventListener("click", goLocation);
-//    }
-//
-//    function goLocation() {
-//      location.href='/member/<%=pro_id %>/' + recordId;
-//    }
-//    function removeHandler() {
-//      document.getElementById("tr").removeEventListener("click", goLocation);
-//      $('#tag_dropdown').slideToggle(200);
-//    }
-//
-//    
-//    $(function () {  
-//      $('#tag').click(function (event) {  
-//          //取消事件冒泡  
-//          event.stopPropagation();  
-//      });
-//
-//      //點選空白處隱藏
-//      $(document).click(function(event){
-//        var _con = $('#tag');   // 設定目標區域
-//        if(!_con.is(event.target) && _con.has(event.target).length === 0){ 
-//          $('#tag_dropdown').slideUp(200);   //滑動消失
-//        }
-//      });
-//    })
-
 
     //匯入solr
     $(document).ready(function() {        

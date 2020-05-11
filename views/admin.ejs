@@ -30,7 +30,6 @@
       <div id="myTabContent" class="tab-content">
         <div class="tab-pane fade active show" id="ctd_review">
           <div class="jumbotron" style="padding-top:15px; padding-left: 0; background-color: inherit;">
-            
 
             <!--檔案表格-->
             <% if (review.length == 0) { %>
@@ -76,9 +75,6 @@
                 </tbody>
               </table> 
             <% } %>
-
-
-
 
           </div>  
         </div>
@@ -184,7 +180,7 @@
               </div>
             </div>
 
-            <!--更換專案管理員驗證身分-->
+            <!--更換專案管理員：驗證身分-->
             <div id="chAdmin" class="modal" >
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -205,7 +201,7 @@
               </div>
             </div>
 
-            <!--更換專案管理員驗證身分-->
+            <!--更換專案管理員：勾選成員-->
             <div id="changeAdmin" class="modal" >
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -249,23 +245,29 @@
   </body>
 
   <script>
+    $(document).ready(function() {
+      //切換tabs
+      if (window.localStorage.getItem('tab') == '<%= pro_id %>pm')
+        openPM();
+      else
+        openR();
+    })
+
     /**tabs**/
     function openR() {
-      $("#tab_r").addClass("active");
-      $("#tab_pm").removeClass("active");
+      $("#tab_r").addClass("active").css("color", "#18BC9C");
+      $("#tab_pm").removeClass("active").css("color", "#7b8a8b");
       $("#ctd_review").addClass("active show");
       $("#projectmanage").removeClass("active show");
-      $('#tab_r').css("color", "#18BC9C");
-      $('#tab_pm').css("color", "#7b8a8b");
+      window.localStorage.setItem('tab', '<%= pro_id %>review');
     }
 
     function openPM() {
-      $("#tab_pm").addClass("active");
-      $("#tab_r").removeClass("active");
+      $("#tab_pm").addClass("active").css("color", "#18BC9C");
+      $("#tab_r").removeClass("active").css("color", "#7b8a8b");
       $("#projectmanage").addClass("active show");
       $("#ctd_review").removeClass("active show");
-      $('#tab_pm').css("color", "#18BC9C");
-      $('#tab_r').css("color", "#7b8a8b");
+      window.localStorage.setItem('tab', '<%= pro_id %>pm');
     }
 
     //關閉修改專案名稱視窗
