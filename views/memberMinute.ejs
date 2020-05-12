@@ -63,8 +63,8 @@
                 <!-- 申請修改：若是申請修改且審核中，表格加上一列顯示修改過的檔案，顯示修改原因 -->
                     <tr>
                       <td>修改後的檔案</td>
-                      <td><%= record[0].rec_revisepath.substring(14).slice(0, -26) %>.docx
-                        <a href="/file/<%= record[0].rec_id %>" target="_blank">
+                      <td><%= record[0].rec_revisepath.substring(14, record[0].rec_revisepath.lastIndexOf('.')-21)+record[0].rec_revisepath.substring(record[0].rec_revisepath.lastIndexOf('.')) %>
+                        <a href="/file/new/<%= record[0].rec_id %>" target="_blank">
                           <i class="fas fa-arrow-down" style="margin-left: 1em; color: #50565c;"></i>
                         </a>
                       </td>
@@ -182,7 +182,7 @@
                           <div class="alert alert-light" style="width: 49.8%; float: left; margin-bottom: 0.25rem;">
                             修改過的會議記錄
                             <!--下載icon-->
-                            <a href="/file/<%= record[0].rec_id %>" target="_blank">
+                            <a href="/file/new/<%= record[0].rec_id %>" target="_blank">
                               <i class="fas fa-arrow-down" style="margin-left:1rem; display: inline; color: #50565c;"></i>
                             </a>
                           </div>
@@ -215,24 +215,26 @@
         <div id="tags" class="modal" >
           <div class="modal-dialog" role="document">
               <div class="modal-content">
-                  <form method="POST" class="form-group" id="reviseForm">
+                <form method="POST" class="form-group" id="reviseForm" method="POST" action="/member/tag/<%= pro_id %>/<%= record[0].rec_id %>">
                       <div class="modal-header">
                         <h5 class="modal-title">套用標籤</h5>
                       </div>
                       <div class="modal-body">
                         <div class="card mb-3" style="max-height: 15rem; min-height: 8rem; overflow-y: auto;">
-                          <div class="card-body" style="padding: 1rem;">
-                            <% for (var i = 0; i < tag.length; i++) { %>
-                              <% cbIsCheck = tag_cbIsChecked(tag[i].tag_name); %>
-                              <% if (cbIsCheck == true) { %>
+                          <div id="tagdiv" class="card-body" style="padding: 1rem;">
+                            <input type="hidden" id="recid" name="recid" value="<%= record[0].rec_id %>">
+                            <% for (var i = 0; i < tag.length; i++) { %>                             
+                              <% if (tag[i].tag_recid == record[0].rec_id) { %>
                                 <div class="custom-control custom-checkbox">
-                                  <input type="checkbox" class="custom-control-input" id="cb<%=i %>" value="<%= tag[i].tag_name%>" checked>
+                                  <input type="checkbox" class="custom-control-input" id="cb<%=i %>" name="cb" value="<%= tag[i].tag_name %>" checked>
                                   <label class="custom-control-label" for="cb<%=i %>"><%= tag[i].tag_name%></label>
+                                  <input type="hidden" id="tagrecid" name="tagrecid" value="<%= tag[i].tag_recid %>">                                 
                                 </div>
-                              <% } else if (cbIsCheck == false) { %>
+                              <% } else  { %>
                                 <div class="custom-control custom-checkbox">
-                                  <input type="checkbox" class="custom-control-input" id="cb<%=i %>" value="<%= tag[i].tag_name%>">
+                                  <input type="checkbox" class="custom-control-input" id="cb<%=i %>" name="cb" value="<%= tag[i].tag_name %>">
                                   <label class="custom-control-label" for="cb<%=i %>"><%= tag[i].tag_name%></label>
+                                  <input type="hidden" id="tagrecid" name="tagrecid" value="<%= tag[i].tag_recid %>">                
                                 </div>
                               <% } %>
                             <% } %>
@@ -246,8 +248,8 @@
                         
                       </div>
                       <div class="modal-footer">
-                          <input type="button" value="取消" class="btn btn-secondary" onclick="document.getElementById('tags').style.display='none';">
-                          <input type="button" value="儲存" class="btn btn-primary" id="btnTags">
+                        <input type="button" value="取消" class="btn btn-secondary" onclick="closeTags()">
+                        <input type="submit" value="儲存" class="btn btn-primary" id="btnTags">
                       </div>
                   </form>
               </div>
@@ -258,7 +260,7 @@
         <div id="addTags" class="modal" >
           <div class="modal-dialog" role="document">
             <div class="modal-content">
-              <form class="form-group" id="nameForm" method="POST" action="/admin/change?proid=<%= pro_id %>">
+              <form class="form-group" id="nameForm" method="POST" action="/member/tag/<%= pro_id %>/<%= record[0].rec_id %>">
                 <div class="modal-header"><h5 class="modal-title">新增標籤</h5></div>
                 <div class="modal-body">
                   <label class="col-form-label">請輸入欲新增的標籤</label>
@@ -274,21 +276,6 @@
           </div>
         </div>
 
-        <!--顯示checkbox是否要勾-->
-        <% function tag_cbIsChecked(s) { %>
-          <% if(record[0].tag_names != null) { %>
-          <% var recordTag = record[0].tag_names.split(','); %>
-          <% } %>
-          <% var isCheck = false; %>
-          <% for(var i in recordTag) { %>
-            <% if (s == recordTag[i]) { %>
-              <% recordTag.splice(i, 1); %>
-              <% isCheck = true; %>
-              <% break; %>
-            <% } %>
-          <% } %>
-          <% return isCheck; %>
-        <% } %>
 
   </body>
 
@@ -320,7 +307,31 @@
     function closeAddTags() {
       document.getElementById('addTags').style.display='none';
       $("#newTag").val(null);
+      $('#newTag').removeClass("is-invalid");
+      $("#message1").css("display", "none");
     }
+
+    function closeTags() {
+      for(let i=0; i<$('input[name=cb]').length; i++) {
+        if($('input[name=tagrecid]').eq(i).val() == $('#recid').val()){
+          $('input[name=cb]').eq(i).prop("checked", true);
+        }
+        else{
+          $('input[name=cb]').eq(i).prop("checked", false);
+        }
+      }           
+      $('#tags').hide();
+    } 
+
+    $('#btnAddTag').click(function () {
+      if(!$('#newTag').val()){
+        $('#newTag').addClass("is-invalid");
+        $("#message1").text("請輸入標籤").css("display", "block");
+      }
+      else{
+        $("#nameForm").submit();
+      }
+    })
 
   </script>
 </html>
