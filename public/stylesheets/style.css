@@ -6682,8 +6682,15 @@
      max-width: 1140px;
    }
  }
- 
+
  .tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+ 
+ /* .tooltip {
+  visibility: hidden;
    position: absolute;
    z-index: 1070;
    display: block;
@@ -6705,9 +6712,40 @@
    font-size: 0.8203125rem;
    word-wrap: break-word;
    opacity: 0;
- }
+ } */
+
+ .tooltip .tooltiptext {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  visibility: hidden;
+  width: 4.5rem;
+  position: absolute;
+  z-index: 1;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -2.25rem;/* Use half of the width, to center the tooltip */
+  color: #fff;
+  font-size: 0.8203125rem;
+  text-align: center;
+  background-color: #000;
+}
+
+.tooltip .tooltiptext::after { /*tooltop 下面的小三角形*/
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 0.25rem;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+ .tooltip:hover .tooltiptext {
+  visibility: visible;
+}
  
- .tooltip.show {
+ /* .tooltip.show {
    opacity: 0.9;
  }
  
@@ -6723,7 +6761,7 @@
    content: "";
    border-color: transparent;
    border-style: solid;
- }
+ } */
  
  .bs-tooltip-top, .bs-tooltip-auto[x-placement^="top"] {
    padding: 0.4rem 0;

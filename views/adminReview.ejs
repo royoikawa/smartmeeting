@@ -26,8 +26,16 @@
         <div class="jumbotron" style="padding-top:1rem; padding-bottom: 0; padding-left: 3rem; margin-bottom: 1rem; background-color: #ecf0f1;">
             <h5><%= record[0].rec_name %>
               <span class="badge badge-pill badge-info" style="margin-left: 1em; font-weight: normal;"><%= state %></span>
-              <a href="/file/<%= record[0].rec_id %>" target="_blank"><i class="fas fa-arrow-down" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c;"></i></a>
-              <i class="fas fa-eye" onclick="document.getElementById('preview').style.display='block';" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c; cursor: pointer;"></i>
+              <a href="/file/<%= record[0].rec_id %>" target="_blank">
+                <div class="tooltip" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c;">
+                  <i class="fas fa-arrow-down"></i>
+                  <span class="tooltiptext">下載檔案</span>
+                </div>
+              </a>
+              <div class="tooltip" style="float: right; font-size: 1.2rem; margin-left: 1em; color: #50565c; cursor: pointer;">
+                <i class="fas fa-eye" onclick="document.getElementById('preview').style.display='block';"></i>
+                <span class="tooltiptext">預覽檔案</span>
+              </div>
             </h5>
             <hr class="my-4">
           
@@ -61,7 +69,12 @@
                 <tr>
                   <td>修改後的檔案<br>(須審核的檔案)</td>
                   <td><%= record[0].rec_revisepath.substring(14).slice(0, -26) %>.docx
-                    <a href="/file/<%= record[0].rec_id %>" target="_blank"><i class="fas fa-arrow-down" style="margin-left: 1em; color: #50565c;"></i></a>
+                    <a href="/file/<%= record[0].rec_id %>" target="_blank">
+                      <div class="tooltip" style="margin-left: 1em; color: #50565c;">
+                        <i class="fas fa-arrow-down"></i>
+                        <span class="tooltiptext" style="width: 7rem; margin-left: -3.5rem;">下載修改後檔案</span>
+                      </div>
+                    </a>
                   </td>
                 </tr>
               </tbody>
