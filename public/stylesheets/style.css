@@ -128,7 +128,18 @@
  */
  @import url("https://fonts.googleapis.com/css?family=Lato:400,700,400italic&display=swap");
  :root {
-   --blue: #2C3E50;
+  --color1: #F1C8C6;
+  --color2: #E1B4D3;
+  --color3: #AEDDEF;
+  --color4: #B1D3C5;
+  --color5: #F5DDAD;
+  --color6: #E2CB9D;
+  --color7: #BDC0E0;
+  --color8: #CCDBE2;
+  --color9: #E4A99B;
+  --color10: #A2B59F;
+  
+  --blue: #2C3E50;
    --indigo: #6610f2;
    --purple: #6f42c1;
    --pink: #e83e8c;

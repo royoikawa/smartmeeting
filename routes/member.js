@@ -140,7 +140,11 @@ router.all('/:proid', function(req, res, next) {
             
             pool.query(q, [pro_id]).then(results => {
                 data_rec_t_a = results.rows;
-                //res.json(data_rec_t_a);           
+                //res.json(data_rec_t_a);
+                for (var i in data_rec_t_a) {
+                    if (data_rec_t_a[i].tag_names != null)
+                        data_rec_t_a[i].tag_names = data_rec_t_a[i].tag_names.split(",");
+                }
                 res.render('member', { 
                     title: 'SmartMeeting', 
                     username: req.session.userName,

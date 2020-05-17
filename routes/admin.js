@@ -43,6 +43,10 @@ router.get('/:id_join', function(req, res, next) {
             if (err) throw err;
             data = results.rows;
             //res.json(data);
+            for (var i in data) {
+                if (data[i].tag_names != null)
+                    data[i].tag_names = data[i].tag_names.split(",");
+            }
             res.render('admin', { 
                 title: 'SmartMeeting',
                 username: req.session.userName, 

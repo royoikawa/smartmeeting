@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Smartmeeting</title>
-    <link rel="shortcut icon" type="image/x-icon" href="/x-icon.ico">
-    <link rel='stylesheet' href='/stylesheets/style.css'>
-    <link rel="stylesheet" href="/stylesheets/css/all.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
-    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-    
-  </head>
+  <%- include headerTag %>
   <body>
     <div><%- include navbar %></div>
     <div class="jumbotron" style="background-color: rgba(88, 87, 87, 0.01); padding-top: 3rem;">
@@ -40,7 +31,7 @@
         <div class="tab-pane fade active show" id="ctd_minutes">
           <div class="jumbotron" style="padding-top:15px; padding-left: 0; background-color: inherit;">
 
-            <!--新增會議記錄dropdown toggle-->
+            <!--新增會議記錄-->
             <div class="nav-item dropdown" id="add_toggle" onclick="$('#file_dropdown').slideToggle(200);" style="position: relative; float: left; display: block; margin-right: 1em;">  
               <button type="button" class="btn btn-outline-primary"><i class="fas fa-plus"></i>&nbsp;&nbsp;新增</button>
           
@@ -150,51 +141,35 @@
                     <th scope="col">標籤</th>
                     <th scope="col">上傳者</th>
                     <th scope="col">上次修改時間</th>
+                    <!--<th scope="col"></th>-->
                   </tr>
                 </thead>
                 <tbody>
                   <% isEven = true; %><!--用來判斷 table 的顏色，從第0列開始算，true表偶數列(灰色)、false表奇數列(白色)-->
-                  <% var tagColors = ["#F1C8C6", "#BDC0E0", "#F5DDAD", "#AEDDEF", "#B1D3C5", "#E1B4D3", "#E2CB9D", "#CCDBE2", "#E4A99B", "#A2B59F"]; %> 
-                  <% let tagToColor = new Map(); %>
-                  <% let pointerToNextColor = 0; %> 
                   <% for(var i = 0; i < record.length; i++) { %>
-                    <% var name = record[i].rec_name; %>
-                    <% var tags = record[i].tag_names; %>
-                    <% var uploader = record[i].acc_name; %>
-                    <% var time = record[i].rec_time; %>
-                    <% var state = record[i].rec_state; %>
+                    <% name = record[i].rec_name; %>
+                    <% tags = record[i].tag_names; %>
+                    <% uploader = record[i].acc_name; %>
+                    <% time = record[i].rec_time; %>
+                    <% state = record[i].rec_state; %>
 
                     <% if (isEven == true) { %>
                       <tr class="table-light" style="cursor: pointer;" id="tr" onclick="location.href='/member/<%=pro_id %>/<%= record[i].rec_id %>';">
-                      <% isEven = false; %>
-                    <% } else if (isEven == false) { %>
-                      <tr style="cursor: pointer;" id="tr" onclick="location.href='/member/<%=pro_id %>/<%= record[i].rec_id %>';">
-                      <% isEven = true; %>
-                    <% } %>
-                        <th scope="row"><%= name %><span class="badge badge-pill badge-info" style="margin-left: 1em;"><%= state %></span></th>
-                        <td>
-                          <% if (tags != null) { %>
-                            <% for( let t = 0; t < tags.length; t++ ) { %>
-                              <% console.log(tagToColor.has(tags[t]) ); %> 
-                              <% if ( tagToColor.has(tags[t]) ) { %>
-                                <span class="badge" style="margin-right: 2px; background-color: <%= tagToColor.get(tags[t]) %>;">
-                              <% } else { %>
-                                <span class="badge" style="margin-right: 2px; background-color: <%= tagColors[pointerToNextColor] %>;">
-                                <% tagToColor.set(tags[t], tagColors[pointerToNextColor]); %>
-                                <% pointerToNextColor += 1; %> 
-                              <% } %> 
-                                  <%= tags[t] %>
-                                </span>
-                                
-                            <% } %>
-                            
-                          <% } %> 
-                          
-                        </td>
+                        <th scope="row"><%= name %><span class="badge badge-pill badge-info" style="margin-left: 1em; font-weight: normal;"><%= state %></span></th>
+                        <td><%= tags %></td>
                         <td><%= uploader %></td>
                         <td><%= time %></td>
                       </tr>
-                      
+                      <% isEven = false; %>
+                    <% } else if (isEven == false) { %>
+                      <tr style="cursor: pointer;" id="tr" onclick="location.href='/member/<%=pro_id %>/<%= record[i].rec_id %>';">
+                        <th scope="row"><%= name %><span class="badge badge-pill badge-info" style="margin-left: 1em; font-weight: normal;"><%= state %></span></th>
+                        <td><%= tags %></td>
+                        <td><%= uploader %></td>
+                        <td><%= time %></td>
+                      </tr>
+                      <% isEven = true; %>
+                    <% } %>
                   <% } %>
                 </tbody>
               </table> 
@@ -204,10 +179,99 @@
 
         <!--文檔音檔tab-->
         <div class="tab-pane fade" id="ctd_audioText">
-          <div class="jumbotron" style="padding: 15px 0; overflow-y: visible; background-color: inherit;">
-            <div class="iframe-container">
-              <iframe id="iframe_preview" src="https://drive.google.com/embeddedfolderview?authuser=0&hl=zh_TW&id=1KlUS4geNcwMtYKaNViwIKTFtAFrV7Yxp#list" allowfullscreen></iframe>
-            </div>
+          <div class="jumbotron" style="padding-top:15px; padding-left: 0; background-color: inherit;">
+            <!--搜尋文檔音檔-->
+            <form method="post" action="" class="form-inline my-2 my-lg-0" style="position: relative; display: inline-block; padding-left: 1em; margin-top: 1em; margin-right: 2em;">
+              <div class="form-inline">
+                <div class="form-group">
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text" style="color: #2C3E50; border-color: inherit;"><i class="fas fa-search"></i></span>
+                    </div>
+                    <input class="form-control" type="text" style="border-color: #2C3E50;" name="searchAudioText" id="searchAudioText" placeholder="搜尋文檔或音檔" aria-label="Search audio or text">
+                    <div class="input-group-append">
+                      <input class="btn btn-outline-primary" style=" border-left-width: 0;" type="submit" value="搜尋">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+
+
+
+            <!--文檔音檔表格-->
+            <% if (audioText.length == 0) { %>
+              <p class="text-primary" style="margin-top: 2em;">沒有符合的項目</p>
+            <% } else { %>
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">檔名</th>
+                    <th scope="col">儲存時間</th>
+                    <th scope="col"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% isEven = true; %><!--用來判斷 table 的顏色，從第0列開始算，true表偶數列(灰色)、false表奇數列(白色)-->
+                  <% for(var i = 0; i < audioText.length; i++) { %>
+                    <% name = audioText[i].at_name; %>
+                    <% time = audioText[i].at_time; %>
+                    <% if (name.substring(name.lastIndexOf('.')) == '.wav') { %>
+                      <% eyeOrSound = 1; %><!--音檔顯示喇叭-->
+                    <% } else { %>
+                      <% eyeOrSound = 0; %><!--文檔顯示眼睛-->
+                    <% } %>
+
+                    <% if (isEven == true) { %>
+                      <tr class="table-light">
+                        <th scope="row"><%= name %></th>
+                        <td><%= time %></td>
+                        <% if (eyeOrSound == 0) { %>
+                          <td><i class="fas fa-eye" onclick="document.getElementById('audio_preview').style.display='block';" style="font-size:1.1rem; color: #50565c; cursor: pointer;"></i></td>
+                        <% } else if (eyeOrSound == 1) { %>
+                          <td><i class="fas fa-volume-up" onclick="document.getElementById('audio_preview').style.display='block';" style="font-size:1.1rem; color: #50565c; cursor: pointer;"></i></td>
+                        <% } %>
+                      </tr>
+                      <% isEven = false; %>
+                    <% } else if (isEven == false) { %>
+                      <tr>
+                        <th scope="row"><%= name %></th>
+                        <td><%= time %></td>
+                        <% if (eyeOrSound == 0) { %>
+                          <td><i class="fas fa-eye" onclick="document.getElementById('audio_preview').style.display='block';" style="font-size:1.1rem; color: #50565c; cursor: pointer;"></i></td>
+                        <% } else if (eyeOrSound == 1) { %>
+                          <td><i class="fas fa-volume-up" onclick="document.getElementById('audio_preview').style.display='block';" style="font-size:1.1rem; color: #50565c; cursor: pointer;"></i></td>
+                        <% } %>
+                      </tr>
+                      <% isEven = true; %>
+                    <% } %>
+                  <% } %>
+                </tbody>
+              </table>
+
+              <!--預覽文檔音檔modal-->
+              <div id="audio_preview" class="modal">
+                <div class="modal-dialog" role="document" style="min-width: 100%; height: 100%;">
+                    <div class="modal-content" style="min-height: 100%; scroll-behavior: auto; overflow: auto;">
+                        <form method="POST" class="form-group">
+                            <div class="modal-header">
+                              <h5 class="modal-title"><%= audioText[0].at_name%></h5>
+                              <button type="button" class="close" aria-label="Close" onclick="document.getElementById('audio_preview').style.display='none';">
+                                <span aria-hidden="true">&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body" style="padding-top: 0;">
+                              <div class="iframe-container">
+                                <iframe id="iframe_preview" src="https://drive.google.com/embeddedfolderview?authuser=0&hl=zh_TW&id=1KlUS4geNcwMtYKaNViwIKTFtAFrV7Yxp#list" allowfullscreen></iframe>
+                              </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+              </div>
+            <% } %>
+
+
           </div>
         </div>
       </div>
