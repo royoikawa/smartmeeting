@@ -176,22 +176,37 @@ router.get('/:proid/:rec_id', function(req, res, next) {
         //res.render('memberMinute', { title: 'SmartMeeting', username: req.session.userName, userid: req.session.userAccount, pro_id: pro_id, pro_name: pro_name, record: data });
         next();
     });
-    //pool.query(q, [recid, pro_id], function(err, results) {
-    //    if (err) throw err;
-    //    data = results.rows;
-    //    //res.json(data);
-    //    //res.render('memberMinute', { title: 'SmartMeeting', username: req.session.userName, userid: req.session.userAccount, pro_id: pro_id, pro_name: pro_name, record: data });
-    //    next();
-    //});
+    
 });
 
 //顯示tag
 router.get('/:proid/:rec_id', function(req, res, next) {
     pro_id = req.params.proid;
     var recid = req.params.rec_id;
+    var arr = [];//存整筆
+    var arr1 = [];//存標籤名
     //recPlusAcc = "SELECT * FROM record, account WHERE rec_upload = acc_id AND rec_id = $1";
     //aggTags = "select tag_recid, string_agg(tag_name,',') as tag_names from tag where tag_proid=$2 group by tag_recid";
-    //var q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id";;
+    //var q = "SELECT * FROM (" + recPlusAcc + ") AS ra, (" + aggTags + ") AS t WHERE tag_recid = rec_id";
+    var test = "SELECT * FROM tag WHERE tag_proid=$1 ORDER BY CASE tag_recid WHEN $2 THEN 1 ELSE 2 END, tag_id";
+    pool.query(test, [pro_id, recid]).then(results => {    
+        for(let i = 0;i<results.rowCount; i++){
+            if(!(arr1.includes(results.rows[i].tag_name))){
+                arr.push(results.rows[i]);
+                arr1.push(results.rows[i].tag_name);
+            }
+        }
+        res.render('memberMinute', { 
+            title: 'SmartMeeting', 
+            username: req.session.userName, 
+            userid: req.session.userAccount, 
+            pro_id: pro_id, 
+            pro_name: pro_name, 
+            record: data, 
+            tag: arr, 
+            notice: notice});
+    })
+    /*
     var q = "SELECT * FROM (SELECT DISTINCT ON (tag_name) * FROM tag WHERE tag_proid = $1) AS distinctTag ORDER BY CASE tag_recid WHEN $2 THEN 1 ELSE 2 END, tag_id;";
     pool.query(q, [pro_id, recid], function(err, results) {
         if (err) throw err;
@@ -206,8 +221,82 @@ router.get('/:proid/:rec_id', function(req, res, next) {
             record: data, 
             tag: distinctTag, 
             notice: notice});
-    })
+    })*/
 });
 
+router.post('/tag/:proid/:recid', function(req, res, next) {
+    var proid = req.params.proid;
+    var recid = req.params.recid;
+    var newtag = req.body.newTag;
+    var tag = req.body.cb;
+    
+    if(newtag){ //新增新標籤
+        var arr = new Array();
+        arr = newtag.split(' ');
+        for(let i=0; i<arr.length; i++){
+            //console.log(arr[i]);
+            var selecttag = "SELECT * FROM tag WHERE tag_name=$1 AND tag_recid=$2";
+            pool.query(selecttag, [arr[i], recid]).then(results => {
+                if(results.rowCount==0){
+                    var addnewtag = "INSERT INTO tag(tag_name, tag_recid, tag_proid) VALUES ($1, $2, $3)";
+                    pool.query(addnewtag, [arr[i], recid, proid]).then(() => {
+                        if(i==arr.length-1){
+                            res.redirect('/member/'+pro_id+'/'+recid);
+                        }
+                    });
+                }               
+            })
+
+        }
+        
+        /*
+        var selecttag = "SELECT * FROM tag WHERE tag_name=$1 AND tag_recid=$2";
+        pool.query(selecttag, [newtag, recid]).then(results => {
+            if(results.rowCount==0){
+                var addnewtag = "INSERT INTO tag(tag_name, tag_recid, tag_proid) VALUES ($1, $2, $3)";
+                pool.query(addnewtag, [newtag, recid, proid]).then(() => {
+                    res.redirect('/member/'+pro_id+'/'+recid);
+                })
+            }
+            else{
+                res.redirect('/member/'+pro_id+'/'+recid);
+            }
+        }) */      
+    }
+    
+    else if(!tag){
+        var deletetag = "DELETE FROM tag WHERE tag_recid=$1";
+        pool.query(deletetag, [recid], function(err, results) {
+            if(err) throw err;
+            res.redirect('/member/'+pro_id+'/'+recid);
+        })
+    }
+    else if (tag) {    
+        var arr = [];
+        var checktag = "SELECT * FROM tag WHERE tag_recid=$1";
+        pool.query(checktag, [recid]).then(results => {
+            for(let i=0; i<results.rowCount; i++){
+                arr.push(results.rows[i].tag_name);//現有的標籤
+            }
+        }).then(() => {
+            for(let i=0; i<tag.length; i++){//表單勾選沒出現在現有標籤，新增
+                if(!arr.includes(tag[i])){
+                    var addtag = "INSERT INTO tag(tag_name, tag_recid, tag_proid) VALUES ($1, $2, $3)";
+                    pool.query(addtag, [tag[i], recid, proid]);
+                }                                
+            }
+        }).then(() => {
+            for(let i=0; i<arr.length; i++){//現有標籤沒出現在表單勾選，刪除
+                if(!tag.includes(arr[i])){
+                    var addtag = "DELETE FROM tag WHERE tag_name=$1 AND tag_recid=$2";
+                    pool.query(addtag, [arr[i], recid]);
+                }                
+            }
+        }).then(() => {            
+            res.redirect('/member/'+pro_id+'/'+recid);                      
+        })
+    }    
+    
+});
 
 module.exports = router;
