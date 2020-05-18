@@ -61,7 +61,6 @@
                         <td>
                           <% if (tags != null) { %>
                             <% for( let t = 0; t < tags.length; t++ ) { %>
-                              <% console.log(tagToColor.has(tags[t]) ); %> 
                               <% if ( tagToColor.has(tags[t]) ) { %>
                                 <span class="badge" style="margin-right: 2px; background-color: <%= tagToColor.get(tags[t]) %>;">
                               <% } else { %>

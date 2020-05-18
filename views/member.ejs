@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Smartmeeting</title>
-    <link rel="shortcut icon" type="image/x-icon" href="/x-icon.ico">
-    <link rel='stylesheet' href='/stylesheets/style.css'>
-    <link rel="stylesheet" href="/stylesheets/css/all.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
-    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
-    
-  </head>
+  <%- include headerTag %>
   <body>
     <div><%- include navbar %></div>
     <div class="jumbotron" style="background-color: rgba(88, 87, 87, 0.01); padding-top: 3rem;">
@@ -63,7 +54,6 @@
                           <div class="modal-body">
                               <!--<iframe id="iframe_upload" src="https://script.google.com/macros/s/AKfycbzlikYulCzy4fKGcBOUvlUuENPXrGnjJ9sdpEdbsFiqDZo_aik/exec" width="100%" height="100%" frameborder="0" scrolling="no" allowfullscreen></iframe>-->
                               <input type="file" class="form-control-file" id="files" name="files" aria-describedby="fileHelp" required >
-                              <label class="col-form-label">檔名</label>
 
                           </div>
                           <div class="modal-footer">
@@ -86,7 +76,6 @@
                           <div class="modal-body">
                               <!--<iframe id="iframe_upload" src="https://script.google.com/macros/s/AKfycbzlikYulCzy4fKGcBOUvlUuENPXrGnjJ9sdpEdbsFiqDZo_aik/exec" width="100%" height="100%" frameborder="0" scrolling="no" allowfullscreen></iframe>-->
                               <input type="file" class="form-control-file" id="oldfiles" name="oldfiles" aria-describedby="fileHelp" required >
-                              <label class="col-form-label">檔名</label>
 
                           </div>
                           <div class="modal-footer">
@@ -154,9 +143,16 @@
                 </thead>
                 <tbody>
                   <% isEven = true; %><!--用來判斷 table 的顏色，從第0列開始算，true表偶數列(灰色)、false表奇數列(白色)-->
+                  <!--標示標籤顏色，相同的標籤用相同顏色，不同標籤不同顏色-->
+                  <!--tagColors 為儲存全部顏色的陣列-->
                   <% var tagColors = ["#F1C8C6", "#BDC0E0", "#F5DDAD", "#AEDDEF", "#B1D3C5", "#E1B4D3", "#E2CB9D", "#CCDBE2", "#E4A99B", "#A2B59F"]; %> 
+                  
+                  <!--tagToColor 為一個 Map物件，裡面存放以(key, value)為形式的資料結構，用來存放"標籤和顏色"的對應關係，key是標籤、value是顏色-->
                   <% let tagToColor = new Map(); %>
+                  
+                  <!--pointerToNextColor 為紀錄目前使用到哪個顏色-->
                   <% let pointerToNextColor = 0; %> 
+                  
                   <% for(var i = 0; i < record.length; i++) { %>
                     <% var name = record[i].rec_name; %>
                     <% var tags = record[i].tag_names; %>
@@ -175,12 +171,12 @@
                         <td>
                           <% if (tags != null) { %>
                             <% for( let t = 0; t < tags.length; t++ ) { %>
-                              <% console.log(tagToColor.has(tags[t]) ); %> 
-                              <% if ( tagToColor.has(tags[t]) ) { %>
-                                <span class="badge" style="margin-right: 2px; background-color: <%= tagToColor.get(tags[t]) %>;">
+                              <% if ( tagToColor.has(tags[t]) ) { %><!--has(x)為Map物件的方法，是否存在x-->
+                                <span class="badge" 
+                                style="margin-right: 2px; background-color: <%= tagToColor.get(tags[t]) %>;"><!--get(key)為Map物件的方法，得到key的值-->
                               <% } else { %>
                                 <span class="badge" style="margin-right: 2px; background-color: <%= tagColors[pointerToNextColor] %>;">
-                                <% tagToColor.set(tags[t], tagColors[pointerToNextColor]); %>
+                                <% tagToColor.set(tags[t], tagColors[pointerToNextColor]); %><!--set(key, value)為Map物件的方法，設置一筆資料為(key, value)-->
                                 <% pointerToNextColor += 1; %> 
                               <% } %> 
                                   <%= tags[t] %>
