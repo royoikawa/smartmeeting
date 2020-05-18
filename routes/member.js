@@ -275,29 +275,40 @@ router.post('/tag/:proid/:recid', function(req, res, next) {
             res.redirect('/member/'+pro_id+'/'+recid);
         })
     }
-    else if (tag) {    
-        var arr = [];
+    else if(tag){         
+        var arrtag = [];
         var checktag = "SELECT * FROM tag WHERE tag_recid=$1";
         pool.query(checktag, [recid]).then(results => {
             for(let i=0; i<results.rowCount; i++){
-                arr.push(results.rows[i].tag_name);//現有的標籤
+                arrtag.push(results.rows[i].tag_name);//現有的標籤
             }
         }).then(() => {
-            for(let i=0; i<tag.length; i++){//表單勾選沒出現在現有標籤，新增
-                if(!arr.includes(tag[i])){
+            if(typeof tag == "string"){//表單只有選一個時是字串
+                if(!(arrtag.includes(tag))){
                     var addtag = "INSERT INTO tag(tag_name, tag_recid, tag_proid) VALUES ($1, $2, $3)";
-                    pool.query(addtag, [tag[i], recid, proid]);
-                }                                
+                    pool.query(addtag, [tag, recid, proid]);
+                }
             }
+            else{//表單選多個時是陣列
+                for(let i=0; i<tag.length; i++){//表單勾選沒出現在現有標籤，新增
+                    if(!(arrtag.includes(tag[i]))){
+                        var addtag = "INSERT INTO tag(tag_name, tag_recid, tag_proid) VALUES ($1, $2, $3)";
+                        pool.query(addtag, [tag[i], recid, proid]);
+                    }                                
+                }
+            }
+            
         }).then(() => {
-            for(let i=0; i<arr.length; i++){//現有標籤沒出現在表單勾選，刪除
-                if(!tag.includes(arr[i])){
+            for(let i=0; i<arrtag.length; i++){//現有標籤沒出現在表單勾選，刪除
+                if(!(tag.includes(arrtag[i]))){
                     var addtag = "DELETE FROM tag WHERE tag_name=$1 AND tag_recid=$2";
-                    pool.query(addtag, [arr[i], recid]);
+                    pool.query(addtag, [arrtag[i], recid]);
                 }                
             }
-        }).then(() => {            
-            res.redirect('/member/'+pro_id+'/'+recid);                      
+        }).then(() => { 
+            setTimeout(function(){
+                res.redirect('/member/'+pro_id+'/'+recid);
+            }, 800)                                           
         })
     }    
     
