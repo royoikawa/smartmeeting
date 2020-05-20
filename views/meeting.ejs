@@ -2,7 +2,11 @@
 <html>
   <%- include headerTag %>
   <body>
-    <div><%- include navbar %></div>
+    <div class="waiting" id="waitingUpload">
+      等待上傳音檔與文檔...
+    </div>
+  <div><%- include navbar %></div>
+    
     <div class="jumbotron" style="background-color: rgba(88, 87, 87, 0.01); padding-top: 3rem; padding-bottom: 0; margin-bottom: 0;">
       <div class="col-sm-10">
         <div class="card" style="border-color: transparent;">
@@ -10,7 +14,7 @@
         </div>
       </div>
       <span class="badge badge-light">專案代號：<%= pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
-      <!--結束會議-->
+      <!--結束會議--><button type="button" id="bbb" class="btn btn-primary">Button</button>
       <button type="button" id="btnMeeting" onclick="postEnd();" class="btn btn-outline-warning btn-sm" style="float: right;">結束會議</button>
       <span id="onAir" class="badge badge-danger">錄音中</span>
       <div class="divider"></div>
@@ -202,6 +206,7 @@
       $("#btnMeeting").attr("disabled", false);//使「開始鍵」無法點
       postOff();
       stop();
+      waitForUpload();
     }
 
     //計時器動畫
@@ -384,6 +389,13 @@
           location.href='/member/<%= pro_id %>';
         }  
       })
+    }
+
+    function waitForUpload() {
+      $("#waitingUpload").slideToggle("slow");
+      //你的程式碼放這裡
+      //alert前面加一行這個
+      //$("#waitingUpload").slideToggle("slow");
     }
   
   </script>
