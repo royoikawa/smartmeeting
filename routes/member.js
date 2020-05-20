@@ -245,7 +245,9 @@ router.post('/tag/:proid/:recid', function(req, res, next) {
                     var addnewtag = "INSERT INTO tag(tag_name, tag_recid, tag_proid) VALUES ($1, $2, $3)";
                     pool.query(addnewtag, [arr[i], recid, proid]).then(() => {
                         if(i==arr.length-1){
-                            res.redirect('/member/'+pro_id+'/'+recid);
+                            setTimeout(function() {
+                                res.redirect('/member/'+pro_id+'/'+recid);
+                            }, 800)                          
                         }
                     });
                 }               
