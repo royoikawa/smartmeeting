@@ -241,12 +241,14 @@ router.post('/tag/:proid/:recid', function(req, res, next) {
             //console.log(arr[i]);
             var selecttag = "SELECT * FROM tag WHERE tag_name=$1 AND tag_recid=$2";
             pool.query(selecttag, [arr[i], recid]).then(results => {
+                console.log(results);
                 if(results.rowCount==0){
                     var addnewtag = "INSERT INTO tag(tag_name, tag_recid, tag_proid) VALUES ($1, $2, $3)";
                     pool.query(addnewtag, [arr[i], recid, proid]).then(() => {
-                        if(i==arr.length-1){
-                            res.redirect('/member/'+pro_id+'/'+recid);
-                        }
+                        // if(i==arr.length-1){
+                    //         res.redirect('/member/'+pro_id+'/'+recid);
+                            console.log("ss");
+                        // }
                     });
                 }               
             })
@@ -268,21 +270,20 @@ router.post('/tag/:proid/:recid', function(req, res, next) {
         }) */      
     }
     
-    else if(!tag){
+    if(!tag){
         var deletetag = "DELETE FROM tag WHERE tag_recid=$1";
         pool.query(deletetag, [recid], function(err, results) {
             if(err) throw err;
             res.redirect('/member/'+pro_id+'/'+recid);
         })
     }
-    else if(tag){         
+    if(tag){         
         var arrtag = [];
         var checktag = "SELECT * FROM tag WHERE tag_recid=$1";
         pool.query(checktag, [recid]).then(results => {
             for(let i=0; i<results.rowCount; i++){
                 arrtag.push(results.rows[i].tag_name);//現有的標籤
             }
-        }).then(() => {
             if(typeof tag == "string"){//表單只有選一個時是字串
                 if(!(arrtag.includes(tag))){
                     var addtag = "INSERT INTO tag(tag_name, tag_recid, tag_proid) VALUES ($1, $2, $3)";
@@ -297,19 +298,16 @@ router.post('/tag/:proid/:recid', function(req, res, next) {
                     }                                
                 }
             }
-            
-        }).then(() => {
             for(let i=0; i<arrtag.length; i++){//現有標籤沒出現在表單勾選，刪除
                 if(!(tag.includes(arrtag[i]))){
                     var addtag = "DELETE FROM tag WHERE tag_name=$1 AND tag_recid=$2";
                     pool.query(addtag, [arrtag[i], recid]);
                 }                
             }
-        }).then(() => { 
             setTimeout(function(){
                 res.redirect('/member/'+pro_id+'/'+recid);
-            }, 800)                                           
-        })
+            }, 800) 
+        });
     }    
     
 });

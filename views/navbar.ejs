@@ -12,8 +12,11 @@
         </li>
         
         <li class="nav-item dropdown" id="toggle_notice" onclick="$('#dropdown_notice').slideToggle(200);">
-          <a id="noticeclick" class="nav-link" href="#" style="margin-right: 0.5em;"><i class="fas fa-bell"></i><span class="badge badge-danger badge-pill" id='noticecount'></span></a>
-          <div class="dropdown-menu" id="dropdown_notice" style="right: 0; left: auto; min-width: 15rem; max-height: 20rem; overflow-y: auto;" aria-labelledby="notice">
+          <a id="noticeclick" class="nav-link" href="#" style="margin-right: -5px; float: left;">
+            <i class="fas fa-bell"></i>
+          </a>
+          <span style="color: red; float: left; margin-right: 0.5em;" id='noticecount'>&bull;</span>
+          <div class="dropdown-menu" id="dropdown_notice" style="right: 0; left: auto; min-width: 15rem; height: 20rem; overflow-y: auto;" aria-labelledby="notice">
             <% if(notice.length!=0) { %>              
               <% for(var i=0; i<notice.length; i++) { %>              
                 <% if(notice[i].ap_authority=='管理員') { %>
@@ -92,19 +95,33 @@
 
   <script>
     $(document).ready(function() {
-      $("[id=num]").css("background-color", "transparent");//red
-      for (let k = 0; k < $("[id=num]").length; k++){
-        $("[id=num]").eq(k).hover(function() {
-          $("[id=num]").eq(k).css("background-color", "#2C3E50");
+      if (/*沒有新通知*/false) {
+        $("#noticecount").css("visibility", "hidden");//圓點不出現
+      } else {
+        $("#noticecount").css("visibility", "visible");//圓點出現
         
-        }, function() {
-          $("[id=num]").eq(k).css("background-color", "transparent");//red
-        })
+        $("#noticeclick").click(function() {
+          $("#noticecount").css("visibility", "hidden");//隱藏圓點
 
-        // $("[id=num]").eq(k).click(function() {
-        //   $("[id=num]").eq(k).css("backgruond-color",  "transparent");
-      
-        // })
+          /*顯示沒讀的通知，背景變色*/
+          for (let k = 0; k < 2; k++) {  //改成沒有讀的
+            $("[id=num]").eq(k).css("background-color", "#ecf0f1");
+            $("[id=num]").eq(k).mouseenter(function() {  //滑鼠移到上面，背景變藍色
+              $("[id=num]").eq(k).css("background-color", "#2C3E50");
+            });
+            $("[id=num]").eq(k).mouseleave(function() {  //滑鼠離開，背景變回
+              $("[id=num]").eq(k).css("background-color", "#ecf0f1");
+            });
+          }
+          for (let k = 0; k < $("[id=num]").length; k++) {
+            $("[id=num]").eq(k).click(function() {
+              $("[id=num]").eq(k).css("backgruond-color",  "inherit");
+              /*
+              **變更資料庫，全部通知變成已讀
+              */
+            })
+          }
+        })
       }
       
       
