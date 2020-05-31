@@ -219,10 +219,7 @@
                     <h5 class="modal-title">套用標籤</h5>
                   </div>
                   <div class="modal-body">
-                    <label class="col-form-label">新增標籤（若欲輸入多個標籤，請以空白區隔）</label>
-                    <input class="form-control" type="text" name="newTag" id="newTag">
-                    <span class="invalid-feedback" id="message1"></span>
-                    <label class="col-form-label" style="margin-top: 1em;">或 勾選其他在專案中的標籤</label>
+                    <label class="col-form-label">勾選其他在專案中的標籤</label>
                     <div class="card mb-3" style="max-height: 15rem; min-height: 8rem; overflow-y: auto;">
                       <div id="tagdiv" class="card-body" style="padding: 1rem;">
                         <input type="hidden" id="recid" name="recid" value="<%= record[0].rec_id %>">
@@ -244,8 +241,9 @@
 
                       </div>
                     </div>
-                    <!-- <button type="button" class="btn btn-light btn-sm" onclick="document.getElementById('addTags').style.display='block';">新增標籤</button> -->
-                    
+                    <label class="col-form-label">或 新增標籤（若欲輸入多個標籤，請以空白區隔）</label>
+                    <input class="form-control" type="text" name="newTag" id="newTag">
+                    <span class="invalid-feedback" id="message1"></span>
                     <input type="hidden" id="filter" name="filter">
       
                     

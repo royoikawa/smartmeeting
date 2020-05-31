@@ -11,6 +11,7 @@
       </div>
       <div style="width: inherit; height: fit-content;">
         <span class="badge badge-light">專案代號：<%= pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
+        <button type="button" onclick="document.getElementById('chooseAutoTag').style.display='block';" class="btn btn-primary">標籤</button>
         <button id="meet" type="button" onclick="location.href='/meeting/<%= pro_id %>';" class="btn btn-outline-warning btn-sm" style="float: right;">我要開會</button>
       </div>
       <div class="divider"></div>
@@ -207,9 +208,73 @@
           </div>
         </div>
       </div>
-    
 
+    </div>
 
+    <!--選擇標籤modal-->
+    <div id="chooseAutoTag" class="modal" >
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <form class="form-group" id="reviseForm" method="POST" action="/member/tag/<%= pro_id %>/<%= record[0].rec_id %>">
+              <div class="modal-header">
+                <h5 class="modal-title">套用標籤</h5>
+              </div>
+              <div class="modal-body">
+
+                <label class="col-form-label">您可能會喜歡</label>
+                <div class="card mb-3" style="max-height: 15rem; min-height: 8rem; overflow-y: auto;">
+                  <div id="tagdiv" class="card-body" style="padding: 1rem;">
+                    <input type="hidden" id="recid" name="recid" value="<%= record[0].rec_id %>">
+                    
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="cb1" name="cb" value="tag_name1" checked>
+                          <label class="custom-control-label" for="cb1">tag_name1</label>
+                          <input type="hidden" id="tagrecid" name="tagrecid" value="tag_recid1">                                 
+                        </div>
+                      
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="cb2" name="cb" value="tag_name2">
+                          <label class="custom-control-label" for="cb2">tag_name2</label>
+                          <input type="hidden" id="tagrecid" name="tagrecid" value="tag_recid2">                
+                        </div>
+                      
+
+                  </div>
+                </div>
+                
+                <label class="col-form-label">或 勾選其他在專案中的標籤</label>
+                <div class="card mb-3" style="max-height: 15rem; min-height: 8rem; overflow-y: auto;">
+                  <div id="tagdiv" class="card-body" style="padding: 1rem;">
+                    <input type="hidden" id="recid" name="recid" value="<%= record[0].rec_id %>">
+                    
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="cb1" name="cb" value="tag_name1" checked>
+                          <label class="custom-control-label" for="cb1">tag_name1</label>
+                          <input type="hidden" id="tagrecid" name="tagrecid" value="tag_recid1">                                 
+                        </div>
+                      
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="cb2" name="cb" value="tag_name2">
+                          <label class="custom-control-label" for="cb2">tag_name2</label>
+                          <input type="hidden" id="tagrecid" name="tagrecid" value="tag_recid2">                
+                        </div>
+
+                  </div>
+                </div>
+                <label class="col-form-label">或 新增標籤（若欲輸入多個標籤，請以空白區隔）</label>
+                <input class="form-control" type="text" name="newTag" id="newTag">
+                <span class="invalid-feedback" id="message1"></span>
+                <input type="hidden" id="filter" name="filter">
+  
+                
+              </div>
+              <div class="modal-footer">
+                <input type="button" value="取消" class="btn btn-secondary" onclick="document.getElementById('chooseAutoTag').style.display='none';">
+                <input type="submit" value="儲存" class="btn btn-primary" id="autoTags">
+              </div>
+            </form>
+          </div>
+      </div>
     </div>
     
   </body>
