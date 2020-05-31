@@ -58,9 +58,9 @@
                   <span>我的身份：</span>
                   <% if (isInProject == false) { %>
                     <span class="text-primary">尚未加入</span>
-                  <% } else if (authority == '管理員') { %>
+                  <% } else if (authority == '擁有者') { %>
                     <span class="text-warning"><%= authority %></span>
-                  <% } else if (authority == '成員') { %>
+                  <% } else if (authority == '參與者') { %>
                     <span class="text-info"><%= authority %></span>
                   <% } %>
                 </div>
@@ -78,7 +78,7 @@
   <div class="modal-dialog" role="document">
       <div class="modal-content">
           <form method="POST" class="form-group">
-              <div class="modal-header"><h5 class="modal-title">加入專案 <span id="n_join"></span> 成為成員</h5></div>
+              <div class="modal-header"><h5 class="modal-title">加入專案 <span id="n_join"></span> 成為參與者</h5></div>
               <div class="modal-body">
                 <label class="col-form-label">輸入密碼</label>
                 <input class="form-control" type="hidden" id="id_join" name="id_join">
@@ -110,9 +110,9 @@
       $("#au_join").val(auth);
 
       // isInP 判斷使用者是否在專案中，true 有在專案 → 進一步判斷身分，false 沒在專案 → 出現需輸入密碼的彈跳視窗
-      // 若「有在專案中」且身分為「管理員」，直接到「管理員」畫面；若「有在專案中」且身份為「成員」，直接到「成員」畫面
+      // 若「有在專案中」且身分為「擁有者」，直接到「擁有者」畫面；若「有在專案中」且身份為「參與者」，直接到「參與者」畫面
       if (isInP == 'true') {
-        if ($("#au_join").val() == '管理員') 
+        if ($("#au_join").val() == '擁有者') 
           location.href="admin/"+ $("#id_join").val();
         else 
           location.href="member/"+ $("#id_join").val();

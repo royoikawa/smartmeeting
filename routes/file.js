@@ -6,6 +6,24 @@ var path = require('path');
 var moment = require("moment");
 var tz = require("moment-timezone");
 var pool = require('../models/db');
+var nodemailer = require('nodemailer');
+
+//宣告發信物件
+var transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+        type: 'OAuth2',
+        user: 'smartmeetingfjuim@gmail.com',
+        clientId: '8885475494-vprru9illuq8enjrfsh624akorp74dhj.apps.googleusercontent.com',
+        clientSecret: 'b7mM_iGlNpzN9RLFMKOY3vca',
+        refreshToken: '1//04l3utS89fJ_8CgYIARAAGAQSNwF-L9Ir8of7DRRTcc0PhUXyPKBmveFflzO8dgW4QnjaCEf835836KG7hZryaao-QXTuTqQNTvU',
+        accessToken: 'ya29.Il-_B6nzAnVhDJAtjcw2jgt-HEQOl9RRRelxFn_vyio-d6GyzXMdWWbDJnz7rMxjIRVz5CRATg2ZsDETQYLOnnBSdK-wCdBaMx7SXz_KrRS6g0VMEL2cQfiEy59zC8tBWw',
+        expires: 1484314697598
+    }
+    
+});
 
 //上傳檔案儲存的路徑和檔名
 var storage = multer.diskStorage({
@@ -59,6 +77,7 @@ router.get('/new/:fileid', function(req, res, next) {
 
 //上傳新會議記錄
 router.post('/newminute', upload.single('files'), function(req, res, next) {
+    var recipient = "";
     var proid = req.query.proid;
     var index = req.file.filename.lastIndexOf('.');
     var time = req.file.filename.substring(index-20, index-1).replace(/\./g, ':');//上傳時間
@@ -72,6 +91,57 @@ router.post('/newminute', upload.single('files'), function(req, res, next) {
             var insertnotice = "INSERT INTO notice (notice_recid, notice_action, notice_time) VALUES ($1, $2, $3)";
             pool.query(insertnotice, [result.rows[0].rec_id, "新檔案上傳", time], function(err) {//新增notice
                 if(err) throw err;
+
+                pool.query("SELECT * FROM account_project, project WHERE ap_proid=pro_id AND ap_proid=$1 AND ap_authority='擁有者'", [proid]).then(results => {
+                    var options = {
+                        //寄件者
+                        from: 'smartmeetingfjuim@gmail.com',
+                        //收件者
+                        to: results.rows[0].ap_accid,    
+                        //主旨
+                        subject: '專案' + results.rows[0].pro_name + '有新檔案須審核', // Subject line
+                        //嵌入 html 的內文
+                        html: '<p>專案'+ results.rows[0].pro_name + '有新檔案 '+ filename +' 須審核<br>請登入系統觀看。</p><p>智慧會議系統團隊</p>',    
+                    };
+                
+                    //發送信件方法
+                    transporter.sendMail(options, function(error, info){
+                        if(error){
+                            console.log("發送失敗");
+                        }else{
+                            console.log("發送成功");
+                        }
+                    });
+                })
+                pool.query("SELECT * FROM account_project, project WHERE ap_proid=pro_id AND ap_proid=$1 AND ap_authority='參與者'", [proid]).then(results => {
+                    for(let i=0; i<results.rowCount; i++) {
+                        recipient += results.rows[i].ap_accid;
+                        if(i<results.rowCount-1){
+                            recipient += ',';
+                        }
+                    }  
+                
+                    var options = {
+                        //寄件者
+                        from: 'smartmeetingfjuim@gmail.com',
+                        //收件者
+                        to: recipient,    
+                        //主旨
+                        subject: '專案' + results.rows[0].pro_name + '有新檔案上傳', // Subject line
+                        //嵌入 html 的內文
+                        html: '<p>專案' + results.rows[0].pro_name + '有新檔案 '+ filename +' 上傳<br>請登入系統觀看。</p><p>智慧會議系統團隊</p>',    
+                    };
+                
+                    //發送信件方法
+                    transporter.sendMail(options, function(error, info){
+                        if(error){
+                            console.log("發送失敗");
+                        }else{
+                            console.log("發送成功");
+                        }
+                    });
+                });
+                
                 res.redirect('/member/'+proid);
             });
         });
@@ -105,6 +175,7 @@ router.post('/oldminute', upload.single('oldfiles'), function(req, res, next) {
 
 //審核不通過重新上傳 覆蓋掉之前檔案
 router.post('/reupload', upload.single('reuploadFile'), function(req, res, next){
+    var recipient = "";
     var proid = req.query.proid;
     var id = req.query.recid;
     var sql = "SELECT * FROM record WHERE rec_id=$1";
@@ -123,6 +194,57 @@ router.post('/reupload', upload.single('reuploadFile'), function(req, res, next)
         var sql = "INSERT INTO notice (notice_recid, notice_action, notice_time) VALUES ($1, $2, $3)";
         pool.query(sql, [id, '重新上傳', time], function(err) {
             if(err) throw err;
+
+            pool.query("SELECT * FROM account_project, project WHERE ap_proid=pro_id AND ap_proid=$1 AND ap_authority='擁有者'", [proid]).then(results => {
+                var options = {
+                    //寄件者
+                    from: 'smartmeetingfjuim@gmail.com',
+                    //收件者
+                    to: results.rows[0].ap_accid,    
+                    //主旨
+                    subject: '專案' + results.rows[0].pro_name + '有不通過檔案須審核', // Subject line
+                    //嵌入 html 的內文
+                    html: '<p>專案'+ results.rows[0].pro_name + '有不通過檔案 '+ req.file.originalname +' 已重新上傳，須審核<br>請登入系統觀看。</p><p>智慧會議系統團隊</p>',    
+                };
+            
+                //發送信件方法
+                transporter.sendMail(options, function(error, info){
+                    if(error){
+                        console.log("發送失敗");
+                    }else{
+                        console.log("發送成功");
+                    }
+                });
+            })
+            pool.query("SELECT * FROM account_project, project WHERE ap_proid=pro_id AND ap_proid=$1 AND ap_authority='參與者'", [proid]).then(results => {
+                for(let i=0; i<results.rowCount; i++) {
+                    recipient += results.rows[i].ap_accid;
+                    if(i<results.rowCount-1){
+                        recipient += ',';
+                    }
+                }  
+            
+                var options = {
+                    //寄件者
+                    from: 'smartmeetingfjuim@gmail.com',
+                    //收件者
+                    to: recipient,    
+                    //主旨
+                    subject: '專案' + results.rows[0].pro_name + '有檔案重新上傳', // Subject line
+                    //嵌入 html 的內文
+                    html: '<p>專案' + results.rows[0].pro_name + '有檔案 '+ req.file.originalname +' 重新上傳<br>請登入系統觀看。</p><p>智慧會議系統團隊</p>',    
+                };
+            
+                //發送信件方法
+                transporter.sendMail(options, function(error, info){
+                    if(error){
+                        console.log("發送失敗");
+                    }else{
+                        console.log("發送成功");
+                    }
+                });
+            });
+
             res.redirect('/member/'+proid);
         });
     })
@@ -130,6 +252,7 @@ router.post('/reupload', upload.single('reuploadFile'), function(req, res, next)
 
 //修改重新上傳 
 router.post('/revise', upload.single('reviseFile'), function(req, res, next){
+    var recipient = "";
     var proid = req.query.proid;
     var id = req.query.recid;
     var reason = req.body.reviseReason;
@@ -141,6 +264,57 @@ router.post('/revise', upload.single('reviseFile'), function(req, res, next){
         var sql = "INSERT INTO notice (notice_recid, notice_action, notice_time) VALUES ($1, $2, $3)";
         pool.query(sql, [id, '修改上傳', time], function(err) {
             if(err) throw err;
+
+            pool.query("SELECT * FROM account_project, project, record WHERE ap_proid=pro_id AND ap_proid=$1 AND ap_authority='擁有者' AND rec_id=$2", [proid, id]).then(results => {
+                var options = {
+                    //寄件者
+                    from: 'smartmeetingfjuim@gmail.com',
+                    //收件者
+                    to: results.rows[0].ap_accid,    
+                    //主旨
+                    subject: '專案' + results.rows[0].pro_name + '有已確立檔案須審核', // Subject line
+                    //嵌入 html 的內文
+                    html: '<p>專案'+ results.rows[0].pro_name + '有已確立檔案 '+ results.rows[0].rec_name +' 須審核<br>請登入系統觀看。</p><p>智慧會議系統團隊</p>',    
+                };
+            
+                //發送信件方法
+                transporter.sendMail(options, function(error, info){
+                    if(error){
+                        console.log("發送失敗");
+                    }else{
+                        console.log("發送成功");
+                    }
+                });
+            })
+            pool.query("SELECT * FROM account_project, project, record WHERE ap_proid=pro_id AND ap_proid=$1 AND ap_authority='參與者' AND rec_id=$2", [proid, id]).then(results => {
+                for(let i=0; i<results.rowCount; i++) {
+                    recipient += results.rows[i].ap_accid;
+                    if(i<results.rowCount-1){
+                        recipient += ',';
+                    }
+                }  
+            
+                var options = {
+                    //寄件者
+                    from: 'smartmeetingfjuim@gmail.com',
+                    //收件者
+                    to: recipient,    
+                    //主旨
+                    subject: '專案' + results.rows[0].pro_name + '有檔案上傳', // Subject line
+                    //嵌入 html 的內文
+                    html: '<p>專案' + results.rows[0].pro_name + '有檔案 '+ results.rows[0].rec_name +' 上傳<br>請登入系統觀看。</p><p>智慧會議系統團隊</p>',    
+                };
+            
+                //發送信件方法
+                transporter.sendMail(options, function(error, info){
+                    if(error){
+                        console.log("發送失敗");
+                    }else{
+                        console.log("發送成功");
+                    }
+                });
+            });
+
             res.redirect('/member/'+proid);
         });
     })

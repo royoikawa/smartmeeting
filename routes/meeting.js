@@ -8,6 +8,22 @@ var pro_name;
 var minute;
 var notice;
 
+router.post('/upload/:proid', function(req, res, next) {
+    var proid = req.params.proid;
+    var name = req.body.name;
+    var select = "SELECT * FROM audiotext WHERE at_name=$1 AND at_proid=$2";
+    pool.query(select, [name, proid]).then(results => {
+        if(results.rowCount>0){
+            console.log('有找到');
+            res.json({'status': 0 });
+        }
+        else{
+            console.log('沒找到');
+            res.json({'status': 1 });
+        }
+    })
+});
+
 router.post('/:proid', function(req, res, next) {
     pro_id = req.params.proid;
     var searchM = req.body.searchMinute;

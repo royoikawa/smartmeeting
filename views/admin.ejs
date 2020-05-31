@@ -107,11 +107,11 @@
                   <span class="project-item"><strong>使用者</strong></span>
                   <div class="project-item">
                     <div class="card border-dark mb-3" style="max-width: inherit;">
-                      <div class="card-header">管理員<i onclick="document.getElementById('chAdmin').style.display='block';" class="fas fa-edit" style="cursor: pointer; color: #7b8a8b; margin-left: 0.7em;"></i></div>
+                      <div class="card-header">擁有者<i onclick="document.getElementById('chAdmin').style.display='block';" class="fas fa-edit" style="cursor: pointer; color: #7b8a8b; margin-left: 0.7em;"></i></div>
                       <div class="card-body">
                         <p class="card-text"><%= username %></p>
                       </div>
-                      <div class="card-header" style="border-top: 1px solid rgba(0, 0, 0, 0.125);">成員
+                      <div class="card-header" style="border-top: 1px solid rgba(0, 0, 0, 0.125);">參與者
                         <span class="badge badge-pill badge-dark" style="line-height: 1rem; margin-left: 0.7em;"><%= prodata.length %></span>
                       </div>
                       <div class="card-body">                       
@@ -173,7 +173,7 @@
               </div>
             </div>
 
-            <!--移除專案成員-->
+            <!--移除專案參與者-->
             <div id="proMem" class="modal" >
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -188,7 +188,7 @@
               </div>
             </div>
 
-            <!--更換專案管理員：驗證身分-->
+            <!--更換專案擁有者：驗證身分-->
             <div id="chAdmin" class="modal" >
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -209,14 +209,14 @@
               </div>
             </div>
 
-            <!--更換專案管理員：勾選成員-->
+            <!--更換專案擁有者：勾選參與者-->
             <div id="changeAdmin" class="modal" >
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <form class="form-group" id="newadminForm" method="POST" action="/admin/<%= pro_id %>/pm/change">
-                    <div class="modal-header"><h5 class="modal-title">更換管理員</h5></div>
+                    <div class="modal-header"><h5 class="modal-title">更換擁有者</h5></div>
                     <div class="modal-body" style="scroll-behavior: auto;">
-                      <h6 class="modal-title">請勾選欲更換的管理員：</h6>
+                      <h6 class="modal-title">請勾選欲更換的擁有者：</h6>
                       <table width='100%' style="border-collapse:separate; border-spacing: 0px 1rem;">                
                         <% for(var i=0; i<prodata.length; i++) { %>
                           <% if( i%4 == 0 ) {%>
@@ -236,7 +236,7 @@
                       <span class="invalid-feedback" id="message4"></span>
                     </div>
                     <div class="modal-footer">
-                      <span class="invalid-feedback" style="display: block; width: fit-content;">注意：更換後您的身分將變為成員</span>
+                      <span class="invalid-feedback" style="display: block; width: fit-content;">注意：更換後您的身分將變為參與者</span>
                       <input type="button" value="取消" class="btn btn-secondary" data-dismiss="modal" onclick="closeChangeAdmin()">
                       <input type="button" value="確認" class="btn btn-primary" id="btn4">
                     </div>
@@ -300,7 +300,6 @@
       if (!$("#proname").val()) {
         $('#proname').addClass("is-invalid");
         $("#message1").text("請輸入專案名稱").css("display", "block").addClass("is-invalid");
-        alert("dddd");
       } else {
         $("#nameForm").submit();
         alert("成功修改專案名稱！");
@@ -360,7 +359,7 @@
       }     
     })
 
-    //顯示移除專案成員視窗
+    //顯示移除專案參與者視窗
     function OpenProMem(mem) {
       var text = "確定移除 " + mem.name + "？";
       $('#promem').text(text);
@@ -380,14 +379,14 @@
       })
     }
 
-    //關閉驗證管理員身分視窗
+    //關閉驗證擁有者身分視窗
     function closeChAdmin() {
       $("#chpw").val(null).removeClass("is-invalid");
       $("#message3").css("display", "none");
       document.getElementById("chAdmin").style.display = "none";
     }
 
-    //驗證管理員密碼按鈕
+    //驗證擁有者密碼按鈕
     $("#btn3").click(function(){
       if (!$("#chpw").val()) {
         $('#chpw').addClass("is-invalid");
@@ -412,20 +411,20 @@
       }     
     })
 
-    //關閉更換管理員視窗
+    //關閉更換擁有者視窗
     function closeChangeAdmin() {
       $('input[name=newadmin]').attr("checked", false);
       $("#message4").css("display", "none");
       document.getElementById("changeAdmin").style.display = "none";
     }
 
-    //換新管理員按鈕
+    //換新擁有者按鈕
     $("#btn4").click(function(){
       if ($("input:radio[name=newadmin]:checked").val()) {
         $("#newadminForm").submit();
       }
       else{
-        $("#message4").text("請選擇一位成員").css("display", "block").addClass("is-invalid");
+        $("#message4").text("請選擇一位參與者").css("display", "block").addClass("is-invalid");
       }    
     })
 

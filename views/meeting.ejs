@@ -14,7 +14,7 @@
         </div>
       </div>
       <span class="badge badge-light">專案代號：<%= pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
-      <!--結束會議--><button type="button" id="bbb" class="btn btn-primary">Button</button>
+      <!--結束會議-->
       <button type="button" id="btnMeeting" onclick="postEnd();" class="btn btn-outline-warning btn-sm" style="float: right;">結束會議</button>
       <span id="onAir" class="badge badge-danger">錄音中</span>
       <div class="divider"></div>
@@ -131,12 +131,18 @@
   </body>
 
   <script>
-    
+    var uploadfilename;
     var date = new Date();
-    var y = date.getFullYear();
-    var m = date.getMonth()+1;//預設是0 記得+1
-    var d = date.getDate();
-    $('#date').text(y+'-'+m+'-'+d); 
+    var yy = date.getFullYear();
+    var mm = date.getMonth()+1;//預設是0 記得+1
+    var dd = date.getDate();
+    if(mm<10){
+      mm = "0"+mm;
+    }
+    if(dd<10){
+      dd = "0"+dd;
+    }
+    $('#date').text(yy+'-'+mm+'-'+dd); 
 
     function closeAudiotext() {
       $('#name').val(null);
@@ -149,6 +155,7 @@
         $('#name').addClass("is-invalid");
       }
       else{
+        uploadfilename = $('#name').val();
         var data = {datapoints:[ {dataChnId:'project_id', values: {value: '<%= pro_id %>*' + $('#name').val()} } ] }
         $.ajax({
           url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datapoints',
@@ -213,6 +220,7 @@
     var h = m = s = 0;   //定義時、分、秒初始為0
     var time = 0;
     var word;
+    var uploadfile;
  
     function timer() {   //定義計時函數
       s = s + 1;
@@ -391,11 +399,49 @@
       })
     }
 
+    function project_idnull() { //清除mcs值 project_id
+      var data = {
+        datapoints:[ {dataChnId:'project_id', values: {value: ''} } ]
+      }
+      $.ajax({
+        url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datapoints',
+        headers: {deviceKey:'nOJM4aFkjC980deR'},
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function(res){
+          console.log('project_id null');
+        }  
+      })
+    }
+
+    function upload() { //確認文檔是否上傳
+      var data = yy+''+mm+''+dd + '-'+ uploadfilename +'.txt';
+      $.ajax({
+        url: '/meeting/upload/<%= pro_id %>',
+        type: 'POST',
+        data:  {'name': data},
+        success: function(res) {
+          var times=0;
+          if(res.status==0){
+            $("#waitingUpload").slideToggle("slow");            
+            clearInterval(uploadfile);
+            project_idnull();
+            times=-1;           
+          }
+          if(times==-1){
+            setTimeout(function() {
+              alert('檔案已上傳至雲端');
+            }, 1000)                               
+            times=0;
+          }
+        }
+      })
+    }
+
     function waitForUpload() {
       $("#waitingUpload").slideToggle("slow");
-      //你的程式碼放這裡
-      //alert前面加一行這個
-      //$("#waitingUpload").slideToggle("slow");
+      uploadfile = setInterval(upload, 2000);//每2秒確認音文檔上傳
     }
   
   </script>
