@@ -88,7 +88,7 @@ router.post('/', function(req, res, next) {
         var newpid = results.rows[0].pro_id;
 
       p = 'INSERT INTO account_project (ap_proid, ap_accid, ap_authority) VALUES ($1, $2, $3)';
-      pool.query(p, [newpid, req.session.userAccount, "管理員"], function(err) {
+      pool.query(p, [newpid, req.session.userAccount, "擁有者"], function(err) {
         if(err) throw err;
         res.redirect('/admin/' + newpid);
       });
@@ -104,7 +104,7 @@ router.post('/', function(req, res, next) {
   p = req.body.id_join;
   var q = 'INSERT INTO account_project (ap_proid, ap_accid, ap_authority) VALUES ($1, $2, $3)';
 
-  pool.query(q, [p, req.session.userAccount, '成員'], function(err) {
+  pool.query(q, [p, req.session.userAccount, '參與者'], function(err) {
     if(err) throw err;
     res.redirect('/member/' + p);
   })

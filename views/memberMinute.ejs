@@ -87,7 +87,7 @@
               <% } %>
 
           <!--審核不通過、已確立之檔案，顯示按鈕-->
-          <% if (record[0].acc_name == username) { %>
+          <% if (record[0].rec_upload == userid) { %>
             <% if (state == '審核不通過') { %>
               <button type="button" class="btn btn-primary" onclick="document.getElementById('reupload').style.display='block';">重新上傳</button>
             <% } else if (state == null) { %>
@@ -144,7 +144,7 @@
                       </div>
                       <div class="modal-footer">
                           <input type="button" value="取消" class="btn btn-secondary" onclick="cancelRevise();">
-                          <input type="submit" value="確定" class="btn btn-primary" id="btnRevise">
+                          <input type="button" value="確定" class="btn btn-primary" id="btnRevise">
                       </div>
                   </form>
               </div>
@@ -284,6 +284,11 @@
       if (!$("#reviseTextarea").val()) {
         $("#msg_reason").css("display", "block");
         $('#reviseTextarea').addClass("is-invalid");
+      }
+      else{
+        $("#msg_reason").css("display", "none");
+        $('#reviseTextarea').removeClass("is-invalid");
+        $('#reviseForm').submit();
       }
       
     })

@@ -61,7 +61,7 @@
             <!-- 審核修改：若是審核修改，表格加上一列顯示修改過的檔案，顯示修改原因，顯示按鈕 -->
                 <tr>
                   <td>修改後的檔案<br>(須審核的檔案)</td>
-                  <td><%= record[0].rec_revisepath.substring(14).slice(0, -26) %>.docx
+                  <td><%= record[0].rec_revisepath.substring(14, record[0].rec_revisepath.lastIndexOf('.')-21)+record[0].rec_revisepath.substring(record[0].rec_revisepath.lastIndexOf('.')) %>
                     <a href="/file/new/<%= record[0].rec_id %>" target="_blank">
                       <div class="tooltip" style="margin-left: 1em; color: #50565c;">
                         <i class="fas fa-arrow-down"></i>
