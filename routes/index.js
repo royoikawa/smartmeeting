@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var pool = require('../models/db');
-
+var moment = require("moment");
+var tz = require("moment-timezone");
 
 var notice;
 router.all('/', function(req, res, next) {
@@ -9,7 +10,7 @@ router.all('/', function(req, res, next) {
     res.redirect('/login');
   }
   //通知
-  var sql = "SELECT * FROM notice, record, project, account_project WHERE notice_recid=rec_id AND rec_proid=pro_id AND pro_id=ap_proid AND ap_accid=$1 ORDER BY notice_time DESC";
+  var sql = "SELECT * FROM notice, record, project, account_project, account WHERE notice_recid=rec_id AND rec_proid=pro_id AND pro_id=ap_proid AND ap_accid=$1 AND ap_accid=acc_id ORDER BY notice_time DESC";
   pool.query(sql,[req.session.userAccount]).then(results => {
       notice = results.rows;
       next();
@@ -77,18 +78,19 @@ router.post('/', function(req, res, next) {
   } else {
     var pro_name = req.body.pro_name;
     var pro_pw = req.body.pro_pw;
-    var p = 'INSERT INTO project (pro_name, pro_pw) VALUES ($1, $2)';
+    var time = moment(new Date()).tz("Asia/Taipei").format("YYYY-MM-DD HH:mm:ss");
+    var p = 'INSERT INTO project (pro_name, pro_pw, pro_time) VALUES ($1, $2, $3)';
     
-    pool.query(p, [pro_name, pro_pw], function(err) {
+    pool.query(p, [pro_name, pro_pw, time], function(err) {
       if(err) throw err;
       
-      p = 'SELECT pro_id FROM project WHERE pro_name = $1';
-      pool.query(p, [pro_name], function(err, results) {
+      p = 'SELECT pro_id FROM project WHERE pro_name = $1 AND pro_pw=$2 AND pro_time=$3';
+      pool.query(p, [pro_name, pro_pw, time], function(err, results) {
         if(err) throw err;
         var newpid = results.rows[0].pro_id;
 
-      p = 'INSERT INTO account_project (ap_proid, ap_accid, ap_authority) VALUES ($1, $2, $3)';
-      pool.query(p, [newpid, req.session.userAccount, "擁有者"], function(err) {
+      p = 'INSERT INTO account_project (ap_proid, ap_accid, ap_authority, ap_time) VALUES ($1, $2, $3, $4)';
+      pool.query(p, [newpid, req.session.userAccount, "擁有者", time], function(err) {
         if(err) throw err;
         res.redirect('/admin/' + newpid);
       });
@@ -102,9 +104,10 @@ router.post('/', function(req, res, next) {
 /* 加入專案 */
 router.post('/', function(req, res, next) {
   p = req.body.id_join;
-  var q = 'INSERT INTO account_project (ap_proid, ap_accid, ap_authority) VALUES ($1, $2, $3)';
+  var time = moment(new Date()).tz("Asia/Taipei").format("YYYY-MM-DD HH:mm:ss");
+  var q = 'INSERT INTO account_project (ap_proid, ap_accid, ap_authority, ap_time) VALUES ($1, $2, $3, $4)';
 
-  pool.query(q, [p, req.session.userAccount, '參與者'], function(err) {
+  pool.query(q, [p, req.session.userAccount, '參與者', time], function(err) {
     if(err) throw err;
     res.redirect('/member/' + p);
   })

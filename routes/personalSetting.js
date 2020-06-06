@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var pg = require('../models/db');
+var moment = require("moment");
+var tz = require("moment-timezone");
 
 var notice;
 
@@ -9,7 +11,7 @@ router.get('/', function(req, res, next) {
         res.redirect('/login');
     }
     //通知
-    var sql = "SELECT * FROM notice, record, project, account_project WHERE notice_recid=rec_id AND rec_proid=pro_id AND pro_id=ap_proid AND ap_accid=$1 ORDER BY notice_time DESC";
+    var sql = "SELECT * FROM notice, record, project, account_project, account WHERE notice_recid=rec_id AND rec_proid=pro_id AND pro_id=ap_proid AND ap_accid=$1 AND ap_accid=acc_id ORDER BY notice_time DESC";
     pg.query(sql,[req.session.userAccount]).then(results => {
         notice = results.rows;
         res.render('personalSetting', { title: '個人設定', username:req.session.userName, userid:req.session.userAccount, notice: notice});
@@ -42,5 +44,13 @@ router.post('/changepw', function(req, res) {
     
 });
 
+//點擊通知
+router.post('/click', function(req, res) {   
+    var time = moment(new Date()).tz("Asia/Taipei").format("YYYY-MM-DD HH:mm:ss");  
+    var click = "UPDATE account SET acc_click=$1 WHERE acc_id=$2";
+    pg.query(click, [time, req.session.userAccount]).then(results => {
+        res.json({"status": 0, "time": time});
+    })  
+});
 
 module.exports = router;

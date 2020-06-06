@@ -415,8 +415,8 @@
       })
     }
 
-    function upload() { //確認文檔是否上傳
-      var data = yy+''+mm+''+dd + '-'+ uploadfilename +'.txt';
+    function upload() { //確認音檔是否上傳
+      var data = yy+''+mm+''+dd + '-'+ uploadfilename ;
       $.ajax({
         url: '/meeting/upload/<%= pro_id %>',
         type: 'POST',

@@ -77,6 +77,7 @@ router.get('/new/:fileid', function(req, res, next) {
 
 //上傳新會議記錄
 router.post('/newminute', upload.single('files'), function(req, res, next) {
+    var recid;
     var recipient = "";
     var proid = req.query.proid;
     var index = req.file.filename.lastIndexOf('.');
@@ -88,10 +89,11 @@ router.post('/newminute', upload.single('files'), function(req, res, next) {
         if(err) throw err;
         var sql = "SELECT * FROM record WHERE rec_path=$1 and rec_proid=$2";
         pool.query(sql, [filepath, proid]).then(result => {//找檔案id
+            recid = result.rows[0].rec_id;
             var insertnotice = "INSERT INTO notice (notice_recid, notice_action, notice_time) VALUES ($1, $2, $3)";
             pool.query(insertnotice, [result.rows[0].rec_id, "新檔案上傳", time], function(err) {//新增notice
                 if(err) throw err;
-
+                
                 pool.query("SELECT * FROM account_project, project WHERE ap_proid=pro_id AND ap_proid=$1 AND ap_authority='擁有者'", [proid]).then(results => {
                     var options = {
                         //寄件者
@@ -141,8 +143,8 @@ router.post('/newminute', upload.single('files'), function(req, res, next) {
                         }
                     });
                 });
-                
-                res.redirect('/member/'+proid);
+                res.json({"status": 0, "recid": recid});
+                //res.redirect('/member/'+proid);
             });
         });
     }) 
@@ -161,6 +163,7 @@ router.post('/newminute', upload.single('files'), function(req, res, next) {
 
 //上傳舊會議記錄
 router.post('/oldminute', upload.single('oldfiles'), function(req, res, next) {
+    var recid;
     var proid = req.query.proid;
     var index = req.file.filename.lastIndexOf('.');
     var time = req.file.filename.substring(index-20, index-1).replace(/\./g, ':');
@@ -169,7 +172,12 @@ router.post('/oldminute', upload.single('oldfiles'), function(req, res, next) {
     var filepath = req.file.path.replace(/\\/g, '\/');
     pool.query(insertfile, [filename, filepath, time, req.session.userAccount, proid], function(err) {
         if(err) throw err;
-        res.redirect('/member/'+proid);
+        var sql = "SELECT * FROM record WHERE rec_path=$1 and rec_proid=$2";
+        pool.query(sql, [filepath, proid]).then(result => {//找檔案id
+            recid = result.rows[0].rec_id;
+            res.json({"status": 0, "recid": recid});
+        })
+        //res.redirect('/member/'+proid);
     });   
 });
 
@@ -194,7 +202,7 @@ router.post('/reupload', upload.single('reuploadFile'), function(req, res, next)
         var sql = "INSERT INTO notice (notice_recid, notice_action, notice_time) VALUES ($1, $2, $3)";
         pool.query(sql, [id, '重新上傳', time], function(err) {
             if(err) throw err;
-
+            
             pool.query("SELECT * FROM account_project, project WHERE ap_proid=pro_id AND ap_proid=$1 AND ap_authority='擁有者'", [proid]).then(results => {
                 var options = {
                     //寄件者
@@ -264,7 +272,7 @@ router.post('/revise', upload.single('reviseFile'), function(req, res, next){
         var sql = "INSERT INTO notice (notice_recid, notice_action, notice_time) VALUES ($1, $2, $3)";
         pool.query(sql, [id, '修改上傳', time], function(err) {
             if(err) throw err;
-
+            
             pool.query("SELECT * FROM account_project, project, record WHERE ap_proid=pro_id AND ap_proid=$1 AND ap_authority='擁有者' AND rec_id=$2", [proid, id]).then(results => {
                 var options = {
                     //寄件者

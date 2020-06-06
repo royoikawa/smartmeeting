@@ -15,63 +15,125 @@
           <a id="noticeclick" class="nav-link" href="#" style="margin-right: -5px; float: left;">
             <i class="fas fa-bell"></i>
           </a>
-          <span style="color: red; float: left; margin-right: 0.5em;" id='noticecount'>&bull;</span>
-          <div class="dropdown-menu" id="dropdown_notice" style="right: 0; left: auto; min-width: 15rem; height: 20rem; overflow-y: auto;" aria-labelledby="notice">
+           <span style="color: red; float: left; margin-right: 0.5em; visibility: hidden;" id='noticecount'>&bull;</span>
+          <div class="dropdown-menu" id="dropdown_notice" style="right: 0; left: auto; min-width: 15rem; height: 20rem; overflow-y: auto;" aria-labelledby="notice">           
             <% if(notice.length!=0) { %>              
-              <% for(var i=0; i<notice.length; i++) { %>              
-                <% if(notice[i].ap_authority=='管理員') { %>
-                  <input type="hidden" id="recid" value="<%= notice[i].rec_id %>">
-                  <% if(notice[i].notice_action=='新檔案上傳') { %>
-                    <% if(notice[i].rec_state=='審核中') { %>
-                      <a id="num" class="dropdown-item" href="/admin/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有新上傳檔案 <%= notice[i].rec_name %> 要審核<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
-                    <% } else { %>
-                      <a id="num" class="dropdown-item" href="/admin/<%= notice[i].pro_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有新上傳檔案 <%= notice[i].rec_name %> 要審核<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
-                    <% } %>                  
-                    <div class="dropdown-divider"></div>
-                  <% } else if(notice[i].notice_action=='重新上傳') { %>
-                    <% if(notice[i].rec_state=='審核中') { %>
-                      <a id="num" class="dropdown-item" href="/admin/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有不通過檔案 <%= notice[i].rec_name %> 已重新上傳，須審核<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
-                    <% } else { %>
-                      <a id="num" class="dropdown-item" href="/admin/<%= notice[i].pro_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有不通過檔案 <%= notice[i].rec_name %> 已重新上傳，須審核<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
-                    <% } %>
+              <% if(notice.length>5) { %>
+                <% notice.length = 5; %>
+                <% } %>
+              <% ch=false %>
+              <% for(var i=0; i<notice.length; i++) { %>
+                <% if(notice[i].notice_time >= notice[i].ap_time) { %>
+                  <% ch=true %>
+                  <% if(notice[i].ap_authority=='擁有者') { %>
+                    <input type="hidden" id="recid" value="<%= notice[i].rec_id %>">
+                    <% if(notice[i].notice_action=='新檔案上傳') { %>
+                      <% if(notice[i].notice_time >= notice[i].acc_click){ %>
+                        <input type="hidden" class="c" value="<%= i %>">
+                        <script>$("#noticecount").css("visibility", "visible");</script>                 
+                      <% } %>
+                      <% if(notice[i].rec_state=='審核中') { %>
+                        <a id="num" class="dropdown-item" href="/admin/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有新上傳檔案 <%= notice[i].rec_name %> 要審核<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
+                      <% } else { %>
+                        <a id="num" class="dropdown-item" href="/admin/<%= notice[i].pro_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有新上傳檔案 <%= notice[i].rec_name %> 要審核<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
+                      <% } %>                  
                       <div class="dropdown-divider"></div>
-                  <% } else if(notice[i].notice_action=='修改上傳') { %>
-                    <% if(notice[i].rec_state=='審核中') { %>
-                      <a id="num" class="dropdown-item" href="/admin/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有已確立檔案 <%= notice[i].rec_name %> 須審核<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
-                    <% } else { %>
-                      <a id="num" class="dropdown-item" href="/admin/<%= notice[i].pro_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有已確立檔案 <%= notice[i].rec_name %> 須審核<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
-                    <% } %>
-                      <div class="dropdown-divider"></div>
-                  <% } %>
 
-                <% } else { %>
-                  <% if(notice[i].notice_action=='新檔案上傳') { %>
-                    <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有新檔案 <%= notice[i].rec_name %> 上傳<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
-                    <div class="dropdown-divider"></div>
-                  <% } else if(notice[i].notice_action=='新檔案確立') { %>
-                    <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有新檔案 <%= notice[i].rec_name %> 確立<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
-                    <div class="dropdown-divider"></div>
-                  <% } else if(notice[i].notice_action=='重新上傳') { %>
-                    <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有新檔案 <%= notice[i].rec_name %> 重新上傳<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
-                    <div class="dropdown-divider"></div>
-                  <% } else if(notice[i].notice_action=='修改上傳') { %>
-                    <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有檔案 <%= notice[i].rec_name %> 上傳<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
-                    <div class="dropdown-divider"></div>
-                  <% } else if(notice[i].rec_upload!=userid && notice[i].notice_action=='修改通過') { %>
-                    <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有檔案 <%= notice[i].rec_name %> 已修改<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
-                    <div class="dropdown-divider"></div>
-                  <% } else if(notice[i].rec_upload==userid && notice[i].notice_action=='審核不通過') { %>
-                    <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> <%= notice[i].rec_name %> 審核不通過，需重新上傳<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
-                    <div class="dropdown-divider"></div>
-                  <% } else if(notice[i].rec_upload==userid && notice[i].notice_action=='修改通過') { %>
-                    <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 您修改的 <%= notice[i].rec_name %> 審核通過<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
-                    <div class="dropdown-divider"></div>
-                  <% } else if(notice[i].rec_upload==userid && notice[i].notice_action=='修改不通過') { %>
-                    <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 您修改的 <%= notice[i].rec_name %> 審核不通過<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
-                    <div class="dropdown-divider"></div>
+                    <% } else if(notice[i].notice_action=='重新上傳') { %>
+                      <% if(notice[i].notice_time >= notice[i].acc_click){ %>
+                        <input type="hidden" class="c" value="<%= i %>">
+                        <script>$("#noticecount").css("visibility", "visible");</script>                 
+                      <% } %>
+                      <% if(notice[i].rec_state=='審核中') { %>
+                        <a id="num" class="dropdown-item" href="/admin/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有不通過檔案 <%= notice[i].rec_name %> 已重新上傳，須審核<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
+                      <% } else { %>
+                        <a id="num" class="dropdown-item" href="/admin/<%= notice[i].pro_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有不通過檔案 <%= notice[i].rec_name %> 已重新上傳，須審核<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
+                      <% } %>
+                      <div class="dropdown-divider"></div>
+
+                    <% } else if(notice[i].notice_action=='修改上傳') { %>
+                      <% if(notice[i].notice_time >= notice[i].acc_click){ %>
+                        <input type="hidden" class="c" value="<%= i %>">
+                        <script>$("#noticecount").css("visibility", "visible");</script>                 
+                      <% } %>
+                      <% if(notice[i].rec_state=='審核中') { %>
+                        <a id="num" class="dropdown-item" href="/admin/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有已確立檔案 <%= notice[i].rec_name %> 須審核<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
+                      <% } else { %>
+                        <a id="num" class="dropdown-item" href="/admin/<%= notice[i].pro_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有已確立檔案 <%= notice[i].rec_name %> 須審核<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
+                      <% } %>
+                      <div class="dropdown-divider"></div>
+                    <% } %>
+
+                  <% } else { %>
+                    <% if(notice[i].notice_action=='新檔案上傳') { %>
+                      <% if(notice[i].notice_time >= notice[i].acc_click){ %>
+                        <input type="hidden" class="c" value="<%= i %>">
+                        <script>$("#noticecount").css("visibility", "visible");</script>                 
+                      <% } %>
+                      <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有新檔案 <%= notice[i].rec_name %> 上傳<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
+                      <div class="dropdown-divider"></div>
+
+                    <% } else if(notice[i].notice_action=='新檔案確立') { %>
+                      <% if(notice[i].notice_time >= notice[i].acc_click){ %>
+                        <input type="hidden" class="c" value="<%= i %>">
+                        <script>$("#noticecount").css("visibility", "visible");</script>                 
+                      <% } %>
+                      <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有新檔案 <%= notice[i].rec_name %> 確立<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
+                      <div class="dropdown-divider"></div>
+
+                    <% } else if(notice[i].notice_action=='重新上傳') { %>
+                      <% if(notice[i].notice_time >= notice[i].acc_click){ %>
+                        <input type="hidden" class="c" value="<%= i %>">
+                        <script>$("#noticecount").css("visibility", "visible");</script>                 
+                      <% } %>
+                      <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有新檔案 <%= notice[i].rec_name %> 重新上傳<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
+                      <div class="dropdown-divider"></div>
+
+                    <% } else if(notice[i].notice_action=='修改上傳') { %>
+                      <% if(notice[i].notice_time >= notice[i].acc_click){ %>
+                        <input type="hidden" class="c" value="<%= i %>">
+                        <script>$("#noticecount").css("visibility", "visible");</script>                 
+                      <% } %>
+                      <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有檔案 <%= notice[i].rec_name %> 上傳<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
+                      <div class="dropdown-divider"></div>
+
+                    <% } else if(notice[i].rec_upload!=userid && notice[i].notice_action=='修改通過') { %>
+                      <% if(notice[i].notice_time >= notice[i].acc_click){ %>
+                        <input type="hidden" class="c" value="<%= i %>">
+                        <script>$("#noticecount").css("visibility", "visible");</script>                 
+                      <% } %>
+                      <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有檔案 <%= notice[i].rec_name %> 已修改<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
+                      <div class="dropdown-divider"></div>
+
+                    <% } else if(notice[i].rec_upload==userid && notice[i].notice_action=='審核不通過') { %>
+                      <% if(notice[i].notice_time >= notice[i].acc_click){ %>
+                        <input type="hidden" class="c" value="<%= i %>">
+                        <script>$("#noticecount").css("visibility", "visible");</script>                 
+                      <% } %>
+                      <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> <%= notice[i].rec_name %> 審核不通過，需重新上傳<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
+                      <div class="dropdown-divider"></div>
+
+                    <% } else if(notice[i].rec_upload==userid && notice[i].notice_action=='修改通過') { %>
+                      <% if(notice[i].notice_time >= notice[i].acc_click){ %>
+                        <input type="hidden" class="c" value="<%= i %>">
+                        <script>$("#noticecount").css("visibility", "visible");</script>                 
+                      <% } %>
+                      <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 您修改的 <%= notice[i].rec_name %> 審核通過<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
+                      <div class="dropdown-divider"></div>
+
+                    <% } else if(notice[i].rec_upload==userid && notice[i].notice_action=='修改不通過') { %>
+                      <% if(notice[i].notice_time >= notice[i].acc_click){ %>
+                        <input type="hidden" class="c" value="<%= i %>">
+                        <script>$("#noticecount").css("visibility", "visible");</script>                 
+                      <% } %>
+                      <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 您修改的 <%= notice[i].rec_name %> 審核不通過<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
+                      <div class="dropdown-divider"></div>
+                    <% } %>
                   <% } %>
                 <% } %>
-                
+              <% } %>
+              <% if(ch==false){ %>
+                <a class="dropdown-item" href="#" style=" word-wrap:break-word; white-space: pre-wrap;">沒有通知 </a>
               <% } %>
             <% } else { %>
               <a class="dropdown-item" href="#" style=" word-wrap:break-word; white-space: pre-wrap;">沒有通知 </a>
@@ -95,34 +157,40 @@
 
   <script>
     $(document).ready(function() {
-      if (/*沒有新通知*/false) {
-        $("#noticecount").css("visibility", "hidden");//圓點不出現
-      } else {
-        $("#noticecount").css("visibility", "visible");//圓點出現
-        
         $("#noticeclick").click(function() {
           $("#noticecount").css("visibility", "hidden");//隱藏圓點
-
+          
           /*顯示沒讀的通知，背景變色*/
-          for (let k = 0; k < 2; k++) {  //改成沒有讀的
-            $("[id=num]").eq(k).css("background-color", "#ecf0f1");
-            $("[id=num]").eq(k).mouseenter(function() {  //滑鼠移到上面，背景變藍色
-              $("[id=num]").eq(k).css("background-color", "#2C3E50");
-            });
-            $("[id=num]").eq(k).mouseleave(function() {  //滑鼠離開，背景變回
+          for (let k = 0; k < $(".c").length; k++) {  //改成沒有讀的
+            if($(".c").eq(k).val()>=0){             
+              console.log('color')
               $("[id=num]").eq(k).css("background-color", "#ecf0f1");
-            });
+              $("[id=num]").eq(k).mouseenter(function() {  //滑鼠移到上面，背景變藍色
+                $("[id=num]").eq(k).css("background-color", "#2C3E50");
+              });
+              $("[id=num]").eq(k).mouseleave(function() {  //滑鼠離開，背景變回
+                $("[id=num]").eq(k).css("background-color", "#ecf0f1");
+              });
+            }
+            else{
+              console.log('nocolor')
+              $("[id=num]").eq(k).css("backgruond-color",  "inherit");//沒反應
+            }
+
           }
           for (let k = 0; k < $("[id=num]").length; k++) {
             $("[id=num]").eq(k).click(function() {
-              $("[id=num]").eq(k).css("backgruond-color",  "inherit");
-              /*
-              **變更資料庫，全部通知變成已讀
-              */
+              $("[id=num]").eq(k).css("backgruond-color",  "inherit");            
             })
           }
+          $.ajax({
+            url: '/personalSetting/click',
+            type: "POST",
+            success: function(res) {
+
+            }
+          })
         })
-      }
       
       
     })
@@ -150,10 +218,12 @@
       });
 
       //點選空白處隱藏
-      $(document).click(function(event){
+      $(document).click(function(event){        
         var _con = $('#dropdown_notice');   // 設定目標區域
-        if(!_con.is(event.target) && _con.has(event.target).length === 0){ 
-          $('#dropdown_notice').slideUp(200);   //滑動消失
+        if(!_con.is(event.target) && _con.has(event.target).length === 0){
+          $('#dropdown_notice').slideUp(200, function() {
+            $(".c").val(-1);              
+          });   //滑動消失                            
         }
       });
     })

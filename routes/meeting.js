@@ -58,7 +58,7 @@ router.all('/:proid', function(req, res, next) {
         res.redirect('/login');
     }
     //通知
-    var sql = "SELECT * FROM notice, record, project, account_project WHERE notice_recid=rec_id AND rec_proid=pro_id AND pro_id=ap_proid AND ap_accid=$1 ORDER BY notice_time DESC";
+    var sql = "SELECT * FROM notice, record, project, account_project, account WHERE notice_recid=rec_id AND rec_proid=pro_id AND pro_id=ap_proid AND ap_accid=$1 AND ap_accid=acc_id ORDER BY notice_time DESC";
     pool.query(sql,[req.session.userAccount]).then(results => {
         notice = results.rows;
         var pro_id = req.params.proid;

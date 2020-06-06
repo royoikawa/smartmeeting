@@ -11,7 +11,7 @@
       </div>
       <div style="width: inherit; height: fit-content;">
         <span class="badge badge-light">專案代號：<%= pro_id %></span><span style="font-size: 1em;"><%= pro_name %></span>
-        <button type="button" onclick="document.getElementById('chooseAutoTag').style.display='block';" class="btn btn-primary">標籤</button>
+        <!-- <button type="button" onclick="document.getElementById('chooseAutoTag').style.display='block';" class="btn btn-primary">標籤</button> -->
         <button id="meet" type="button" onclick="location.href='/meeting/<%= pro_id %>';" class="btn btn-outline-warning btn-sm" style="float: right;">我要開會</button>
       </div>
       <div class="divider"></div>
@@ -59,7 +59,7 @@
                           </div>
                           <div class="modal-footer">
                               <input type="button" value="取消" class="btn btn-secondary" data-dismiss="modal" onclick="cancelUpload();">
-                              <input type="submit" value="確定" class="btn btn-primary" id="btn1">
+                              <input type="button" value="確定" class="btn btn-primary" id="btn1">
                           </div>
                       </form>
                   </div>
@@ -81,7 +81,7 @@
                           </div>
                           <div class="modal-footer">
                               <input type="button" value="取消" class="btn btn-secondary" data-dismiss="modal" onclick="cancelUploadOld();">
-                              <input type="submit" value="確定" class="btn btn-primary" id="btn2">
+                              <input type="button" value="確定" class="btn btn-primary" id="btn2">
                           </div>
                       </form>
                   </div>
@@ -211,11 +211,12 @@
 
     </div>
 
+    <% if (record.length != 0) { %>
     <!--選擇標籤modal-->
     <div id="chooseAutoTag" class="modal" >
       <div class="modal-dialog" role="document">
           <div class="modal-content">
-            <form class="form-group" id="reviseForm" method="POST" action="/member/tag/<%= pro_id %>/<%= record[0].rec_id %>">
+            <form class="form-group" id="tagForm" method="POST">
               <div class="modal-header">
                 <h5 class="modal-title">套用標籤</h5>
               </div>
@@ -224,58 +225,45 @@
                 <label class="col-form-label">您可能會喜歡</label>
                 <div class="card mb-3" style="max-height: 15rem; min-height: 8rem; overflow-y: auto;">
                   <div id="tagdiv" class="card-body" style="padding: 1rem;">
-                    <input type="hidden" id="recid" name="recid" value="<%= record[0].rec_id %>">
-                    
-                        <div class="custom-control custom-checkbox">
-                          <input type="checkbox" class="custom-control-input" id="cb1" name="cb" value="tag_name1" checked>
-                          <label class="custom-control-label" for="cb1">tag_name1</label>
-                          <input type="hidden" id="tagrecid" name="tagrecid" value="tag_recid1">                                 
-                        </div>
-                      
-                        <div class="custom-control custom-checkbox">
-                          <input type="checkbox" class="custom-control-input" id="cb2" name="cb" value="tag_name2">
-                          <label class="custom-control-label" for="cb2">tag_name2</label>
-                          <input type="hidden" id="tagrecid" name="tagrecid" value="tag_recid2">                
-                        </div>
-                      
-
+                    <input type="hidden" id="recid" name="recid" value="">
+                    <div id="autotagdiv"></div>
+                        <!--<div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="acb1" name="acb" value="tag_name1">
+                          <label class="custom-control-label" for="acb1">tag_name1</label>                                 
+                        </div>-->
                   </div>
                 </div>
                 
                 <label class="col-form-label">或 勾選其他在專案中的標籤</label>
                 <div class="card mb-3" style="max-height: 15rem; min-height: 8rem; overflow-y: auto;">
                   <div id="tagdiv" class="card-body" style="padding: 1rem;">
-                    <input type="hidden" id="recid" name="recid" value="<%= record[0].rec_id %>">
-                    
+                    <% if(tag.length != 0) { %>
+                      <% for (var i = 0; i < tag.length; i++) { %>                                                  
                         <div class="custom-control custom-checkbox">
-                          <input type="checkbox" class="custom-control-input" id="cb1" name="cb" value="tag_name1" checked>
-                          <label class="custom-control-label" for="cb1">tag_name1</label>
-                          <input type="hidden" id="tagrecid" name="tagrecid" value="tag_recid1">                                 
-                        </div>
-                      
-                        <div class="custom-control custom-checkbox">
-                          <input type="checkbox" class="custom-control-input" id="cb2" name="cb" value="tag_name2">
-                          <label class="custom-control-label" for="cb2">tag_name2</label>
-                          <input type="hidden" id="tagrecid" name="tagrecid" value="tag_recid2">                
-                        </div>
+                          <input type="checkbox" class="custom-control-input" id="cb<%= i %>" name="cb" value="<%= tag[i].tag_name %>">
+                          <label class="custom-control-label" for="cb<%= i %>"><%= tag[i].tag_name%></label>               
+                        </div>                     
+                      <% } %>
+                    <% } %>
 
                   </div>
                 </div>
                 <label class="col-form-label">或 新增標籤（若欲輸入多個標籤，請以空白區隔）</label>
                 <input class="form-control" type="text" name="newTag" id="newTag">
                 <span class="invalid-feedback" id="message1"></span>
-                <input type="hidden" id="filter" name="filter">
+                <input type="hidden" id="tagfilter" name="tagfilter">
   
                 
               </div>
               <div class="modal-footer">
-                <input type="button" value="取消" class="btn btn-secondary" onclick="document.getElementById('chooseAutoTag').style.display='none';">
-                <input type="submit" value="儲存" class="btn btn-primary" id="autoTags">
+                <input type="button" value="取消" class="btn btn-secondary" onclick="closeAutoTag();">
+                <input type="button" value="儲存" class="btn btn-primary" id="autoTags">
               </div>
             </form>
           </div>
       </div>
     </div>
+    <% } %>
     
   </body>
 
@@ -368,6 +356,145 @@
         }
       });
     })
+
+    var time;
+    //上傳新檔案
+    $('#files').on('change', function(e) {
+      var e = e || window.event;
+      var files = e.target.files;
+      var file = files[0];
+      $('#btn1').off('click').on('click', function() {
+        var formData = new FormData();
+        formData.append('files', file);
+        console.log(file);
+        $.ajax({
+          url: '/file/newminute?proid=<%= pro_id %>',
+          type: 'POST',
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: function(res) {
+            if(res.status==0){
+              //time = setInterval(getFile, 1000);//實驗室電腦取消註解此行
+              console.log(res.recid);
+              $('#recid').val(res.recid);
+              //本地使用，因無法自動產標籤，實驗室電腦註解以下兩行
+              cancelUpload();
+              $('#chooseAutoTag').show();
+            }
+          }
+        })
+      })
+    })
+
+    //上傳舊檔案
+    $('#oldfiles').on('change', function(e) {
+      var e = e || window.event;
+      var files = e.target.files;
+      var file = files[0];
+      $('#btn2').off('click').on('click', function() {
+        var formData = new FormData();
+        formData.append('oldfiles', file);
+        console.log(file);
+        $.ajax({
+          url: '/file/oldminute?proid=<%= pro_id %>',
+          type: 'POST',
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: function(res) {
+            if(res.status==0){
+              //time = setInterval(getFile, 1000);//實驗室電腦取消註解此行
+              console.log(res.recid);
+              $('#recid').val(res.recid);
+              //本地使用，因無法自動產標籤，實驗室電腦註解以下兩行
+              cancelUploadOld();
+              $('#chooseAutoTag').show();
+            }
+          }
+        })
+      })
+    })
+
+    function getFile() { //取值 mcs file_id
+      var arr = [];//存檔案id、自動標籤
+      var tags = [];//存自動標籤
+      $.ajax({
+          url: 'https://api.mediatek.com/mcs/v2/devices/D0GyA2Da/datachannels/file_id/datapoints',//deviceld: D0GyA2Da, deviceKey: nOJM4aFkjC980deR, datachannelID: words
+          headers: {deviceKey:'nOJM4aFkjC980deR'},
+          type: 'GET',
+          contentType: 'application/json',
+          success: function(res){
+            var value = res.dataChannels[0].dataPoints[0].values.value;
+            arr = value.split('@');
+            if(arr[0]==$('#recid').val()){
+              tags = arr[1].split(" ");
+              var strList = '';
+              for(var i=0; i<tags.length; i++){
+                strList += '<div class="custom-control custom-checkbox">';
+                strList += '<input type="checkbox" class="custom-control-input" id="acb'+i+'" name="acb" value="'+tags[i]+'">';
+                strList += '<label class="custom-control-label" for="acb'+i+'">'+tags[i]+'</label>';
+                strList += '</div>';
+              }
+              $("#autotagdiv").html(strList);
+              $('#chooseAutoTag').show();
+              cancelUpload();
+              cancelUploadOld();
+              clearInterval(time);
+            }     
+          }  
+      })     
+    }
+
+    //關閉自動標籤視窗
+    function closeAutoTag() {
+      for(let i=0; i<$('input[name=cb]').length; i++) {       
+        $('input[name=cb]').eq(i).prop("checked", false);      
+      }           
+      $('#chooseAutoTag').hide();
+    }
+
+    //傳送自動標籤表單
+    $('#autoTags').click(function() {
+      var val = [];
+      $('input[name=acb]:checkbox:checked').each(function(i) {
+        if($(this).is(':checked')) {
+          val.push($(this).val());
+        }
+      });
+
+      $('input[name=cb]:checkbox:checked').each(function(i) {
+        if($(this).is(':checked')) {
+          val.push($(this).val());
+        }
+      });
+      
+      if($('#newTag').val()){
+        var newtag = [];
+        newtag = $('#newTag').val().split(" ");
+      }
+      
+      for(var i in newtag){
+        val.push(newtag[i]);
+      }
+
+      var jsonString = JSON.stringify({val});
+      $("#tagfilter").val(jsonString);
+      console.log(jsonString);
+      $.ajax({
+        url: '/member/autotag/<%= pro_id %>/'+$('#recid').val(),
+        type: 'POST',
+        data: $("#tagfilter").val(jsonString),
+        success: function(res) {
+          console.log('tag')
+          if(res.status==0){
+            location.href="/member/<%= pro_id %>";
+          }
+        }
+      })
+    })
+
+    
 
     //匯入solr
     $(document).ready(function() {        

@@ -35,7 +35,7 @@ router.all('/:id_join', function(req, res, next) {
     }
     var pro_id = req.params.id_join;
     //通知
-    var sql = "SELECT * FROM notice, record, project, account_project WHERE notice_recid=rec_id AND rec_proid=pro_id AND pro_id=ap_proid AND ap_accid=$1 ORDER BY notice_time DESC";
+    var sql = "SELECT * FROM notice, record, project, account_project, account WHERE notice_recid=rec_id AND rec_proid=pro_id AND pro_id=ap_proid AND ap_accid=$1 AND ap_accid=acc_id ORDER BY notice_time DESC";
     pool.query(sql,[req.session.userAccount]).then(results => {
         notice = results.rows;
         //專案參與者資料
@@ -121,7 +121,7 @@ router.post('/:proid/:recid/audit', function(req, res, next){
         pool.query(sql, [id, "新檔案確立", time]).then(() => {               
             sql = "UPDATE record SET rec_state=null, rec_time=$1 WHERE rec_id=$2";
             pool.query(sql, [time, id]).then(() => {
-
+                
                 pool.query("SELECT * FROM account_project, project, record WHERE ap_proid=pro_id AND ap_proid=$1 AND rec_id=$2 AND rec_upload=ap_accid", [proid, id]).then(results => {
                     var options = {
                         //寄件者
@@ -182,7 +182,7 @@ router.post('/:proid/:recid/audit', function(req, res, next){
         pool.query(sql, [id, "審核不通過", time]).then(() => {
             sql = "UPDATE record SET rec_state='審核不通過', rec_reason=$1, rec_time=$2 WHERE rec_id=$3";
             pool.query(sql, [reason, time, id]).then(() => {
-
+                
                 pool.query("SELECT * FROM account_project, project, record WHERE ap_proid=pro_id AND ap_proid=$1 AND rec_id=$2 AND rec_upload=ap_accid", [proid, id]).then(results => {
                     var options = {
                         //寄件者
@@ -263,6 +263,7 @@ router.post('/', function(req, res, next){
                 sql = "UPDATE record SET rec_name=$1, rec_state=null, rec_reason=null, rec_path=$2, rec_time=$3, rec_revisepath=null WHERE rec_id=$4";
                 pool.query(sql, [filename, repath, time, id], function(err) {
                     if(err) throw err;
+                    
                     pool.query("SELECT * FROM account_project, project, record WHERE ap_proid=pro_id AND ap_proid=$1 AND rec_id=$2 AND rec_upload=ap_accid", [proid, id]).then(results => {
                         var options = {
                             //寄件者
@@ -330,7 +331,7 @@ router.post('/', function(req, res, next){
                 sql = "UPDATE record SET rec_state=null, rec_reason=$1, rec_time=$2, rec_revisepath=null WHERE rec_id=$3";
                 pool.query(sql, [reason, time, id], function(err) {
                     if(err) throw err;
-
+                    
                     pool.query("SELECT * FROM account_project, project, record WHERE ap_proid=pro_id AND ap_proid=$1 AND rec_id=$2 AND rec_upload=ap_accid", [proid, id]).then(results => {
                         var options = {
                             //寄件者
