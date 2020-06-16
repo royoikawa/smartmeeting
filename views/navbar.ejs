@@ -65,7 +65,7 @@
                     <% } %>
 
                   <% } else { %>
-                    <% if(notice[i].notice_action=='新檔案上傳') { %>
+                    <% if(notice[i].rec_upload!=userid && notice[i].notice_action=='新檔案上傳') { %>
                       <% if(notice[i].notice_time >= notice[i].acc_click){ %>
                         <input type="hidden" class="c" value="<%= i %>">
                         <script>$("#noticecount").css("visibility", "visible");</script>                 
@@ -81,7 +81,7 @@
                       <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有新檔案 <%= notice[i].rec_name %> 確立<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
                       <div class="dropdown-divider"></div>
 
-                    <% } else if(notice[i].notice_action=='重新上傳') { %>
+                    <% } else if(notice[i].rec_upload!=userid && notice[i].notice_action=='重新上傳') { %>
                       <% if(notice[i].notice_time >= notice[i].acc_click){ %>
                         <input type="hidden" class="c" value="<%= i %>">
                         <script>$("#noticecount").css("visibility", "visible");</script>                 
@@ -89,7 +89,7 @@
                       <a id="num" class="dropdown-item" href="/member/<%= notice[i].pro_id %>/<%= notice[i].rec_id %>" style=" word-wrap:break-word; white-space: pre-wrap;">專案 <strong><%= notice[i].pro_name %></strong> 有新檔案 <%= notice[i].rec_name %> 重新上傳<footer class="blockquote-footer"><%= notice[i].notice_time %> </footer></a>
                       <div class="dropdown-divider"></div>
 
-                    <% } else if(notice[i].notice_action=='修改上傳') { %>
+                    <% } else if(notice[i].rec_upload!=userid && notice[i].notice_action=='修改上傳') { %>
                       <% if(notice[i].notice_time >= notice[i].acc_click){ %>
                         <input type="hidden" class="c" value="<%= i %>">
                         <script>$("#noticecount").css("visibility", "visible");</script>                 

@@ -115,7 +115,7 @@ router.post('/newminute', upload.single('files'), function(req, res, next) {
                         }
                     });
                 })
-                pool.query("SELECT * FROM account_project, project WHERE ap_proid=pro_id AND ap_proid=$1 AND ap_authority='參與者'", [proid]).then(results => {
+                pool.query("SELECT * FROM account_project, project, record WHERE ap_proid=pro_id AND ap_proid=$1 AND ap_authority='參與者' AND rec_id=$2 AND rec_upload!=ap_accid", [proid, recid]).then(results => {
                     for(let i=0; i<results.rowCount; i++) {
                         recipient += results.rows[i].ap_accid;
                         if(i<results.rowCount-1){
@@ -224,7 +224,7 @@ router.post('/reupload', upload.single('reuploadFile'), function(req, res, next)
                     }
                 });
             })
-            pool.query("SELECT * FROM account_project, project WHERE ap_proid=pro_id AND ap_proid=$1 AND ap_authority='參與者'", [proid]).then(results => {
+            pool.query("SELECT * FROM account_project, project, record WHERE ap_proid=pro_id AND ap_proid=$1 AND ap_authority='參與者' AND rec_id=$2 AND rec_upload!=ap_accid", [proid, id]).then(results => {
                 for(let i=0; i<results.rowCount; i++) {
                     recipient += results.rows[i].ap_accid;
                     if(i<results.rowCount-1){
@@ -294,7 +294,7 @@ router.post('/revise', upload.single('reviseFile'), function(req, res, next){
                     }
                 });
             })
-            pool.query("SELECT * FROM account_project, project, record WHERE ap_proid=pro_id AND ap_proid=$1 AND ap_authority='參與者' AND rec_id=$2", [proid, id]).then(results => {
+            pool.query("SELECT * FROM account_project, project, record WHERE ap_proid=pro_id AND ap_proid=$1 AND ap_authority='參與者' AND rec_id=$2 AND rec_upload!=ap_accid", [proid, id]).then(results => {
                 for(let i=0; i<results.rowCount; i++) {
                     recipient += results.rows[i].ap_accid;
                     if(i<results.rowCount-1){

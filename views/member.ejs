@@ -2,6 +2,9 @@
 <html>
   <%- include headerTag %>
   <body>
+    <div class="waiting" id="waitingTag">
+      等待系統產生標籤...
+    </div>
     <div><%- include navbar %></div>
     <div class="jumbotron" style="background-color: rgba(88, 87, 87, 0.01); padding-top: 3rem;">
       <div class="col-sm-10">
@@ -377,10 +380,10 @@
             if(res.status==0){
               //time = setInterval(getFile, 1000);//實驗室電腦取消註解此行
               console.log(res.recid);
-              $('#recid').val(res.recid);
-              //本地使用，因無法自動產標籤，實驗室電腦註解以下兩行
+              $('#recid').val(res.recid);              
               cancelUpload();
-              $('#chooseAutoTag').show();
+              //$("#waitingTag").slideToggle("slow");//本地使用，不用等自動標籤，實驗室電腦取消註解此行
+              $('#chooseAutoTag').show();//實驗室電腦註解此行
             }
           }
         })
@@ -407,9 +410,9 @@
               //time = setInterval(getFile, 1000);//實驗室電腦取消註解此行
               console.log(res.recid);
               $('#recid').val(res.recid);
-              //本地使用，因無法自動產標籤，實驗室電腦註解以下兩行
               cancelUploadOld();
-              $('#chooseAutoTag').show();
+              //$("#waitingTag").slideToggle("slow");//本地使用，不用等自動標籤，實驗室電腦取消註解此行
+              $('#chooseAutoTag').show();//實驗室電腦註解此行
             }
           }
         })
@@ -428,6 +431,7 @@
             var value = res.dataChannels[0].dataPoints[0].values.value;
             arr = value.split('@');
             if(arr[0]==$('#recid').val()){
+              $("#waitingTag").slideToggle("slow");
               tags = arr[1].split(" ");
               var strList = '';
               for(var i=0; i<tags.length; i++){
@@ -452,6 +456,7 @@
         $('input[name=cb]').eq(i).prop("checked", false);      
       }           
       $('#chooseAutoTag').hide();
+      location.href="/member/<%= pro_id %>";
     }
 
     //傳送自動標籤表單
